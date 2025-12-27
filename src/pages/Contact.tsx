@@ -11,10 +11,10 @@ import { Footer } from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
 
 const contactInfo = [
-  { icon: Mail, label: "Email", value: "hello@consistentacademy.com", href: "mailto:hello@consistentacademy.com" },
-  { icon: Phone, label: "Phone", value: "+1 (555) 123-4567", href: "tel:+15551234567" },
-  { icon: MapPin, label: "Address", value: "123 Academy Street, Education District, City 12345", href: "#" },
-  { icon: Clock, label: "Hours", value: "Mon-Sat: 9:00 AM - 8:00 PM", href: "#" },
+  { icon: Mail, label: "Email", value: "theconsistentacademy@gmail.com", href: "mailto:theconsistentacademy@gmail.com" },
+  { icon: Phone, label: "Phone", value: "+91 77091 09830", href: "tel:+917709109830" },
+  { icon: MapPin, label: "Address", value: "Pune,Maharashtra", href: "#" },
+  
 ];
 
 const Contact = () => {
@@ -138,7 +138,7 @@ const Contact = () => {
                         value={formData.phone}
                         onChange={handleChange}
                         className="w-full px-4 py-3 rounded-xl bg-background shadow-neu-inset-sm border-0 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                        placeholder="+1 (555) 000-0000"
+                        placeholder="+91 00000-00000"
                       />
                     </div>
                     <div>

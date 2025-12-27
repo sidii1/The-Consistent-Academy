@@ -12,7 +12,7 @@ import { Footer } from "@/components/layout/Footer";
 
 const stats = [
   { icon: Users, value: "500+", label: "Students Trained" },
-  { icon: BookOpen, value: "15+", label: "Expert Courses" },
+  { icon: BookOpen, value: "5+", label: "Expert Courses" },
   { icon: Trophy, value: "95%", label: "Success Rate" },
 ];
 

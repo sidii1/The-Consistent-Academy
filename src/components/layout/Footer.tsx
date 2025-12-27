@@ -140,15 +140,15 @@ export const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
                 <MapPin size={18} className="text-primary mt-0.5 flex-shrink-0" />
-                <span>123 Academy Street, Education District, City 12345</span>
+                <span>Pune,Maharashtra</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Phone size={18} className="text-primary flex-shrink-0" />
-                <span>+1 (555) 123-4567</span>
+                <span>+91 77091 09830</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Mail size={18} className="text-primary flex-shrink-0" />
-                <span>hello@consistentacademy.com</span>
+                <span>theconsistentacademy@gmail.com</span>
               </li>
             </ul>
           </motion.div>
