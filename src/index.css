@@ -1,0 +1,188 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Neumorphic Design System for The Consistent Academy - Enhanced Purple Theme */
+
+@layer base {
+  :root {
+    --background: 250 30% 97%;
+    --foreground: 262 30% 15%;
+
+    --card: 250 30% 98%;
+    --card-foreground: 262 30% 15%;
+
+    --popover: 250 30% 98%;
+    --popover-foreground: 262 30% 15%;
+
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 262 83% 75%;
+    --primary-dark: 262 83% 45%;
+
+    --secondary: 262 30% 94%;
+    --secondary-foreground: 262 30% 20%;
+
+    --muted: 262 20% 92%;
+    --muted-foreground: 262 15% 45%;
+
+    --accent: 280 70% 65%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 262 25% 88%;
+    --input: 262 25% 94%;
+    --ring: 262 83% 58%;
+
+    --radius: 1rem;
+
+    /* Neumorphic Shadows with purple tint */
+    --shadow-light: 262 30% 100%;
+    --shadow-dark: 262 30% 85%;
+    
+    /* Neumorphic shadow values */
+    --neu-shadow-sm: 4px 4px 8px hsl(262 30% 85% / 0.5), -4px -4px 8px hsl(0 0% 100% / 0.8);
+    --neu-shadow: 8px 8px 16px hsl(262 30% 85% / 0.5), -8px -8px 16px hsl(0 0% 100% / 0.8);
+    --neu-shadow-lg: 12px 12px 24px hsl(262 30% 85% / 0.5), -12px -12px 24px hsl(0 0% 100% / 0.8);
+    --neu-shadow-xl: 20px 20px 40px hsl(262 30% 85% / 0.5), -20px -20px 40px hsl(0 0% 100% / 0.8);
+    --neu-shadow-inset: inset 4px 4px 8px hsl(262 30% 85% / 0.5), inset -4px -4px 8px hsl(0 0% 100% / 0.8);
+    --neu-shadow-inset-sm: inset 2px 2px 4px hsl(262 30% 85% / 0.5), inset -2px -2px 4px hsl(0 0% 100% / 0.8);
+
+    /* Enhanced Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(280 70% 60%));
+    --gradient-soft: linear-gradient(135deg, hsl(262 30% 98%), hsl(262 30% 95%));
+    --gradient-purple-glow: radial-gradient(circle at center, hsl(262 83% 75% / 0.4), transparent 70%);
+    --gradient-blob: linear-gradient(135deg, hsl(262 83% 70% / 0.2), hsl(280 70% 65% / 0.15));
+    --gradient-purple-section: linear-gradient(180deg, hsl(262 83% 58% / 0.08), hsl(280 70% 65% / 0.05), transparent);
+    --gradient-accent-section: linear-gradient(180deg, hsl(280 70% 65% / 0.1), hsl(262 83% 58% / 0.05));
+
+    --sidebar-background: 262 30% 98%;
+    --sidebar-foreground: 262 30% 20%;
+    --sidebar-primary: 262 83% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 262 30% 94%;
+    --sidebar-accent-foreground: 262 30% 20%;
+    --sidebar-border: 262 25% 88%;
+    --sidebar-ring: 262 83% 58%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer utilities {
+  /* Neumorphic utility classes */
+  .neu-flat {
+    box-shadow: var(--neu-shadow);
+  }
+
+  .neu-pressed {
+    box-shadow: var(--neu-shadow-inset);
+  }
+
+  .neu-convex {
+    box-shadow: var(--neu-shadow);
+    background: linear-gradient(145deg, hsl(262 30% 100%), hsl(262 30% 93%));
+  }
+
+  .neu-concave {
+    box-shadow: var(--neu-shadow-inset);
+    background: linear-gradient(145deg, hsl(262 30% 93%), hsl(262 30% 100%));
+  }
+
+  /* Shadow utilities */
+  .shadow-neu {
+    box-shadow: var(--neu-shadow);
+  }
+
+  .shadow-neu-sm {
+    box-shadow: var(--neu-shadow-sm);
+  }
+
+  .shadow-neu-lg {
+    box-shadow: var(--neu-shadow-lg);
+  }
+
+  .shadow-neu-xl {
+    box-shadow: var(--neu-shadow-xl);
+  }
+
+  .shadow-glow {
+    box-shadow: 0 0 30px hsl(262 83% 58% / 0.3);
+  }
+
+  /* Text gradients */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+
+  /* Floating animation */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(2deg); }
+  }
+
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0px) translateX(0px); }
+    33% { transform: translateY(-15px) translateX(10px); }
+    66% { transform: translateY(-5px) translateX(-10px); }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+  }
+
+  @keyframes blob {
+    0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-float-slow {
+    animation: float-slow 8s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 4s ease-in-out infinite;
+  }
+
+  .animate-blob {
+    animation: blob 10s ease-in-out infinite;
+  }
+
+  /* Glassmorphism for overlays with purple tint */
+  .glass {
+    @apply backdrop-blur-md;
+    background: hsl(262 30% 98% / 0.85);
+  }
+
+  /* Purple accent backgrounds */
+  .bg-purple-glow {
+    background: radial-gradient(ellipse at 50% 50%, hsl(262 83% 58% / 0.15), transparent 70%);
+  }
+
+  .bg-accent-glow {
+    background: radial-gradient(ellipse at 50% 50%, hsl(280 70% 65% / 0.15), transparent 70%);
+  }
+}
