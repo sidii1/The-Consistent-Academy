@@ -344,16 +344,17 @@ const Index = () => {
 
           <AnimatedText className="text-muted-foreground text-lg mb-6" delay={0.2}>
             Founder & Lead Instructor at The Consistent Academy with over{" "}
-            <strong>17 years of experience</strong> in English education.
+            <strong>19 years of experience</strong> in English education.
             She holds <strong>B.Sc, B.Ed, and MPM</strong> qualifications,
             is <strong>UGC NET qualified</strong>, and is a
-            <strong> British Council Certified IELTS Trainer</strong>.
+            <strong> British Council Certified IELTS Trainer</strong>.She is a Certified soft skill and corporate trainer  also holds certificate as <strong>Train the Trainer</strong>.
           </AnimatedText>
 
           <AnimatedText className="text-muted-foreground text-lg mb-6" delay={0.3}>
             Vidya is also certified in <strong>TOEFL, PET, TESOL & TEFL</strong>,
-            and is the author of <em>“Cakewalk IELTS”</em>, a practical guide that
-            simplifies IELTS preparation for learners worldwide.
+            and is the author of three books <em>“Cakewalk IELTS”</em>, a practical guide that
+            simplifies IELTS preparation for learners worldwide, <em>"Reading detective" </em>- Solving Comprehension mysteries for kids, and <em>"101 management books you'll never read but should"</em>.
+
           </AnimatedText>
 
           <NeumorphicCard className="p-6 bg-gradient-to-br from-primary/10 to-accent/5 mb-8" hover={false}>
