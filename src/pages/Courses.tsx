@@ -8,23 +8,24 @@ import { SectionWrapper } from "@/components/ui/section-wrapper";
 import { AnimatedHeading, AnimatedText } from "@/components/ui/animated-text";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { title } from "process";
 
 const courses = [
   {
     title: "IELTS Preparation",
     description: "Comprehensive training for all four IELTS modules: Listening, Reading, Writing, and Speaking.",
     icon: "📚",
-    duration: "12 Weeks",
+    duration: "4 Weeks",
     students: "200+",
     rating: "4.9",
-    features: ["Mock tests", "Speaking practice", "Writing feedback", "Score prediction"],
+    features: ["Mock tests", "Speaking practice", "Writing feedback", "Score prediction","Study materials provided"],
     popular: true,
   },
   {
     title: "Spoken English",
     description: "Build confidence in everyday communication with practical conversation skills.",
     icon: "🎯",
-    duration: "8 Weeks",
+    duration: "4 Weeks",
     students: "150+",
     rating: "4.8",
     features: ["Daily conversations", "Pronunciation", "Fluency building", "Role plays"],
@@ -34,7 +35,7 @@ const courses = [
     title: "Writing Skills",
     description: "Master academic and professional writing with structured practice sessions.",
     icon: "✍️",
-    duration: "10 Weeks",
+    duration: "2 Weeks",
     students: "120+",
     rating: "4.9",
     features: ["Essay writing", "Email etiquette", "Report writing", "Grammar focus"],
@@ -54,7 +55,7 @@ const courses = [
     title: "Business English",
     description: "Professional communication skills for corporate environments and business contexts.",
     icon: "💼",
-    duration: "8 Weeks",
+    duration: "4 Weeks",
     students: "90+",
     rating: "4.8",
     features: ["Presentations", "Meetings", "Negotiations", "Corporate vocabulary"],
@@ -70,6 +71,17 @@ const courses = [
     features: ["Mock interviews", "Body language", "Common questions", "Confidence building"],
     popular: true,
   },
+
+  {
+    title:"IELTS Writing",
+    description: "Focused training on IELTS Writing tasks to boost your scores effectively.",
+    icon: "📝",
+    duration: "2 Weeks",
+    students: "80+",
+    rating: "4.9",
+    features:["Academic & General Training","Analyze(Task 1/Academic module)","Letters (Task 1/General module)","Descriptive Essays","Essential Grammar & Vocabulary "],
+    popular: false,
+  }
 ];
 
 const Courses = () => {
