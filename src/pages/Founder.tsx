@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import { Quote, Award } from "lucide-react";
 import { AnimatedText, AnimatedHeading } from "@/components/ui/animated-text";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
-import { FloatingBlob } from "@/components/ui/floating-blob";
 import { SectionWrapper } from "@/components/ui/section-wrapper";
 
 const expertise = [
@@ -102,7 +101,7 @@ const Founder = () => {
                   <Quote className="w-8 h-8 text-primary flex-shrink-0" />
                   <div>
                     <p className="text-foreground italic mb-2">
-                      “Confidence in communication is not a talent — it’s a skill.
+                      “Confidence in communication is not a talent — it's a skill.
                       With the right structure and consistency, anyone can master it.”
                     </p>
                     <p className="text-sm text-muted-foreground">
@@ -143,8 +142,7 @@ const Founder = () => {
               transition={{ duration: 0.8 }}
             >
               <div className="relative aspect-square max-w-md mx-auto">
-                <FloatingBlob className="-top-10 -right-10" size="md" color="accent" />
-                <div className="text-center p-8">
+                <div className="text-center">
                   <div className="w-full h-full rounded-full bg-gradient-to-br from-card to-primary/20 shadow-neu mx-auto mb-4 overflow-hidden">
                     <img
                       src="/vidya.png"

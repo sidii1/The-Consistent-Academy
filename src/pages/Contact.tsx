@@ -102,7 +102,7 @@ const Contact = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
+      <section className="relative pt-32 pb-10 overflow-hidden">
         <FloatingBlob className="top-20 -right-32" size="xl" color="primary" />
         <FloatingBlob
           className="bottom-0 -left-20"
@@ -113,13 +113,6 @@ const Contact = () => {
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
-            <motion.span
-              className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              Contact Us
-            </motion.span>
 
             <motion.h1
               className="text-4xl md:text-6xl font-bold mb-6"
