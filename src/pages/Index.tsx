@@ -12,8 +12,8 @@ import Founder from "./Founder";
 import Testimonials from "./Testimonials";
 
 const stats = [
-  { icon: Users, value: "500+", label: "Students Trained" },
-  { icon: BookOpen, value: "5+", label: "Expert Courses" },
+  { icon: Users, value: "1500+", label: "Students Trained" },
+  { icon: BookOpen, value: "6+", label: "Expert Courses" },
   { icon: Trophy, value: "95%", label: "Success Rate" },
 ];
 
@@ -251,8 +251,7 @@ const Index = () => {
         </div>
       </SectionWrapper>
 
-      {/* Founder Section */}
-      <Founder />
+    
 
       {/* Testimonials Section */}
       <Testimonials />
