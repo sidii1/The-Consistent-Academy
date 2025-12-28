@@ -1,0 +1,147 @@
+import { motion } from "framer-motion";
+import { Quote, Award } from "lucide-react";
+import { AnimatedText, AnimatedHeading } from "@/components/ui/animated-text";
+import { NeumorphicCard } from "@/components/ui/neumorphic-card";
+import { FloatingBlob } from "@/components/ui/floating-blob";
+import { SectionWrapper } from "@/components/ui/section-wrapper";
+
+const expertise = [
+  "IELTS Speaking & Writing",
+  "Interview Preparation",
+  "Corporate & Business English",
+  "Personality Development",
+  "Soft Skills Training",
+  "Professional Communication"
+];
+
+const milestones = [
+  { year: "2007", title: "Began Teaching Career" },
+  { year: "2016", title: "IELTS Master Trainer Certification" },
+  { year: "2024", title: "Head of Department (Academics)" },
+  { year: "2025", title: "Founded The Consistent Academy" }
+];
+
+const Founder = () => {
+  return (
+    <section id="founder" className="relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10" />
+
+      <SectionWrapper className="relative z-10">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+            {/* Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <AnimatedText className="text-primary text-sm font-medium uppercase tracking-wider mb-4">
+                Meet the Founder
+              </AnimatedText>
+
+              <AnimatedHeading delay={0.1} className="mb-6">
+                <span className="text-foreground">Vidya </span>
+                <span className="text-gradient">Wankhade</span>
+              </AnimatedHeading>
+
+              <AnimatedText className="text-muted-foreground text-lg mb-6" delay={0.2}>
+                Author, IELTS & Interview Coach, and Founder of{" "}
+                <strong>The Consistent Academy</strong>. With over{" "}
+                <strong>18 years of experience</strong>, Vidya has helped
+                students, professionals, and aspiring leaders communicate
+                with clarity, confidence, and impact.
+              </AnimatedText>
+
+              <AnimatedText className="text-muted-foreground text-lg mb-8" delay={0.3}>
+                A <strong>British Council Certified IELTS Master Trainer</strong>{" "}
+                and Corporate Communication Coach, she blends language mastery
+                with real-world communication strategies — helping learners
+                stand out, not just speak up.
+              </AnimatedText>
+
+              {/* Expertise */}
+              <div className="grid grid-cols-2 gap-3 mb-8">
+                {expertise.map((skill, index) => (
+                  <motion.div
+                    key={skill}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4 + index * 0.05 }}
+                    className="px-4 py-2 rounded-xl bg-gradient-to-br from-primary/15 to-card shadow-neu-sm text-sm font-medium text-foreground"
+                  >
+                    {skill}
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Quote */}
+              <NeumorphicCard className="p-6 bg-gradient-to-br from-primary/15 to-accent/10 mb-8" hover={false}>
+                <div className="flex gap-4">
+                  <Quote className="w-8 h-8 text-primary flex-shrink-0" />
+                  <div>
+                    <p className="text-foreground italic mb-2">
+                      “Confidence in communication is not a talent — it’s a skill.
+                      With the right structure and consistency, anyone can master it.”
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      — Vidya Wankhade
+                    </p>
+                  </div>
+                </div>
+              </NeumorphicCard>
+
+              {/* Milestones */}
+              <div className="grid grid-cols-2 gap-4">
+                {milestones.map((milestone, index) => (
+                  <motion.div
+                    key={milestone.year}
+                    className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-card shadow-neu-sm"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.6 + index * 0.1 }}
+                  >
+                    <span className="text-primary font-bold text-lg">
+                      {milestone.year}
+                    </span>
+                    <p className="text-sm text-foreground font-medium mt-1">
+                      {milestone.title}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Image */}
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <div className="relative aspect-square max-w-md mx-auto">
+                <FloatingBlob className="-top-10 -right-10" size="md" color="accent" />
+                <div className="text-center p-8">
+                  <div className="w-full h-full rounded-full bg-gradient-to-br from-card to-primary/20 shadow-neu mx-auto mb-4 overflow-hidden">
+                    <img
+                      src="/vidya.png"
+                      alt="Vidya Wankhade"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+          </div>
+        </div>
+      </SectionWrapper>
+    </section>
+  );
+};
+
+export default Founder;
