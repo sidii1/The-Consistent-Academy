@@ -8,34 +8,77 @@ import { SectionWrapper } from "@/components/ui/section-wrapper";
 
 const testimonials = [
   {
-    name: "Priya Sharma",
-    role: "IELTS Student",
+    name: "Ninoshka",
+    role: "Veterinary Professional",
     course: "IELTS Preparation",
     rating: 5,
-    text: "The Consistent Academy transformed my English skills. I achieved a band score of 8.0 in IELTS! The teaching methodology is exceptional and the personal attention made all the difference."
+    text: "With consistent guidance and focused practice, I cleared my IELTS in my first attempt with an overall band score of 7.5. Today, I am in Canada, pursuing my goals with confidence and pride."
   },
   {
-    name: "Rahul Mehta",
-    role: "Corporate Professional",
-    course: "Business English",
-    rating: 5,
-    text: "Professional, structured, and results-oriented. The business English course helped me excel in my career. Highly recommended for anyone looking to improve their professional communication."
-  },
-  {
-    name: "Sneha Patel",
-    role: "University Student",
-    course: "Spoken English",
-    rating: 5,
-    text: "I was always afraid to speak English in public. Now I'm confident and fluent! The supportive environment and expert guidance made learning enjoyable and effective."
-  },
-  {
-    name: "Amit Kumar",
-    role: "IT Professional",
+    name: "Sucharita",
+    role: "Aspiring International Student",
     course: "IELTS Preparation",
     rating: 5,
-    text: "Got my dream score of 7.5! The personalized feedback and consistent practice sessions were exactly what I needed. Thank you for making my Canada dream possible!"
+    text: "I cleared my IELTS in my first attempt with an overall band score of 7. Choosing the right guidance helped me move one step closer to building my life abroad."
+  },
+  {
+    name: "Deepak S.",
+    role: "Grade 12 Student",
+    course: "IELTS Preparation",
+    rating: 5,
+    text: "I cleared my IELTS with a band score of 6.5, which was exactly what my university required. This achievement helped me continue my education in Australia and make my family proud."
+  },
+  {
+    name: "Atharv",
+    role: "Mechanical Engineering Student",
+    course: "IELTS Preparation",
+    rating: 5,
+    text: "Scoring a 6.5 band in IELTS helped me achieve my dream of studying in Germany. The preparation was structured, practical, and constantly motivating."
+  },
+  {
+    name: "Shreya",
+    role: "Literature Student",
+    course: "IELTS Preparation",
+    rating: 5,
+    text: "I cleared my IELTS with a 6.5 band and secured admission to my dream university in Germany and the UK. The guidance throughout the process made everything clearer and easier."
+  },
+  {
+    name: "Amol D.",
+    role: "Working Professional",
+    course: "IELTS Preparation",
+    rating: 5,
+    text: "With consistent practice and focused mentoring, I achieved the score required for higher studies in Germany. This journey taught me discipline and confidence."
+  },
+  {
+    name: "Neha O.",
+    role: "Working Professional",
+    course: "IELTS Preparation",
+    rating: 5,
+    text: "I achieved a strong band score of 7 through consistency and the right mentorship. Managing work and preparation was challenging, but the support made it possible."
+  },
+  {
+    name: "Monika",
+    role: "Canada PR Applicant",
+    course: "IELTS Preparation",
+    rating: 5,
+    text: "Clearing my IELTS with a 6.5 band helped me successfully apply for Canada PR. This success has helped me give my daughter a better life in Canada."
+  },
+  {
+    name: "IT Aspirant",
+    role: "IT Enthusiast",
+    course: "IELTS Preparation",
+    rating: 5,
+    text: "With proper guidance, I cleared my IELTS and moved to Germany for higher studies. Things are going well for me here, and I’m grateful for the support I received."
+  },
+  {
+    name: "Sudhanshu",
+    role: "Aspiring International Student",
+    course: "IELTS Preparation",
+    rating: 5,
+    text: "I managed to score 6.5 in IELTS through consistency and regular practice. This achievement helped me move closer to my goal of studying in Germany."
   }
 ];
+
 
 const Testimonials = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
@@ -66,45 +109,48 @@ const Testimonials = () => {
 
           {/* Featured Testimonial Carousel */}
           <div className="max-w-4xl mx-auto mb-16">
-            <div className="relative">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentTestimonial}
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -50 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <NeumorphicCard className="p-8 md:p-12 bg-gradient-to-br from-primary/10 via-card to-accent/5" hover={false}>
-                    <div className="flex flex-col md:flex-row gap-8 items-start">
-                      <div className="flex-shrink-0">
-                        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center text-4xl shadow-neu">
-                          🎓
+            <div className="relative h-[480px] md:h-[400px] flex flex-col">
+              <div className="flex-1 relative">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentTestimonial}
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -50 }}
+                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    className="absolute inset-0"
+                  >
+                    <div className="rounded-3xl bg-card p-8 md:p-8 shadow-neu bg-gradient-to-br from-primary/10 via-card to-accent/5 h-full">
+                      <div className="flex flex-col md:flex-row gap-8 items-start h-full">
+                        <div className="flex-shrink-0">
+                          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/30 to-accent/30 flex items-center justify-center text-4xl shadow-neu">
+                            🎓
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex-1">
-                        <Quote className="w-10 h-10 text-primary/30 mb-4" />
-                        <p className="text-lg text-foreground leading-relaxed mb-6">
-                          "{testimonials[currentTestimonial].text}"
-                        </p>
-                        <div className="flex gap-1 mb-4">
-                          {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                            <Star key={i} size={18} className="text-yellow-500 fill-yellow-500" />
-                          ))}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-foreground">{testimonials[currentTestimonial].name}</p>
-                          <p className="text-sm text-muted-foreground">{testimonials[currentTestimonial].role}</p>
-                          <p className="text-sm text-primary mt-1">{testimonials[currentTestimonial].course}</p>
+                        <div className="flex-1">
+                          <Quote className="w-10 h-10 text-primary/30 mb-4" />
+                          <p className="text-lg text-foreground leading-relaxed mb-6">
+                            "{testimonials[currentTestimonial].text}"
+                          </p>
+                          <div className="flex gap-1 mb-4">
+                            {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
+                              <Star key={i} size={18} className="text-yellow-500 fill-yellow-500" />
+                            ))}
+                          </div>
+                          <div>
+                            <p className="font-bold text-foreground">{testimonials[currentTestimonial].name}</p>
+                            <p className="text-sm text-muted-foreground">{testimonials[currentTestimonial].role}</p>
+                            <p className="text-sm text-primary mt-1">{testimonials[currentTestimonial].course}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </NeumorphicCard>
-                </motion.div>
-              </AnimatePresence>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
 
               {/* Arrow Navigation */}
-              <div className="flex justify-center gap-4 mt-8">
+              <div className="flex justify-center gap-4 mt-8 flex-shrink-0">
                 <NeumorphicButton variant="secondary" onClick={prevTestimonial} className="p-3">
                   <ChevronLeft size={20} />
                 </NeumorphicButton>
@@ -139,8 +185,8 @@ const Testimonials = () => {
               <motion.div
                 key={index}
                 className="text-center p-6 rounded-2xl bg-gradient-to-br from-primary/10 to-card shadow-neu"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.1 * index }}
               >
