@@ -15,6 +15,7 @@ const navLinks: NavItem[] = [
   { name: "Home", sectionId: "home" },
   { name: "Founder", sectionId: "founder" },
   { name: "Courses", path: "/courses" },
+  { name: "Careers", path: "/careers" },
   { name: "Testimonials", sectionId: "testimonials" },
   { name: "Contact", path: "/contact" },
 ];
