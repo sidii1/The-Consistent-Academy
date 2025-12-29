@@ -3,12 +3,15 @@ import { Quote, Award } from "lucide-react";
 import { AnimatedText, AnimatedHeading } from "@/components/ui/animated-text";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { SectionWrapper } from "@/components/ui/section-wrapper";
+import { sub } from "date-fns";
 
 const milestones = [
 
   { year: "2016", title: "IELTS Master Trainer Certification" },
-  { year: "2024", title: "Head of Department (Academics)" },
-  { year: "2025", title: "Founded The Consistent Academy" }
+  { year: "2019", title: "TEFL & TESOL Trainer" },
+  { year: "2022", title: "Published Cakewalk IELTS" },
+  { year: "2024", title: "Head of Department (Academics) Published Reading Detectives" },
+  { year: "2025", title: "Founded The Consistent Academy Published 101 Management Books You’ll Never Read But Should" },
 ];
 
 const Founder = () => {
