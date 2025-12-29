@@ -47,12 +47,19 @@ const values = [
 ];
 
 const images = [
+  "/v8.jpeg",
   "/v6.png",
   "/v1.png",
+  "/v7.jpeg",
   "/v2.png",
   "/v3.png",
   "/v4.png",
   "/v5.png",
+  "/v9.jpeg",
+  "/v13.jpeg",
+  "/v10.jpeg",
+  "/v11.jpeg",
+  "/v12.jpeg"
 ];
 
 /* ---------------- PHOTO SLIDESHOW ---------------- */
