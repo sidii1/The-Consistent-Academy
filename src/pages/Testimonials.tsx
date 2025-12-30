@@ -151,16 +151,16 @@ const Testimonials = () => {
                         "{testimonials[current].text}"
                       </p>
 
-                      <div className="flex gap-1 mb-4">
-                        {Array.from({ length: testimonials[current].rating }).map((_, i) => (
-                          <Star
-                            key={i}
-                            size={18}
-                            className="text-yellow-500 fill-yellow-500"
-                          />
-                        ))}
-                      </div>
-                    </div>
+            <div className="flex gap-1 mb-3">
+              {Array.from({ length: testimonials[current].rating }).map((_, i) => (
+                <Star
+                  key={i}
+                  size={16}
+                  className="text-yellow-500 fill-yellow-500"
+                />
+              ))}
+            </div>
+          </div>
 
                     <div>
                       <p className="font-semibold text-lg">{testimonials[current].name}</p>
@@ -172,40 +172,37 @@ const Testimonials = () => {
                       </p>
                     </div>
 
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
+        </div>
+      </motion.div>
+    </AnimatePresence>
+  </div>
 
-            {/* CONTROLS */}
-            <div className="flex justify-center items-center gap-4 mt-8">
-              <NeumorphicButton variant="secondary" onClick={prev}>
-                <ChevronLeft />
-              </NeumorphicButton>
+  {/* CONTROLS */}
+  <div className="flex justify-center items-center gap-4 mt-6">
+    <NeumorphicButton variant="secondary" onClick={prev}>
+      <ChevronLeft />
+    </NeumorphicButton>
 
-              <div className="flex gap-2">
-                {testimonials.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      stopAutoSlide();
-                      setCurrent(i);
-                    }}
-                    className={`h-2 rounded-full transition-all ${
-                      i === current
-                        ? "w-8 bg-primary"
-                        : "w-2 bg-primary/30"
-                    }`}
-                  />
-                ))}
-              </div>
+    <div className="flex gap-2">
+      {testimonials.map((_, i) => (
+        <button
+          key={i}
+          onClick={() => {
+            stopAutoSlide();
+            setCurrent(i);
+          }}
+          className={`h-2 rounded-full transition-all ${
+            i === current ? "w-8 bg-primary" : "w-2 bg-primary/30"
+          }`}
+        />
+      ))}
+    </div>
 
-              <NeumorphicButton variant="secondary" onClick={next}>
-                <ChevronRight />
-              </NeumorphicButton>
-            </div>
-          </div>
-
+    <NeumorphicButton variant="secondary" onClick={next}>
+      <ChevronRight />
+    </NeumorphicButton>
+  </div>
+</div>
         </div>
       </SectionWrapper>
     </section>
