@@ -11,6 +11,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 
+import CircularGallery from '@/components/ui/circular-gallery';
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { FloatingBlob } from "@/components/ui/floating-blob";
@@ -61,56 +62,10 @@ const images = [
   "/v11.jpeg",
   "/v12.jpeg"
 ];
-
-/* ---------------- PHOTO SLIDESHOW ---------------- */
-
-const PhotoSlideshow = () => {
-  const [active, setActive] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setActive((prev) => (prev + 1) % images.length);
-    }, 3500);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <div className="relative w-full overflow-visible py-24 min-h-[620px]">
-      {/* extra top padding prevents clipping */}
-      <div className="relative flex justify-center items-center h-full">
-        {images.map((src, index) => {
-          const offset = index - active;
-
-          return (
-            <motion.div
-              key={index}
-              onClick={() => setActive(index)}
-              animate={{
-                x: offset * 380,
-                scale: offset === 0 ? 1.18 : 0.9,
-                opacity: offset === 0 ? 1 : 0.45,
-              }}
-              transition={{
-                duration: 0.8,
-                ease: "easeInOut",
-              }}
-              className="absolute cursor-pointer"
-            >
-              <div className="w-[380px] h-[480px] rounded-3xl overflow-hidden shadow-neu-xl">
-                <img
-                  src={src}
-                  alt="Academy moments"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
+const galleryItems = images.map((src, i) => ({
+  image: src,
+  text: ``, // or any label you want
+}));
 
 
 
@@ -263,14 +218,26 @@ const Index = () => {
       </SectionWrapper>
 
       {/* PHOTOS */}
-      <SectionWrapper>
-        <div className="text-center mb-10">
-          <AnimatedHeading>
-            Learning in <span className="text-gradient">Action</span>
-          </AnimatedHeading>
-        </div>
-        <PhotoSlideshow />
-      </SectionWrapper>
+{/* PHOTOS */}
+<SectionWrapper>
+  <div className="text-center mb-6">
+    <AnimatedHeading>
+      Learning in <span className="text-gradient">Action</span>
+    </AnimatedHeading>
+  </div>
+
+  <div className="relative h-[620px] w-full overflow-hidden">
+    <CircularGallery
+      items={galleryItems}
+      bend={3}
+      textColor="#ffffff"
+      borderRadius={0.06}
+      scrollSpeed={2}
+      scrollEase={0.08}
+    />
+  </div>
+</SectionWrapper>
+
 
       <Testimonials />
 
