@@ -132,15 +132,15 @@ const Index = () => {
         </div>
 
         <div className="relative h-[60vh] sm:h-[70vh] w-full overflow-hidden rounded-3xl shadow-neu-xl">
-          <FlowingMenu
-            items={courseMenuItems}
-            speed={18}
-            textColor="#250060e7"
-            bgColor="hsl(var(--card))"
-            marqueeBgColor="#060010"
-            marqueeTextColor="#ffffff"
-            borderColor="rgba(0,0,0,0.1)"
-          />
+        <FlowingMenu
+          items={courseMenuItems}
+          speed={18}
+          textColor="#250060e7"
+          bgColor="hsl(var(--card))"
+          marqueeBgColor="#250060e7"
+          marqueeTextColor="#ffffff"
+          borderColor="rgba(0,0,0,0.1)"
+        />
         </div>
       </SectionWrapper>
 
