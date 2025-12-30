@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 
 import FlowingMenu from "@/components/ui/flowing-menu";
-import CircularGallery from '@/components/ui/circular-gallery';
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { FloatingBlob } from "@/components/ui/floating-blob";
@@ -33,19 +32,18 @@ const stats = [
 ];
 
 const images = [
-  "/v8.jpeg",
-  "/v6.png",
   "/v1.png",
-  "/v7.jpeg",
   "/v2.png",
   "/v3.png",
   "/v4.png",
   "/v5.png",
+  "/v6.png",
+  "/v7.jpeg",
+  "/v8.jpeg",
   "/v9.jpeg",
-  "/v13.jpeg",
   "/v10.jpeg",
   "/v11.jpeg",
-  "/v12.jpeg"
+  "/v12.jpeg",
 ];
 
 const courseImages = [
@@ -55,17 +53,16 @@ const courseImages = [
   "/courses/img4.png",
   "/courses/img5.png",
   "/courses/img6.png",
-  "/courses/img7.png",
 ];
 
 const courses = [
-  { title: "IELTS Preparation", description: "Comprehensive training for all four modules", icon: "📚" },
-  { title: "Spoken English", description: "Build confidence in everyday communication", icon: "🎯" },
-  { title: "Writing Skills", description: "Master academic and professional writing", icon: "✍️" },
-  { title: "Grammar Mastery", description: "Strong foundation from basics to advanced", icon: "📖" },
-  { title: "Business English", description: "Professional communication for corporate settings", icon: "💼" },
-  { title: "Interview Preparation", description: "Ace interviews with confidence", icon: "🎤" },
-  { title: "IELTS Writing", description: "Focused training to boost writing band scores", icon: "📝" },
+  { title: "IELTS Preparation", icon: "📚" },
+  { title: "Spoken English", icon: "🎯" },
+  { title: "Writing Skills", icon: "✍️" },
+  { title: "Grammar Mastery", icon: "📖" },
+  { title: "Business English", icon: "💼" },
+  { title: "Interview Preparation", icon: "🎤" },
+  { title: "IELTS Writing", icon: "📝" },
 ];
 
 const courseMenuItems = courses.map((course, i) => ({
@@ -74,11 +71,68 @@ const courseMenuItems = courses.map((course, i) => ({
   image: courseImages[i % courseImages.length],
 }));
 
-const galleryItems = images.map((src, i) => ({
-  image: src,
-  text: ``,
-}));
+/* ---------------- CENTER PHOTO GALLERY ---------------- */
 
+const CurvedPhotoGallery = () => {
+  const [active, setActive] = useState(0);
+  const total = images.length;
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActive((prev) => (prev + 1) % total);
+    }, 3200);
+
+    return () => clearInterval(interval);
+  }, [total]);
+
+  return (
+    <div className="relative w-full overflow-hidden py-24">
+      <div className="relative flex justify-center items-center h-[520px]">
+        {images.map((src, index) => {
+          let offset = index - active;
+
+          // loop correction
+          if (offset > total / 2) offset -= total;
+          if (offset < -total / 2) offset += total;
+
+          // CURVE math
+          const x = offset * 280;
+          const y = Math.abs(offset) * 22; // vertical curve
+          const scale = offset === 0 ? 1.2 : 0.9;
+          const opacity = offset === 0 ? 1 : 0.45;
+          const zIndex = offset === 0 ? 20 : 10 - Math.abs(offset);
+
+          return (
+            <motion.div
+              key={index}
+              className="absolute cursor-pointer"
+              onClick={() => setActive(index)}
+              animate={{
+                x,
+                y,
+                scale,
+                opacity,
+                zIndex,
+              }}
+              transition={{
+                duration: 0.7,
+                ease: "easeInOut",
+              }}
+            >
+              <div className="w-[320px] h-[460px] rounded-3xl overflow-hidden shadow-neu-xl bg-card">
+                <img
+                  src={src}
+                  alt="Academy moment"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 
 /* ---------------- PAGE ---------------- */
@@ -89,13 +143,15 @@ const Index = () => {
       <Navbar />
 
       {/* HERO */}
-      <section className="relative min-h-screen flex items-center justify-center pt-20">
+      <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
         <FloatingBlob className="top-20 -left-32" size="xl" color="primary" />
         <FloatingBlob className="top-40 right-0" size="lg" color="accent" />
 
         <div className="container mx-auto text-center">
           <motion.h1 className="text-6xl md:text-8xl font-bold mb-6">
-            The <span className="text-gradient">Consistent</span><br />Academy
+            The <span className="text-gradient">Consistent</span>
+            <br />
+            Academy
           </motion.h1>
 
           <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
@@ -120,53 +176,46 @@ const Index = () => {
         </div>
       </section>
 
+      {/* FOUNDER */}
       <Founder />
 
       {/* COURSES */}
       <SectionWrapper id="courses">
         <div className="text-center mb-10">
-          <AnimatedText className="text-primary text-sm uppercase">Courses</AnimatedText>
+          <AnimatedText className="text-primary text-sm uppercase">
+            Courses
+          </AnimatedText>
           <AnimatedHeading>
             Learn with <span className="text-gradient">Clarity & Confidence</span>
           </AnimatedHeading>
         </div>
 
-        <div className="relative h-[60vh] sm:h-[70vh] w-full overflow-hidden rounded-3xl shadow-neu-xl">
+        <div className="relative h-[60vh] w-full overflow-hidden rounded-3xl shadow-neu-xl">
           <FlowingMenu
             items={courseMenuItems}
             speed={18}
             textColor="#250060e7"
             bgColor="hsl(var(--card))"
-            marqueeBgColor="#060010"
+            marqueeBgColor="#250060e7"
             marqueeTextColor="#ffffff"
             borderColor="rgba(0,0,0,0.1)"
           />
         </div>
       </SectionWrapper>
 
-
       {/* PHOTOS */}
-{/* PHOTOS */}
-<SectionWrapper>
-  <div className="text-center mb-6">
+    <SectionWrapper>
+  <div className="text-center mb-10">
     <AnimatedHeading>
       Learning in <span className="text-gradient">Action</span>
     </AnimatedHeading>
   </div>
 
-  <div className="relative h-[620px] w-full overflow-hidden">
-    <CircularGallery
-      items={galleryItems}
-      bend={3}
-      textColor="#ffffff"
-      borderRadius={0.06}
-      scrollSpeed={2}
-      scrollEase={0.08}
-    />
-  </div>
+  <CurvedPhotoGallery />
 </SectionWrapper>
 
 
+      {/* TESTIMONIALS */}
       <Testimonials />
 
       <Footer />
