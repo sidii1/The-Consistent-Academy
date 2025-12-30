@@ -34,15 +34,23 @@ export const Navbar = () => {
       // Update active section based on scroll position (only on home page)
       if (location.pathname === "/") {
         const sections = ["home", "founder", "courses", "testimonials"];
+        let foundActiveSection = false;
+
         for (const sectionId of sections.reverse()) {
           const element = document.getElementById(sectionId);
           if (element) {
             const rect = element.getBoundingClientRect();
             if (rect.top <= 150) {
               setActiveSection(sectionId);
+              foundActiveSection = true;
               break;
             }
           }
+        }
+
+        // If no section is found, default to "home"
+        if (!foundActiveSection) {
+          setActiveSection("home");
         }
       }
     };
@@ -62,9 +70,13 @@ export const Navbar = () => {
       if (location.pathname !== "/") {
         navigate("/", { state: { scrollTo: item.sectionId } });
       } else {
-        const element = document.getElementById(item.sectionId);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
+        if (item.sectionId === "home") {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          const element = document.getElementById(item.sectionId);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+          }
         }
       }
     }
