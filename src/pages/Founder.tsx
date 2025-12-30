@@ -70,22 +70,6 @@ const Founder = () => {
                 <em>“101 Management Books You’ll Never Read But Should”</em>.
               </AnimatedText>
 
-              {/* Quote */}
-              <NeumorphicCard className="p-6 bg-gradient-to-br from-primary/15 to-accent/10 mb-8" hover={false}>
-                <div className="flex gap-4">
-                  <Quote className="w-8 h-8 text-primary flex-shrink-0" />
-                  <div>
-                    <p className="text-foreground italic mb-2">
-                      “Confidence in communication is not a talent — it's a skill.
-                      With the right structure and consistency, anyone can master it.”
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      — Vidya Wankhade
-                    </p>
-                  </div>
-                </div>
-              </NeumorphicCard>
-
               {/* Milestones */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
                 {milestones.map((milestone, index) => (
@@ -124,6 +108,22 @@ const Founder = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
+
+                {/* Quote */}
+                <NeumorphicCard className="p-6 bg-gradient-to-br from-primary/15 to-accent/10 mt-8" hover={false}>
+                  <div className="flex gap-4">
+                    <Quote className="w-8 h-8 text-primary flex-shrink-0" />
+                    <div>
+                      <p className="text-foreground italic mb-2">
+                        “Confidence in communication is not a talent — it's a skill.
+                        With the right structure and consistency, anyone can master it.”
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        — Vidya Wankhade
+                      </p>
+                    </div>
+                  </div>
+                </NeumorphicCard>
               </div>
             </motion.div>
 
