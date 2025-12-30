@@ -14,7 +14,7 @@ const courses = [
   {
     title: "IELTS Preparation",
     description: "Comprehensive training for all four IELTS modules: Listening, Reading, Writing, and Speaking.",
-    icon: "📚",
+    image: "/courses/img1.png",
     duration: "4 Weeks",
     students: "200+",
     rating: "4.9",
@@ -24,7 +24,7 @@ const courses = [
   {
     title: "Spoken English",
     description: "Build confidence in everyday communication with practical conversation skills.",
-    icon: "🎯",
+    image: "/courses/img2.png",
     duration: "4 Weeks",
     students: "150+",
     rating: "4.8",
@@ -34,7 +34,7 @@ const courses = [
   {
     title: "Writing Skills",
     description: "Master academic and professional writing with structured practice sessions.",
-    icon: "✍️",
+    image: "/courses/img3.png",
     duration: "2 Weeks",
     students: "120+",
     rating: "4.9",
@@ -44,7 +44,7 @@ const courses = [
   {
     title: "Grammar Mastery",
     description: "Build a strong foundation with comprehensive grammar training from basics to advanced.",
-    icon: "📖",
+    image: "/courses/img4.png",
     duration: "6 Weeks",
     students: "180+",
     rating: "4.7",
@@ -54,7 +54,7 @@ const courses = [
   {
     title: "Business English",
     description: "Professional communication skills for corporate environments and business contexts.",
-    icon: "💼",
+    image: "/courses/img5.png",
     duration: "4 Weeks",
     students: "90+",
     rating: "4.8",
@@ -64,7 +64,7 @@ const courses = [
   {
     title: "Interview Preparation",
     description: "Ace your interviews with confident communication and structured responses.",
-    icon: "🎤",
+    image: "/courses/img6.png",
     duration: "4 Weeks",
     students: "100+",
     rating: "4.9",
@@ -75,7 +75,7 @@ const courses = [
   {
     title:"IELTS Writing",
     description: "Focused training on IELTS Writing tasks to boost your scores effectively.",
-    icon: "📝",
+    image: "/courses/img7.png",
     duration: "2 Weeks",
     students: "80+",
     rating: "4.9",
@@ -90,7 +90,7 @@ const Courses = () => {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-10 overflow-hidden">
+      <section className="relative pt-32 overflow-hidden">
         <FloatingBlob className="top-20 -right-32" size="xl" color="primary" />
         <FloatingBlob className="bottom-0 -left-20" size="lg" color="accent" delay={0.5} />
 
@@ -126,50 +126,62 @@ const Courses = () => {
               <NeumorphicCard 
                 key={index} 
                 delay={0.05 * index} 
-                className="relative overflow-hidden group"
+                className="relative overflow-hidden group p-0"
               >
                 {course.popular && (
-                  <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-primary-foreground text-xs font-medium">
+                  <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-primary-foreground text-xs font-medium z-20">
                     Popular
                   </div>
                 )}
                 
-                <div className="text-5xl mb-4">{course.icon}</div>
-                <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                  {course.title}
-                </h3>
-                <p className="text-muted-foreground mb-4 text-sm">{course.description}</p>
+                {/* Image Section */}
+                <div className="relative h-32 w-full overflow-hidden">
+                  <img 
+                    src={course.image} 
+                    alt={course.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/80" />
+                </div>
                 
-                <div className="flex gap-4 mb-4 text-sm">
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Clock size={14} />
-                    {course.duration}
-                  </div>
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Users size={14} />
-                    {course.students}
-                  </div>
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <Star size={14} className="text-yellow-500 fill-yellow-500" />
-                    {course.rating}
-                  </div>
-                </div>
-
-                <div className="space-y-2 mb-6">
-                  {course.features.map((feature, i) => (
-                    <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CheckCircle size={14} className="text-primary" />
-                      {feature}
+                {/* Content */}
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
+                    {course.title}
+                  </h3>
+                  <p className="text-muted-foreground mb-4 text-sm">{course.description}</p>
+                  
+                  <div className="flex gap-4 mb-4 text-sm">
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Clock size={14} />
+                      {course.duration}
                     </div>
-                  ))}
-                </div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Users size={14} />
+                      {course.students}
+                    </div>
+                    <div className="flex items-center gap-1 text-muted-foreground">
+                      <Star size={14} className="text-yellow-500 fill-yellow-500" />
+                      {course.rating}
+                    </div>
+                  </div>
 
-                <Link to="/contact">
-                  <NeumorphicButton variant="secondary" className="w-full">
-                    Enroll Now
-                    <ArrowRight size={16} />
-                  </NeumorphicButton>
-                </Link>
+                  <div className="space-y-2 mb-6">
+                    {course.features.map((feature, i) => (
+                      <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <CheckCircle size={14} className="text-primary" />
+                        {feature}
+                      </div>
+                    ))}
+                  </div>
+
+                  <Link to="/contact">
+                    <NeumorphicButton variant="secondary" className="w-full">
+                      Enroll Now
+                      <ArrowRight size={16} />
+                    </NeumorphicButton>
+                  </Link>
+                </div>
               </NeumorphicCard>
             ))}
           </div>
