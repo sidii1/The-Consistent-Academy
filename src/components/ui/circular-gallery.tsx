@@ -438,7 +438,7 @@ class App {
   isDown: boolean = false;
   start: number = 0;
   hasMoved: boolean = false;
-  autoScrollSpeed: number = 0.08;
+  autoScrollSpeed: number = 0.05;
   lastInteractionTime: number = 0;
 
   constructor(
