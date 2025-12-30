@@ -11,6 +11,7 @@ import {
   Lightbulb,
 } from "lucide-react";
 
+import FlowingMenu from "@/components/ui/flowing-menu";
 import CircularGallery from '@/components/ui/circular-gallery';
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
@@ -31,22 +32,6 @@ const stats = [
   { icon: Trophy, value: "95%", label: "Success Rate" },
 ];
 
-const courses = [
-  { title: "IELTS Preparation", description: "Comprehensive training for all four modules", icon: "📚" },
-  { title: "Spoken English", description: "Build confidence in everyday communication", icon: "🎯" },
-  { title: "Writing Skills", description: "Master academic and professional writing", icon: "✍️" },
-  { title: "Grammar Mastery", description: "Strong foundation from basics to advanced", icon: "📖" },
-  { title: "Business English", description: "Professional communication for corporate settings", icon: "💼" },
-  { title: "Interview Preparation", description: "Ace interviews with confidence", icon: "🎤" },
-  { title: "IELTS Writing", description: "Focused training to boost writing band scores", icon: "📝" },
-];
-
-const values = [
-  { icon: Target, title: "Consistency", description: "Small, consistent steps towards fluency." },
-  { icon: Heart, title: "Passion", description: "Dedicated to helping every learner succeed." },
-  { icon: Lightbulb, title: "Innovation", description: "Modern methods blended with proven techniques." },
-];
-
 const images = [
   "/v8.jpeg",
   "/v6.png",
@@ -62,85 +47,37 @@ const images = [
   "/v11.jpeg",
   "/v12.jpeg"
 ];
-const galleryItems = images.map((src, i) => ({
-  image: src,
-  text: ``, // or any label you want
+
+const courseImages = [
+  "/courses/img1.png",
+  "/courses/img2.png",
+  "/courses/img3.png",
+  "/courses/img4.png",
+  "/courses/img5.png",
+  "/courses/img6.png",
+  "/courses/img7.png",
+];
+
+const courses = [
+  { title: "IELTS Preparation", description: "Comprehensive training for all four modules", icon: "📚" },
+  { title: "Spoken English", description: "Build confidence in everyday communication", icon: "🎯" },
+  { title: "Writing Skills", description: "Master academic and professional writing", icon: "✍️" },
+  { title: "Grammar Mastery", description: "Strong foundation from basics to advanced", icon: "📖" },
+  { title: "Business English", description: "Professional communication for corporate settings", icon: "💼" },
+  { title: "Interview Preparation", description: "Ace interviews with confidence", icon: "🎤" },
+  { title: "IELTS Writing", description: "Focused training to boost writing band scores", icon: "📝" },
+];
+
+const courseMenuItems = courses.map((course, i) => ({
+  link: "/courses",
+  text: `${course.icon}  ${course.title}  ${course.icon}`,
+  image: courseImages[i % courseImages.length],
 }));
 
-
-
-/* ---------------- COURSES SLIDESHOW ---------------- */
-
-const CoursesSlideshow = () => {
-  const [active, setActive] = useState(0);
-  const [paused, setPaused] = useState(false);
-
-  useEffect(() => {
-    if (paused) return;
-
-    const timer = setInterval(() => {
-      setActive((prev) => (prev + 1) % courses.length);
-    }, 3500);
-
-    return () => clearInterval(timer);
-  }, [paused]);
-
-  return (
-    <div
-      className="relative w-full overflow-visible py-24 min-h-[560px]"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
-      <div className="relative flex justify-center items-center h-full">
-        {courses.map((course, index) => {
-          // circular distance
-          let offset = index - active;
-          const half = Math.floor(courses.length / 2);
-
-          if (offset > half) offset -= courses.length;
-          if (offset < -half) offset += courses.length;
-
-          // hide far slides
-          if (Math.abs(offset) > 2) return null;
-
-          return (
-            <motion.div
-              key={index}
-              onClick={() => setActive(index)}
-              animate={{
-                x: offset * 380,
-                scale: offset === 0 ? 1.15 : 0.9,
-                opacity: offset === 0 ? 1 : 0.45,
-                y: offset === 0 ? -12 : 0,
-              }}
-              transition={{
-                duration: 0.8,
-                ease: [0.4, 0, 0.2, 1],
-              }}
-              style={{
-                zIndex: 10 - Math.abs(offset),
-              }}
-              className="absolute cursor-pointer"
-            >
-              <NeumorphicCard className="w-[360px] h-[460px] text-center p-10 flex flex-col justify-center shadow-neu-xl">
-                <div className="text-6xl mb-6">{course.icon}</div>
-
-                <h3 className="text-2xl font-semibold mb-4">
-                  {course.title}
-                </h3>
-
-                <p className="text-muted-foreground text-base leading-relaxed">
-                  {course.description}
-                </p>
-              </NeumorphicCard>
-            </motion.div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
+const galleryItems = images.map((src, i) => ({
+  image: src,
+  text: ``,
+}));
 
 
 
@@ -193,19 +130,9 @@ const Index = () => {
             Building <span className="text-gradient">Confident Speakers</span>
           </AnimatedHeading>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {values.map((v, i) => (
-            <NeumorphicCard key={i} className="text-center p-8">
-              <v.icon className="mx-auto text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">{v.title}</h3>
-              <p className="text-muted-foreground">{v.description}</p>
-            </NeumorphicCard>
-          ))}
-        </div>
       </SectionWrapper>
 
-      {/* COURSES SLIDESHOW */}
+      {/* COURSES */}
       <SectionWrapper>
         <div className="text-center mb-10">
           <AnimatedText className="text-primary text-sm uppercase">Courses</AnimatedText>
@@ -214,8 +141,19 @@ const Index = () => {
           </AnimatedHeading>
         </div>
 
-        <CoursesSlideshow />
+        <div className="relative h-[70vh] w-full overflow-hidden rounded-3xl shadow-neu-xl">
+          <FlowingMenu
+            items={courseMenuItems}
+            speed={18}
+            textColor="#250060ff"
+            bgColor="hsl(var(--card))"
+            marqueeBgColor="#060010"
+            marqueeTextColor="#ffffff"
+            borderColor="rgba(0,0,0,0.1)"
+          />
+        </div>
       </SectionWrapper>
+
 
       {/* PHOTOS */}
 {/* PHOTOS */}
