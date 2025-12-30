@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Phone, MapPin, Instagram, Facebook, Linkedin } from "lucide-react";
+import { Mail, Phone, MapPin, Instagram, MessageCircle, Linkedin } from "lucide-react";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -62,10 +62,16 @@ export const Footer = () => {
               Empowering learners to achieve English fluency through consistent practice and expert guidance.
             </p>
             <div className="flex gap-3">
-              {[Instagram, Facebook, Linkedin].map((Icon, index) => (
+              {[
+                { Icon: Instagram, href: "https://www.instagram.com/the_consistent_academy/" },
+                { Icon: MessageCircle, href: "https://chat.whatsapp.com/Kw2YbntkWMqG66MVI9xSJq?mode=ac_t" },
+                { Icon: Linkedin, href: "https://www.linkedin.com/company/the-consistent-academy/" }
+              ].map(({ Icon, href }, index) => (
                 <motion.a
                   key={index}
-                  href="#"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 shadow-neu-sm flex items-center justify-center text-primary hover:text-accent transition-colors"
                   whileHover={{ y: -2, scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

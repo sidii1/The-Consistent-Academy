@@ -94,7 +94,7 @@ const Testimonials = () => {
     stopAutoSlide();
     autoSlideRef.current = setTimeout(() => {
       next();
-    }, 3000); 
+    }, 5000); 
   };
 
   const stopAutoSlide = () => {
@@ -134,7 +134,7 @@ const Testimonials = () => {
 
           {/* SLIDER */}
           <div className="max-w-4xl mx-auto">
-            <div className="relative min-h-[420px]">
+            <div className="relative">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={current}
@@ -142,14 +142,13 @@ const Testimonials = () => {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -80 }}
                   transition={{ duration: 0.45, ease: "easeInOut" }}
-                  className="absolute inset-0"
                 >
-                  <div className="rounded-3xl bg-gradient-to-br from-primary/10 via-card to-accent/10 p-8 shadow-neu h-full flex flex-col justify-between">
+                  <div className="rounded-3xl bg-gradient-to-br from-primary/10 via-card to-accent/10 p-8 shadow-neu flex flex-col">
 
                     <div>
                       <Quote className="w-10 h-10 text-primary/30 mb-4" />
-                      <p className="text-lg leading-relaxed mb-6">
-                        “{testimonials[current].text}”
+                      <p className="text-lg leading-relaxed mb-1">
+                        "{testimonials[current].text}"
                       </p>
 
                       <div className="flex gap-1 mb-4">
@@ -164,7 +163,7 @@ const Testimonials = () => {
                     </div>
 
                     <div>
-                      <p className="font-bold">{testimonials[current].name}</p>
+                      <p className="font-semibold text-lg">{testimonials[current].name}</p>
                       <p className="text-sm text-muted-foreground">
                         {testimonials[current].role}
                       </p>
