@@ -6,12 +6,11 @@ import { SectionWrapper } from "@/components/ui/section-wrapper";
 import { sub } from "date-fns";
 
 const milestones = [
-
-  { year: "2016", title: "IELTS Master Trainer Certification" },
-  { year: "2019", title: "TEFL & TESOL Trainer" },
-  { year: "2022", title: "Published 'Cakewalk IELTS'" },
-  { year: "2024", title: "Head of Department (Academics)", subtitle:"Published 'Reading Detectives'" },
-  { year: "2025", title: "Founded The Consistent Academy", subtitle:"Published '101 Management Books You’ll Never Read But Should'" },
+  { year: "2016", achievements: ["IELTS Master Trainer Certification"] },
+  { year: "2019", achievements: ["TEFL & TESOL Trainer"] },
+  { year: "2022", achievements: ["Published 'Cakewalk IELTS'"] },
+  { year: "2024", achievements: ["Head of Department (Academics)", "Published 'Reading Detectives'"] },
+  { year: "2025", achievements: ["Founded The Consistent Academy", "Published '101 Management Books You'll Never Read But Should'"] },
 ];
 
 const Founder = () => {
@@ -69,32 +68,6 @@ const Founder = () => {
                 <em>“Reading Detective – Solving Comprehension Mysteries for Kids”</em>, and{" "}
                 <em>“101 Management Books You’ll Never Read But Should”</em>.
               </AnimatedText>
-
-              {/* Milestones */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
-                {milestones.map((milestone, index) => (
-                  <motion.div
-                    key={milestone.year}
-                    className="p-4 rounded-2xl shadow-neu bg-gradient-to-br from-card to-secondary/20 transition-all duration-400 hover:shadow-neu-lg hover:-translate-y-1"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.6 + index * 0.1 }}
-                  >
-                    <span className="text-primary font-bold text-lg">
-                      {milestone.year}
-                    </span>
-                    <p className="text-sm text-foreground font-medium mt-1">
-                      {milestone.title}
-                      {milestone.subtitle && (
-                        <span className="text-sm text-foreground font-medium mt-1 block">
-                          {milestone.subtitle}
-                        </span>
-                      )}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
             </motion.div>
 
             {/* Image */}
@@ -133,6 +106,66 @@ const Founder = () => {
             </motion.div>
 
           </div>
+
+          {/* Milestones Timeline - Full Width */}
+          <motion.div 
+            className="mt-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <AnimatedText 
+              className="text-foreground text-2xl font-semibold mb-12 text-center" 
+              delay={0.6}
+            >
+              Journey of Excellence
+            </AnimatedText>
+            
+            <div className="relative px-4">
+              {/* Timeline Line */}
+              <div className="absolute top-8 left-8 right-8 h-1 bg-gradient-to-r from-primary/20 via-primary/40 to-primary/20 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]" />
+              
+              {/* Timeline Items */}
+              <div className="relative flex justify-between items-start gap-4">
+                {milestones.map((milestone, index) => (
+                  <motion.div
+                    key={milestone.year}
+                    className="flex flex-col items-center flex-1 min-w-0"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.7 + index * 0.15, duration: 0.6 }}
+                  >
+                    {/* Year Indicator */}
+                    <div className="relative z-10 w-16 h-16 rounded-full shadow-neu bg-gradient-to-br from-card via-background to-secondary/30 flex items-center justify-center mb-4 group hover:shadow-neu-lg hover:scale-105 transition-all duration-300">
+                      <div className="absolute inset-2 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center group-hover:from-primary/30 group-hover:to-accent/30 transition-all duration-300">
+                        <span className="text-primary font-bold text-sm group-hover:scale-110 transition-transform duration-300">
+                          {milestone.year}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Achievement Card */}
+                    <div className="w-full px-2">
+                      <div className="relative p-4 rounded-xl shadow-neu bg-gradient-to-br from-card/80 via-background/90 to-secondary/20 backdrop-blur-sm hover:shadow-neu-lg transition-all duration-400 hover:-translate-y-1 group">
+                        <div className="space-y-2">
+                          {milestone.achievements.map((achievement, i) => (
+                            <p 
+                              key={i} 
+                              className="text-sm font-semibold text-foreground leading-tight text-center group-hover:text-primary transition-colors duration-300"
+                            >
+                              {achievement}
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
         </div>
       </SectionWrapper>
     </section>
