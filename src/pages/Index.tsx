@@ -85,11 +85,11 @@ const galleryItems = images.map((src, i) => ({
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Navbar />
 
       {/* HERO */}
-      <section className="relative min-h-screen flex items-center justify-center pt-20">
+      <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
         <FloatingBlob className="top-20 -left-32" size="xl" color="primary" />
         <FloatingBlob className="top-40 right-0" size="lg" color="accent" />
 
