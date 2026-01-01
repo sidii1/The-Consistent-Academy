@@ -32,6 +32,12 @@ const TestInterface = ({ testData }: TestInterfaceProps) => {
     });
   };
 
+  const handleClearAnswer = () => {
+    const newAnswers = { ...userAnswers };
+    delete newAnswers[currentQuestion.id];
+    setUserAnswers(newAnswers);
+  };
+
   const handleNext = () => {
     if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -87,70 +93,70 @@ const TestInterface = ({ testData }: TestInterfaceProps) => {
         transition={{ duration: 0.5 }}
       >
         <NeumorphicCard className="max-w-4xl mx-auto">
-          <div className="p-8 md:p-12 text-center">
+          <div className="p-6 md:p-8 text-center">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="w-24 h-24 mx-auto mb-8 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-neu-lg"
+              className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-neu-lg"
             >
-              <Trophy className="w-12 h-12 text-white" />
+              <Trophy className="w-10 h-10 text-white" />
             </motion.div>
 
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
               Test Completed!
             </h2>
 
-            <p className="text-xl text-muted-foreground mb-8">
+            <p className="text-lg text-muted-foreground mb-6">
               {testData.title}
             </p>
 
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
-              <div className="p-6 rounded-2xl shadow-neu-inset bg-gradient-to-br from-card to-secondary/20">
-                <div className="text-3xl font-bold text-primary mb-2">
+            <div className="grid md:grid-cols-3 gap-4 mb-6">
+              <div className="p-4 rounded-xl shadow-neu-inset bg-gradient-to-br from-card to-secondary/20">
+                <div className="text-2xl font-bold text-primary mb-1">
                   {score.percentage}%
                 </div>
-                <div className="text-sm text-muted-foreground">Score</div>
+                <div className="text-xs text-muted-foreground">Score</div>
               </div>
 
-              <div className="p-6 rounded-2xl shadow-neu-inset bg-gradient-to-br from-card to-secondary/20">
-                <div className="text-3xl font-bold text-foreground mb-2">
+              <div className="p-4 rounded-xl shadow-neu-inset bg-gradient-to-br from-card to-secondary/20">
+                <div className="text-2xl font-bold text-foreground mb-1">
                   {score.correct}/{score.total}
                 </div>
-                <div className="text-sm text-muted-foreground">Correct Answers</div>
+                <div className="text-xs text-muted-foreground">Correct Answers</div>
               </div>
 
-              <div className="p-6 rounded-2xl shadow-neu-inset bg-gradient-to-br from-card to-secondary/20">
-                <div className="text-3xl font-bold text-foreground mb-2">
+              <div className="p-4 rounded-xl shadow-neu-inset bg-gradient-to-br from-card to-secondary/20">
+                <div className="text-2xl font-bold text-foreground mb-1">
                   {answeredQuestions}/{totalQuestions}
                 </div>
-                <div className="text-sm text-muted-foreground">Attempted</div>
+                <div className="text-xs text-muted-foreground">Attempted</div>
               </div>
             </div>
 
             {/* Performance Message */}
-            <div className="mb-8">
+            <div className="mb-6">
               {score.percentage >= 80 && (
-                <p className="text-lg text-primary font-medium">
+                <p className="text-base text-primary font-medium">
                   🎉 Excellent work! You have a strong grasp of grammar!
                 </p>
               )}
               {score.percentage >= 60 && score.percentage < 80 && (
-                <p className="text-lg text-accent font-medium">
+                <p className="text-base text-accent font-medium">
                   👍 Good job! Keep practicing to improve further!
                 </p>
               )}
               {score.percentage < 60 && (
-                <p className="text-lg text-muted-foreground font-medium">
+                <p className="text-base text-muted-foreground font-medium">
                   💪 Keep learning! Practice makes perfect!
                 </p>
               )}
             </div>
 
             {/* Detailed Results */}
-            <div className="mb-8">
-              <h3 className="text-2xl font-bold mb-6 text-foreground">Answer Review</h3>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
+            <div className="mb-6">
+              <h3 className="text-xl font-bold mb-4 text-foreground">Answer Review</h3>
+              <div className="space-y-3 max-h-96 overflow-y-auto">
                 {allQuestions.map((question, index) => {
                   const userAnswer = userAnswers[question.id];
                   const isCorrect = userAnswer === question.correctAnswer;
@@ -163,7 +169,7 @@ const TestInterface = ({ testData }: TestInterfaceProps) => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
                       className={cn(
-                        "p-4 rounded-xl text-left",
+                        "p-3 rounded-lg text-left",
                         isCorrect
                           ? "bg-green-50 border-2 border-green-200"
                           : wasAnswered
@@ -171,21 +177,21 @@ const TestInterface = ({ testData }: TestInterfaceProps) => {
                           : "bg-gray-50 border-2 border-gray-200"
                       )}
                     >
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 mt-1">
+                      <div className="flex items-start gap-2">
+                        <div className="flex-shrink-0 mt-0.5">
                           {isCorrect ? (
-                            <CheckCircle2 className="w-5 h-5 text-green-600" />
+                            <CheckCircle2 className="w-4 h-4 text-green-600" />
                           ) : wasAnswered ? (
-                            <XCircle className="w-5 h-5 text-red-600" />
+                            <XCircle className="w-4 h-4 text-red-600" />
                           ) : (
-                            <div className="w-5 h-5 rounded-full border-2 border-gray-400" />
+                            <div className="w-4 h-4 rounded-full border-2 border-gray-400" />
                           )}
                         </div>
                         <div className="flex-1">
-                          <p className="font-medium text-foreground mb-2">
+                          <p className="font-medium text-foreground text-sm mb-1">
                             Q{index + 1}: {question.question}
                           </p>
-                          <div className="text-sm space-y-1">
+                          <div className="text-xs space-y-0.5">
                             {wasAnswered && (
                               <p className={isCorrect ? "text-green-700" : "text-red-700"}>
                                 Your answer: {question.options[userAnswer.charCodeAt(0) - 97]}
@@ -208,9 +214,9 @@ const TestInterface = ({ testData }: TestInterfaceProps) => {
             <NeumorphicButton
               variant="primary"
               onClick={handleRetry}
-              className="min-w-[200px]"
+              className="min-w-[180px]"
             >
-              <RotateCcw className="w-5 h-5 mr-2" />
+              <RotateCcw className="w-4 h-4 mr-2" />
               Retry Test
             </NeumorphicButton>
           </div>
@@ -231,18 +237,18 @@ const TestInterface = ({ testData }: TestInterfaceProps) => {
         transition={{ duration: 0.5 }}
       >
         <NeumorphicCard className="max-w-2xl mx-auto">
-          <div className="p-8 md:p-12 text-center">
-            <h2 className="text-3xl font-bold mb-6 text-foreground">
+          <div className="p-6 md:p-8 text-center">
+            <h2 className="text-2xl font-bold mb-4 text-foreground">
               Ready to Submit?
             </h2>
 
-            <div className="mb-8">
-              <p className="text-lg text-muted-foreground mb-4">
+            <div className="mb-6">
+              <p className="text-base text-muted-foreground mb-3">
                 You have answered <span className="font-bold text-primary">{answeredQuestions}</span> out of{" "}
                 <span className="font-bold">{totalQuestions}</span> questions.
               </p>
               {unansweredCount > 0 && (
-                <p className="text-destructive font-medium">
+                <p className="text-destructive font-medium text-sm">
                   ⚠️ {unansweredCount} question{unansweredCount > 1 ? "s" : ""} remaining unanswered
                 </p>
               )}
@@ -270,119 +276,223 @@ const TestInterface = ({ testData }: TestInterfaceProps) => {
   const selectedAnswer = userAnswers[currentQuestion.id];
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Header with Progress */}
-      <NeumorphicCard className="mb-8">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-foreground">{testData.title}</h2>
-            <span className="text-sm font-medium text-muted-foreground">
-              Question {currentQuestionIndex + 1} of {totalQuestions}
-            </span>
-          </div>
+    <div className="max-w-6xl mx-auto">
+      <div className="grid lg:grid-cols-[1fr_300px] gap-4">
+        {/* Question Card - Left Side */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentQuestionIndex}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.3 }}
+          >
+            <NeumorphicCard className="mb-4">
+              <div className="p-5">
+                {currentQuestion.section && (
+                  <div className="inline-block px-3 py-1 rounded-lg shadow-neu-inset bg-gradient-to-br from-primary/10 to-accent/10 mb-4">
+                    <span className="text-xs font-medium text-primary">
+                      {currentQuestion.section}
+                    </span>
+                  </div>
+                )}
 
-          {/* Progress Bar */}
-          <div className="relative h-3 rounded-full shadow-neu-inset bg-gradient-to-r from-card to-secondary/20 overflow-hidden">
-            <motion.div
-              className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-accent rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-            />
-          </div>
-        </div>
-      </NeumorphicCard>
+                <h3 className="text-lg md:text-xl font-semibold text-foreground mb-4">
+                  {currentQuestion.question}
+                </h3>
 
-      {/* Question Card */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={currentQuestionIndex}
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -50 }}
-          transition={{ duration: 0.3 }}
-        >
-          <NeumorphicCard className="mb-8">
-            <div className="p-8">
-              {currentQuestion.section && (
-                <div className="inline-block px-4 py-2 rounded-xl shadow-neu-inset bg-gradient-to-br from-primary/10 to-accent/10 mb-6">
-                  <span className="text-sm font-medium text-primary">
-                    {currentQuestion.section}
+                {/* Options */}
+                <div className="space-y-2">
+                  {currentQuestion.options.map((option, index) => {
+                    const optionLetter = getOptionLetter(index);
+                    const isSelected = selectedAnswer === optionLetter;
+
+                    return (
+                      <motion.button
+                        key={index}
+                        onClick={() => handleAnswerSelect(optionLetter)}
+                        className={cn(
+                          "w-full p-3 rounded-xl text-left transition-all duration-300 flex items-center gap-3",
+                          isSelected
+                            ? "shadow-neu-inset bg-gradient-to-br from-primary/10 to-accent/10 border-2 border-primary"
+                            : "shadow-neu hover:shadow-neu-lg bg-gradient-to-br from-card to-secondary/20 border-2 border-transparent"
+                        )}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                      >
+                        <div
+                          className={cn(
+                            "w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 font-bold text-sm transition-all",
+                            isSelected
+                              ? "bg-gradient-to-br from-primary to-accent text-white shadow-neu-lg"
+                              : "shadow-neu-inset text-muted-foreground"
+                          )}
+                        >
+                          {optionLetter.toUpperCase()}
+                        </div>
+                        <span className="text-sm md:text-base text-foreground flex-1">
+                          {option}
+                        </span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+
+                {/* Clear Selection Button */}
+                {selectedAnswer && (
+                  <motion.button
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    onClick={handleClearAnswer}
+                    className="mt-3 text-s text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1"
+                  >
+                    <XCircle className="w-3 h-3" />
+                    Clear Selection
+                  </motion.button>
+                )}
+              </div>
+            </NeumorphicCard>
+
+            {/* Navigation - Below Question Card */}
+            <div className="flex items-center justify-between lg:hidden">
+              <NeumorphicButton
+                variant="secondary"
+                onClick={handlePrevious}
+                disabled={currentQuestionIndex === 0}
+                className={cn(
+                  "text-sm",
+                  currentQuestionIndex === 0 && "opacity-50 cursor-not-allowed"
+                )}
+              >
+                Previous
+              </NeumorphicButton>
+
+              <div className="text-xs text-muted-foreground">
+                {Object.keys(userAnswers).length} / {totalQuestions} answered
+              </div>
+
+              {currentQuestionIndex === totalQuestions - 1 ? (
+                <NeumorphicButton variant="primary" onClick={handleNext} className="text-sm">
+                  Finish Test
+                </NeumorphicButton>
+              ) : (
+                <NeumorphicButton variant="primary" onClick={handleNext} className="text-sm">
+                  Next
+                </NeumorphicButton>
+              )}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Progress Sidebar - Right Side */}
+        <div className="lg:sticky lg:top-24 lg:self-start hidden lg:block">
+          <NeumorphicCard>
+            <div className="p-4">
+              <h2 className="text-sm font-bold text-foreground mb-3">{testData.title}</h2>
+              
+              {/* Progress Circle */}
+              <div className="flex items-center justify-center mb-4">
+                <div className="relative w-32 h-32">
+                  <svg className="transform -rotate-90 w-32 h-32">
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="currentColor"
+                      strokeWidth="8"
+                      fill="none"
+                      className="text-secondary/30"
+                    />
+                    <circle
+                      cx="64"
+                      cy="64"
+                      r="56"
+                      stroke="url(#gradient)"
+                      strokeWidth="8"
+                      fill="none"
+                      strokeDasharray={`${2 * Math.PI * 56}`}
+                      strokeDashoffset={`${2 * Math.PI * 56 * (1 - progress / 100)}`}
+                      className="transition-all duration-500 ease-out"
+                      strokeLinecap="round"
+                    />
+                    <defs>
+                      <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="hsl(262 83% 58%)" />
+                        <stop offset="100%" stopColor="hsl(280 70% 65%)" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-2xl font-bold text-primary">
+                      {currentQuestionIndex + 1}
+                    </span>
+                    <span className="text-xs text-muted-foreground">of {totalQuestions}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Answered</span>
+                  <span className="font-medium text-foreground">
+                    {Object.keys(userAnswers).length} / {totalQuestions}
                   </span>
                 </div>
-              )}
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Remaining</span>
+                  <span className="font-medium text-foreground">
+                    {totalQuestions - Object.keys(userAnswers).length}
+                  </span>
+                </div>
+              </div>
 
-              <h3 className="text-xl md:text-2xl font-semibold text-foreground mb-8">
-                {currentQuestion.question}
-              </h3>
+              {/* Progress Bar */}
+              <div className="relative h-2 rounded-full shadow-neu-inset bg-gradient-to-r from-card to-secondary/20 overflow-hidden mb-4">
+                <motion.div
+                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-accent rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                />
+              </div>
 
-              {/* Options */}
-              <div className="space-y-4">
-                {currentQuestion.options.map((option, index) => {
-                  const optionLetter = getOptionLetter(index);
-                  const isSelected = selectedAnswer === optionLetter;
+              {/* Navigation Buttons */}
+              <div className="space-y-2">
+                <NeumorphicButton
+                  variant="secondary"
+                  onClick={handlePrevious}
+                  disabled={currentQuestionIndex === 0}
+                  className={cn(
+                    "w-full text-sm",
+                    currentQuestionIndex === 0 && "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  ← Previous
+                </NeumorphicButton>
 
-                  return (
-                    <motion.button
-                      key={index}
-                      onClick={() => handleAnswerSelect(optionLetter)}
-                      className={cn(
-                        "w-full p-5 rounded-2xl text-left transition-all duration-300 flex items-start gap-4",
-                        isSelected
-                          ? "shadow-neu-inset bg-gradient-to-br from-primary/10 to-accent/10 border-2 border-primary"
-                          : "shadow-neu hover:shadow-neu-lg bg-gradient-to-br from-card to-secondary/20 border-2 border-transparent"
-                      )}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                    >
-                      <div
-                        className={cn(
-                          "w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 font-bold transition-all",
-                          isSelected
-                            ? "bg-gradient-to-br from-primary to-accent text-white shadow-neu-lg"
-                            : "shadow-neu-inset text-muted-foreground"
-                        )}
-                      >
-                        {optionLetter.toUpperCase()}
-                      </div>
-                      <span className="text-base md:text-lg text-foreground flex-1 pt-1">
-                        {option}
-                      </span>
-                    </motion.button>
-                  );
-                })}
+                {currentQuestionIndex === totalQuestions - 1 ? (
+                  <NeumorphicButton 
+                    variant="primary" 
+                    onClick={handleNext} 
+                    className="w-full text-sm"
+                  >
+                    Finish Test ✓
+                  </NeumorphicButton>
+                ) : (
+                  <NeumorphicButton 
+                    variant="primary" 
+                    onClick={handleNext} 
+                    className="w-full text-sm"
+                  >
+                    Next →
+                  </NeumorphicButton>
+                )}
               </div>
             </div>
           </NeumorphicCard>
-        </motion.div>
-      </AnimatePresence>
-
-      {/* Navigation */}
-      <div className="flex items-center justify-between">
-        <NeumorphicButton
-          variant="secondary"
-          onClick={handlePrevious}
-          disabled={currentQuestionIndex === 0}
-          className={cn(
-            currentQuestionIndex === 0 && "opacity-50 cursor-not-allowed"
-          )}
-        >
-          Previous
-        </NeumorphicButton>
-
-        <div className="text-sm text-muted-foreground">
-          {Object.keys(userAnswers).length} / {totalQuestions} answered
         </div>
-
-        {currentQuestionIndex === totalQuestions - 1 ? (
-          <NeumorphicButton variant="primary" onClick={handleNext}>
-            Finish Test
-          </NeumorphicButton>
-        ) : (
-          <NeumorphicButton variant="primary" onClick={handleNext}>
-            Next
-          </NeumorphicButton>
-        )}
       </div>
     </div>
   );

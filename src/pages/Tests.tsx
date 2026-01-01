@@ -22,11 +22,11 @@ const Tests = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-background">
         <Navbar />
-        <div className="pt-28 pb-20">
+        <div className="pt-24 pb-12">
           <div className="container mx-auto px-4">
             <motion.button
               onClick={handleBackToSelection}
-              className="mb-6 flex items-center gap-2 px-4 py-2 rounded-xl shadow-neu hover:shadow-neu-lg transition-all text-muted-foreground hover:text-foreground"
+              className="mb-4 flex items-center gap-2 px-4 py-2 rounded-xl shadow-neu hover:shadow-neu-lg transition-all text-muted-foreground hover:text-foreground"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
