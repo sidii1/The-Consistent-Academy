@@ -419,4 +419,20 @@
     background: hsl(250 25% 97% / 0.9);
     box-shadow: var(--neu-shadow);
   }
+
+  /* ═══════════════════════════════════════════════════════════
+     🎴 3D CARD TRANSFORMS - For book flip effect
+     ═══════════════════════════════════════════════════════════ */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
 }

@@ -3,6 +3,7 @@ import { Quote, Award, BookOpen, ExternalLink } from "lucide-react";
 import { AnimatedText, AnimatedHeading } from "@/components/ui/animated-text";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { SectionWrapper } from "@/components/ui/section-wrapper";
+import { BookCard } from "@/components/ui/book-card";
 import { sub } from "date-fns";
 
 const milestones = [
@@ -18,6 +19,7 @@ const books = [
     title: "Cakewalk IELTS",
     description:
       "A focused, student-friendly guide that simplifies IELTS preparation with practical strategies, clarity, and confidence-building techniques.",
+    imagePath: "/books/cakewalk-ielts.jpg",
     links: [
       { label: "Evincepub", url: "https://evincepub.com/product/a-focal-easy-guide-cakewalk-ielts/" },
       { label: "Bspkart", url: "https://www.bspkart.com/product/a-focal-easy-guide-cakewalk-ielts/" },
@@ -29,6 +31,7 @@ const books = [
     title: "The Reading Detective",
     description:
       "A delightful book for kids that builds comprehension, critical thinking, and a love for reading through engaging stories and activities.",
+    imagePath: "/books/the-reading-detective.jpg",
     links: [
       { label: "Evincepub", url: "https://evincepub.com/product/the-reading-detective-solving-comprehension-mysteries-for-kids/" },
       { label: "Amazon", url: "https://www.amazon.in/dp/9363559335" },
@@ -37,9 +40,10 @@ const books = [
     ],
   },
   {
-    title: "101 Management Books You’ll Never Read But Should",
+    title: "101 Management Books You'll Never Read But Should",
     description:
-      "A crisp, insightful compilation that distills powerful management lessons from the world’s most influential business books.",
+      "A crisp, insightful compilation that distills powerful management lessons from the world's most influential business books.",
+    imagePath: "/books/101-management.jpg",
     links: [
       { label: "Evincepub", url: "https://evincepub.com/product/101-management-books-youll-never-read-but-should/" },
       { label: "Amazon", url: "https://www.amazon.in/dp/9373352318" },
@@ -203,38 +207,50 @@ const Founder = () => {
           </motion.div>
 
           {/* ================= BOOKS SECTION ================= */}
-          <div className="mt-24">
-            <AnimatedHeading className="text-center mb-12">
-              Books by <span className="text-gradient">Vidya Wankhade</span>
-            </AnimatedHeading>
+          <motion.div 
+            className="mt-12 relative"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Background decorative elements */}
+            <div className="absolute inset-0 -z-10 overflow-hidden">
+              <div className="absolute top-1/4 -left-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+              <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-accent/5 rounded-full blur-3xl" />
+            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Section Header */}
+            <div className="text-center mb-10">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <p className="text-primary text-sm font-medium uppercase tracking-wider mb-3">
+                  Published Works
+                </p>
+                <h2 className="text-3xl md:text-4xl font-bold">
+                  Books by <span className="text-gradient">Vidya Wankhade</span>
+                </h2>
+              </motion.div>
+            </div>
+
+            {/* Books Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-8 lg:gap-12 group">
               {books.map((book, i) => (
-                <NeumorphicCard key={i} className="p-6">
-                  <BookOpen className="text-primary mb-4" />
-                  <h3 className="text-lg font-semibold mb-3">{book.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {book.description}
-                  </p>
-
-                  <div className="space-y-2">
-                    {book.links.map((link, j) => (
-                      <a
-                        key={j}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between text-sm text-primary hover:underline"
-                      >
-                        {link.label}
-                        <ExternalLink size={14} />
-                      </a>
-                    ))}
-                  </div>
-                </NeumorphicCard>
+                <BookCard
+                  key={i}
+                  title={book.title}
+                  description={book.description}
+                  imagePath={book.imagePath}
+                  links={book.links}
+                  index={i}
+                />
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </SectionWrapper>
     </section>
