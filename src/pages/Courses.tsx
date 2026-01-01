@@ -84,6 +84,72 @@ const courses = [
   }
 ];
 
+const kidsCourses = [
+  {
+    title: "Elocution Course",
+    description: "Helps children speak clearly, confidently, and expressively.",
+    duration: "4 Weeks",
+    features: [
+      "Clarity in speech & pronunciation",
+      "Expressive reading & storytelling",
+      "Vocabulary & grammar improvement",
+      "Confidence in public speaking",
+      "Listening & comprehension skills",
+    ],
+  },
+  {
+    title: "Public Speaking",
+    description: "Builds confidence and stage presence in young learners.",
+    duration: "4 Weeks",
+    features: [
+      "Reduced stage fear",
+      "Improved body language & projection",
+      "Speech structuring techniques",
+      "Speaking confidence",
+      "TED Talk style preparation",
+      "Holistic personality development",
+    ],
+  },
+  {
+    title: "Grammar Foundations",
+    description: "Strong grammar basics for clear and correct communication.",
+    duration: "4 Weeks",
+    features: [
+      "Sentence construction",
+      "Correct punctuation",
+      "Parts of speech",
+      "Verb tenses",
+      "Subject-verb agreement",
+      "Effective communication",
+    ],
+  },
+  {
+    title: "Creative Writing",
+    description: "Encourages imagination and expressive writing skills.",
+    duration: "4 Weeks",
+    features: [
+      "Idea generation & imagination",
+      "Story structure (Beginning–Middle–End)",
+      "Character creation",
+      "Descriptive writing",
+      "Emotional expression",
+    ],
+  },
+  {
+    title: "Reading Club",
+    description: "Develops love for reading and critical thinking.",
+    duration: "Ongoing",
+    features: [
+      "Reading for pleasure",
+      "Vocabulary in context",
+      "Comprehension & critical thinking",
+      "Listening & speaking skills",
+      "Empathy & life values through stories",
+    ],
+  },
+];
+
+
 const Courses = () => {
   return (
     <div className="min-h-screen bg-background">
@@ -133,6 +199,7 @@ const Courses = () => {
                     Popular
                   </div>
                 )}
+                
                 
                 {/* Image Section */}
                 <div className="relative h-32 w-full overflow-hidden">
@@ -187,6 +254,60 @@ const Courses = () => {
           </div>
         </div>
       </SectionWrapper>
+{/* KIDS COURSES SECTION */}
+<SectionWrapper className="pt-8">
+  <div className="container mx-auto">
+
+    <div className="max-w-3xl mx-auto text-center mb-12">
+      <AnimatedHeading>
+        Courses for <span className="text-gradient">Kids</span>
+      </AnimatedHeading>
+      <AnimatedText className="text-muted-foreground text-lg mt-4">
+        Fun, engaging, and skill-building programs designed specially for young learners.
+      </AnimatedText>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {kidsCourses.map((course, index) => (
+        <NeumorphicCard
+          key={index}
+          delay={0.05 * index}
+          className="p-6"
+        >
+          <h3 className="text-xl font-semibold mb-2 text-foreground">
+            {course.title}
+          </h3>
+
+          <p className="text-sm text-muted-foreground mb-4">
+            {course.description}
+          </p>
+
+          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+            <Clock size={14} />
+            {course.duration}
+          </div>
+
+          <div className="space-y-2 mb-6">
+            {course.features.map((feature, i) => (
+              <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <CheckCircle size={14} className="text-primary mt-0.5" />
+                <span>{feature}</span>
+              </div>
+            ))}
+          </div>
+
+          <Link to="/contact">
+            <NeumorphicButton variant="secondary" className="w-full">
+              Enroll Now
+              <ArrowRight size={16} />
+            </NeumorphicButton>
+          </Link>
+        </NeumorphicCard>
+      ))}
+    </div>
+
+  </div>
+</SectionWrapper>
 
       {/* CTA Section */}
       <SectionWrapper className="bg-secondary/30">
