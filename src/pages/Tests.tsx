@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   addDoc,
   collection,
@@ -10,168 +11,24 @@ import {
   signOut,
   User,
 } from "firebase/auth";
+import { 
+  Mail, 
+  Lock, 
+  LogIn, 
+  UserPlus, 
+  Baby, 
+  GraduationCap,
+  Sparkles,
+  Award,
+  TrendingUp
+} from "lucide-react";
 
 import { db, auth } from "@/lib/firebase";
-import { kidsTestData, adultsTestData, TestData } from "@/lib/testData";
+import { kidsTestData, adultsTestData } from "@/lib/testData";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
-
-/* ------------------------------------------------ */
-/* ---------------- TEST INTERFACE ---------------- */
-/* ------------------------------------------------ */
-
-const TestInterface = ({
-  testData,
-  testType,
-  userId,
-  onBack,
-}: {
-  testData: TestData;
-  testType: "kids" | "adults";
-  userId: string;
-  onBack: () => void;
-}) => {
-  const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-
-  const [score, setScore] = useState(0);
-  const [total, setTotal] = useState(0);
-  const [percentage, setPercentage] = useState(0);
-
-  const handleSubmit = async () => {
-    if (!userId || !testType) {
-      alert("Missing user or test type");
-      return;
-    }
-
-    setSubmitting(true);
-
-    let _score = 0;
-    let _total = 0;
-
-    testData.sections.forEach((section) =>
-      section.questions.forEach((q) => {
-        _total++;
-        if (answers[q.id] === q.correctAnswer) _score++;
-      })
-    );
-
-    const _percentage = Math.round((_score / _total) * 100);
-
-    try {
-      await addDoc(collection(db, "testResults"), {
-        userId,
-        testType,
-        score: _score,
-        total: _total,
-        percentage: _percentage,
-        createdAt: serverTimestamp(),
-      });
-
-      setScore(_score);
-      setTotal(_total);
-      setPercentage(_percentage);
-      setSubmitted(true);
-    } catch (e) {
-      console.error("❌ FIRESTORE ERROR:", e);
-      alert("Save failed");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  /* ---------------- AI ANALYSIS (RULE-BASED) ---------------- */
-
-  const getAnalysis = () => {
-    if (percentage >= 85)
-      return "Excellent grammar skills. You show strong command and accuracy.";
-    if (percentage >= 65)
-      return "Good performance. Some minor improvements are needed.";
-    if (percentage >= 40)
-      return "Average understanding. Practice grammar rules and sentence structure.";
-    return "Needs improvement. Focus on basics and practice regularly.";
-  };
-
-  /* ---------------- SUBMITTED SCREEN ---------------- */
-
-  if (submitted) {
-    return (
-      <div className="space-y-6 text-center">
-        <h2 className="text-3xl font-bold">Test Submitted 🎉</h2>
-
-        <NeumorphicCard>
-          <div className="p-6 space-y-3">
-            <p className="text-xl font-semibold">
-              Score: {score} / {total}
-            </p>
-            <p className="text-lg">Percentage: {percentage}%</p>
-
-            <div className="mt-4">
-              <h3 className="font-semibold text-lg">AI Analysis</h3>
-              <p className="text-muted-foreground">{getAnalysis()}</p>
-            </div>
-          </div>
-        </NeumorphicCard>
-
-        <div className="flex gap-4 justify-center">
-          <NeumorphicButton onClick={onBack}>
-            Back to Tests
-          </NeumorphicButton>
-          <NeumorphicButton
-            onClick={() => {
-              setAnswers({});
-              setSubmitted(false);
-            }}
-          >
-            Retake Test
-          </NeumorphicButton>
-        </div>
-      </div>
-    );
-  }
-
-  /* ---------------- TEST UI ---------------- */
-
-  return (
-    <div className="space-y-6">
-      <h2 className="text-3xl font-bold">{testData.title}</h2>
-
-      {testData.sections.map((section) => (
-        <div key={section.title} className="space-y-4">
-          <h3 className="text-xl font-semibold">{section.title}</h3>
-
-          {section.questions.map((q) => (
-            <div key={q.id}>
-              <p className="font-medium">{q.question}</p>
-
-              {q.options.map((opt, idx) => {
-                const letter = String.fromCharCode(97 + idx);
-                return (
-                  <label key={idx} className="block">
-                    <input
-                      type="radio"
-                      name={`q-${q.id}`}
-                      checked={answers[q.id] === letter}
-                      onChange={() =>
-                        setAnswers({ ...answers, [q.id]: letter })
-                      }
-                    />{" "}
-                    {opt}
-                  </label>
-                );
-              })}
-            </div>
-          ))}
-        </div>
-      ))}
-
-      <NeumorphicButton onClick={handleSubmit} disabled={submitting}>
-        {submitting ? "Submitting..." : "Submit Test"}
-      </NeumorphicButton>
-    </div>
-  );
-};
+import { Navbar } from "@/components/layout/Navbar";
+import TestInterface from "@/components/TestInterface";
 
 /* ------------------------------------------------ */
 /* -------------------- MAIN PAGE ------------------ */
@@ -182,73 +39,365 @@ const Tests = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
-  const [selectedTest, setSelectedTest] =
-    useState<"kids" | "adults" | null>(null);
+  const [selectedTest, setSelectedTest] = useState<"kids" | "adults" | null>(null);
+  const [authError, setAuthError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     signOut(auth);
   }, []);
 
   const handleAuth = async () => {
-    const cred = isRegister
-      ? await createUserWithEmailAndPassword(auth, email, password)
-      : await signInWithEmailAndPassword(auth, email, password);
+    if (!email || !password) {
+      setAuthError("Please enter both email and password");
+      return;
+    }
 
-    setUser(cred.user);
+    setIsLoading(true);
+    setAuthError("");
+
+    try {
+      const cred = isRegister
+        ? await createUserWithEmailAndPassword(auth, email, password)
+        : await signInWithEmailAndPassword(auth, email, password);
+
+      setUser(cred.user);
+    } catch (error: any) {
+      setAuthError(error.message || "Authentication failed");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleAuth();
+    }
+  };
+
+  // Test Interface with Firebase Integration
   if (selectedTest && user) {
+    const testData = selectedTest === "kids" ? kidsTestData : adultsTestData;
+    
     return (
+      <div className="min-h-screen pt-24 px-4">
       <TestInterface
-        testData={
-          selectedTest === "kids"
-            ? kidsTestData
-            : adultsTestData
-        }
-        testType={selectedTest}
-        userId={user.uid}
-        onBack={() => setSelectedTest(null)}
+        testData={testData}
+        onBackToSelection={() => setSelectedTest(null)}
+onTestComplete={async ({ attempted, correct, wrong }) => {
+  console.log("🔥 TEST COMPLETE CALLBACK FIRED", {
+    attempted,
+    correct,
+    wrong,
+    user: user.email,
+    testType: selectedTest,
+  });
+
+  try {
+    const docRef = await addDoc(collection(db, "test_results"), {
+      email: user.email,
+      testType: selectedTest,
+      attemptedAt: serverTimestamp(),
+      attempted,
+      correct,
+      wrong,
+    });
+
+    console.log("✅ Firestore write success, doc ID:", docRef.id);
+  } catch (err) {
+    console.error("❌ Firestore write FAILED:", err);
+  }
+}}
+
       />
+      </div>
     );
   }
 
   return (
-    <div className="max-w-md mx-auto space-y-6">
-      {!user && (
-        <NeumorphicCard>
-          <div className="p-6 space-y-4">
-            <input
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <NeumorphicButton onClick={handleAuth}>
-              {isRegister ? "Register" : "Login"}
-            </NeumorphicButton>
-            <button onClick={() => setIsRegister(!isRegister)}>
-              Switch to {isRegister ? "Login" : "Register"}
-            </button>
-          </div>
-        </NeumorphicCard>
-      )}
+    <>
+      <Navbar />
+      <div className="min-h-screen pt-24 px-4">
+        <div className="max-w-6xl mx-auto">
+        <AnimatePresence mode="wait">
+          {!user ? (
+            // Login/Register Screen
+            <motion.div
+              key="auth"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="max-w-md mx-auto"
+            >
+              <div className="text-center mb-8">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                  className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-neu-lg"
+                >
+                  <Sparkles className="w-10 h-10 text-white" />
+                </motion.div>
+                <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  Welcome to Tests
+                </h1>
+                <p className="text-muted-foreground">
+                  {isRegister ? "Create an account to get started" : "Sign in to continue"}
+                </p>
+              </div>
 
-      {user && !selectedTest && (
-        <div className="space-y-4">
-          <NeumorphicButton onClick={() => setSelectedTest("kids")}>
-            Kids Test
-          </NeumorphicButton>
-          <NeumorphicButton onClick={() => setSelectedTest("adults")}>
-            Adults Test
-          </NeumorphicButton>
-        </div>
-      )}
+              <NeumorphicCard>
+                <div className="p-6 md:p-8 space-y-6">
+                  {/* Email Input */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-primary" />
+                      Email Address
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="email"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        className="w-full px-4 py-3 rounded-xl shadow-neu-inset bg-gradient-to-br from-card to-secondary/20 border-2 border-transparent focus:border-primary outline-none transition-all text-foreground placeholder:text-muted-foreground"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Password Input */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                      <Lock className="w-4 h-4 text-primary" />
+                      Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="password"
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        className="w-full px-4 py-3 rounded-xl shadow-neu-inset bg-gradient-to-br from-card to-secondary/20 border-2 border-transparent focus:border-primary outline-none transition-all text-foreground placeholder:text-muted-foreground"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Error Message */}
+                  {authError && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-sm text-destructive font-medium"
+                    >
+                      {authError}
+                    </motion.p>
+                  )}
+
+                  {/* Submit Button */}
+                  <NeumorphicButton
+                    variant="primary"
+                    onClick={handleAuth}
+                    disabled={isLoading}
+                    className="w-full"
+                  >
+                    {isLoading ? (
+                      <span className="flex items-center gap-2">
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        >
+                          <Sparkles className="w-4 h-4" />
+                        </motion.div>
+                        Processing...
+                      </span>
+                    ) : isRegister ? (
+                      <span className="flex items-center gap-2">
+                        <UserPlus className="w-4 h-4" />
+                        Create Account
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <LogIn className="w-4 h-4" />
+                        Sign In
+                      </span>
+                    )}
+                  </NeumorphicButton>
+
+                  {/* Toggle Auth Mode */}
+                  <div className="text-center">
+                    <button
+                      onClick={() => {
+                        setIsRegister(!isRegister);
+                        setAuthError("");
+                      }}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      {isRegister ? (
+                        <span>Already have an account? <strong>Sign In</strong></span>
+                      ) : (
+                        <span>Don't have an account? <strong>Create One</strong></span>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </NeumorphicCard>
+            </motion.div>
+          ) : (
+            // Test Selection Screen
+            <motion.div
+              key="test-selection"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.5 }}
+              className="max-w-5xl mx-auto"
+            >
+              {/* Welcome Header */}
+              <div className="text-center mb-12">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                  className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-neu-lg"
+                >
+                  <Award className="w-10 h-10 text-white" />
+                </motion.div>
+                <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  Choose Your Test
+                </h1>
+                <p className="text-lg text-muted-foreground">
+                  Select the appropriate grammar test based on your age group
+                </p>
+              </div>
+
+              {/* Test Cards */}
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Kids Test Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <NeumorphicCard className="h-full hover:shadow-neu-xl transition-all duration-300">
+                    <div className="p-8 h-full flex flex-col">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-neu-lg">
+                          <Baby className="w-8 h-8 text-white" />
+                        </div>
+                        <div>
+                          <h2 className="text-2xl font-bold text-foreground">Kids Test</h2>
+                          <p className="text-sm text-muted-foreground">Age 5-17 Years</p>
+                        </div>
+                      </div>
+
+                      <div className="flex-1 space-y-4 mb-6">
+                        <div className="space-y-2">
+                          <div className="flex items-start gap-2">
+                            <TrendingUp className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
+                              <strong className="text-foreground">25 Questions</strong> covering basic grammar concepts
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <TrendingUp className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
+                              Fill in the blanks, analogies, synonyms, and more
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <TrendingUp className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
+                              Age-appropriate difficulty level
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <NeumorphicButton
+                        variant="primary"
+                        onClick={() => setSelectedTest("kids")}
+                        className="w-full"
+                      >
+                        Start Kids Test
+                      </NeumorphicButton>
+                    </div>
+                  </NeumorphicCard>
+                </motion.div>
+
+                {/* Adults Test Card */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <NeumorphicCard className="h-full hover:shadow-neu-xl transition-all duration-300">
+                    <div className="p-8 h-full flex flex-col">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-neu-lg">
+                          <GraduationCap className="w-8 h-8 text-white" />
+                        </div>
+                        <div>
+                          <h2 className="text-2xl font-bold text-foreground">Adults Test</h2>
+                          <p className="text-sm text-muted-foreground">Advanced Learners</p>
+                        </div>
+                      </div>
+
+                      <div className="flex-1 space-y-4 mb-6">
+                        <div className="space-y-2">
+                          <div className="flex items-start gap-2">
+                            <TrendingUp className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
+                              <strong className="text-foreground">28 Questions</strong> covering advanced grammar
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <TrendingUp className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
+                              Idioms, analogies, vocabulary, and sentence improvement
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <TrendingUp className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
+                              Professional-level difficulty
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <NeumorphicButton
+                        variant="primary"
+                        onClick={() => setSelectedTest("adults")}
+                        className="w-full"
+                      >
+                        Start Adults Test
+                      </NeumorphicButton>
+                    </div>
+                  </NeumorphicCard>
+                </motion.div>
+              </div>
+
+              {/* Logout Button */}
+              <div className="mt-8 text-center">
+                <button
+                  onClick={() => {
+                    signOut(auth);
+                    setUser(null);
+                  }}
+                  className="text-sm text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
+    </>
   );
 };
 

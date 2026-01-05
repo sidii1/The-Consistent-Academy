@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
+import { Navbar } from "@/components/layout/Navbar";
 import { XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TestData } from "@/lib/testData";
@@ -10,13 +11,23 @@ import TestResults from "@/components/TestResults";
 interface TestInterfaceProps {
   testData: TestData;
   onBackToSelection?: () => void;
+  onTestComplete?: (result: {
+    attempted: number;
+    correct: number;
+    wrong: number;
+  }) => void;
 }
 
 interface UserAnswers {
   [questionId: number]: string;
 }
 
-const TestInterface = ({ testData, onBackToSelection }: TestInterfaceProps) => {
+const TestInterface = ({
+  testData,
+  onBackToSelection,
+  onTestComplete,
+}: TestInterfaceProps) => {
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<UserAnswers>({});
   const [isTestCompleted, setIsTestCompleted] = useState(false);
@@ -33,6 +44,21 @@ const TestInterface = ({ testData, onBackToSelection }: TestInterfaceProps) => {
       [currentQuestion.id]: answer,
     });
   };
+  const calculateResults = () => {
+  let correct = 0;
+
+  allQuestions.forEach((question) => {
+    const userAnswer = userAnswers[question.id];
+    if (userAnswer && userAnswer === question.correctAnswer) {
+      correct++;
+    }
+  });
+
+  const attempted = Object.keys(userAnswers).length;
+  const wrong = attempted - correct;
+
+  return { attempted, correct, wrong };
+};  
 
   const handleClearAnswer = () => {
     const newAnswers = { ...userAnswers };
@@ -55,8 +81,13 @@ const TestInterface = ({ testData, onBackToSelection }: TestInterfaceProps) => {
   };
 
   const handleSubmit = () => {
+    const results = calculateResults();
+
+    onTestComplete?.(results);
+
     setShowResults(true);
   };
+
 
   const handleRetry = () => {
     setUserAnswers({});
@@ -133,7 +164,9 @@ const TestInterface = ({ testData, onBackToSelection }: TestInterfaceProps) => {
   const selectedAnswer = userAnswers[currentQuestion.id];
 
   return (
-    <div className="max-w-6xl mx-auto mt-12">
+    <>
+      <Navbar />
+      <div className="max-w-6xl mx-auto mt-12 px-4">
       <div className="grid lg:grid-cols-[1fr_300px] gap-4">
         {/* Question Card - Left Side */}
         <AnimatePresence mode="wait">
@@ -332,11 +365,13 @@ const TestInterface = ({ testData, onBackToSelection }: TestInterfaceProps) => {
                 {currentQuestionIndex === totalQuestions - 1 ? (
                   <NeumorphicButton 
                     variant="primary" 
-                    onClick={handleNext} 
-                    className="w-full text-sm"
+                    onClick={() => {
+                      setIsTestCompleted(true);
+                    }}
                   >
                     Submit Test ✓
                   </NeumorphicButton>
+
                 ) : (
                   <NeumorphicButton 
                     variant="primary" 
@@ -363,6 +398,7 @@ const TestInterface = ({ testData, onBackToSelection }: TestInterfaceProps) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

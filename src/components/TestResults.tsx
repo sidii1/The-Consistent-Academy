@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TestData, Question } from "@/lib/testData";
+import { Navbar } from "@/components/layout/Navbar";
 
 interface TestResultsProps {
   testData: TestData;
@@ -93,12 +94,15 @@ const TestResults = ({
     const { errorsBySection, incorrectQuestions, unansweredQuestions } = aiReview;
 
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <NeumorphicCard className="max-w-4xl mx-auto">
+      <>
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-4xl mx-auto px-4"
+        >
+        <NeumorphicCard>
           <div className="p-6 md:p-8">
             {/* AI Review Header */}
             <div className="text-center mb-6">
@@ -348,33 +352,30 @@ const TestResults = ({
           </div>
         </NeumorphicCard>
       </motion.div>
+      </>
     );
   }
 
   // Regular Results Screen
   return (
-    <div className="flex gap-4 items-start">
+    <>
+      <Navbar />
+      <div className="relative px-4">
       {/* Back Button */}
       {onBackToSelection && (
         <motion.button
           onClick={onBackToSelection}
-          className="flex-shrink-0 flex flex-col items-center gap-2 px-4 py-3 rounded-xl shadow-neu hover:shadow-neu-lg transition-all text-muted-foreground hover:text-foreground"
-          whileHover={{ scale: 1.02 }}
+          className="absolute left-4 top-0 flex items-center gap-2 px-6 py-3 rounded-xl shadow-neu hover:shadow-neu-lg transition-shadow text-muted-foreground hover:text-foreground"
           whileTap={{ scale: 0.98 }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <ArrowLeft size={24} />
-          <span className="text-xs text-center leading-tight">Back to<br />Test<br />Selection</span>
+          <ArrowLeft size={20} />
+          <span className="text-sm">Back to Test Selection</span>
         </motion.button>
       )}
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="flex-1"
-      >
+      <div className="max-w-5xl mx-auto">
         <NeumorphicCard className="w-full">
           <div className="p-6 md:p-4 text-center">
             <motion.div
@@ -520,8 +521,9 @@ const TestResults = ({
             </NeumorphicButton>
           </div>
         </NeumorphicCard>
-      </motion.div>
+      </div>
     </div>
+    </>
   );
 };
 
