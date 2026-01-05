@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+} from "firebase/firestore";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -7,199 +11,204 @@ import {
   User,
 } from "firebase/auth";
 
-import { auth } from "@/lib/firebase";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { PageTransition } from "@/components/layout/PageTransition";
-import { NeumorphicCard } from "@/components/ui/neumorphic-card";
+import { db, auth } from "@/lib/firebase";
+import { kidsTestData, adultsTestData, TestData } from "@/lib/testData";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
-import { BookOpen, GraduationCap } from "lucide-react";
-import TestInterface from "@/components/TestInterface";
-import { kidsTestData, adultsTestData } from "@/lib/testData";
-import { TestData } from "@/lib/testData";
+import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 
-type TestType = "kids" | "adults" | null;
+/* ------------------------------------------------ */
+/* ---------------- TEST INTERFACE ---------------- */
+/* ------------------------------------------------ */
 
-/* ---------- FLATTEN QUESTIONS ---------- */
-const flattenQuestions = (testData: TestData) =>
-  testData.sections.flatMap((section) => section.questions);
+const TestInterface = ({
+  testData,
+  testType,
+  userId,
+  onBack,
+}: {
+  testData: TestData;
+  testType: "kids" | "adults";
+  userId: string;
+  onBack: () => void;
+}) => {
+  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
-const Tests = () => {
-  const [selectedTest, setSelectedTest] = useState<TestType>(null);
+  const handleSubmit = async () => {
+    console.log("🟢 SUBMIT");
+    console.log("userId:", userId);
+    console.log("testType:", testType);
 
-  /* ---------- AUTH ---------- */
-  const [user, setUser] = useState<User | null>(null);
-  const [authLoading, setAuthLoading] = useState(true);
-  const [loginLoading, setLoginLoading] = useState(false);
-  const [isRegister, setIsRegister] = useState(false);
+    if (!userId || !testType) {
+      alert("Missing user or test type");
+      return;
+    }
 
-  /* ---------- FORM ---------- */
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+    setSubmitting(true);
 
-  /* ---------- FORCE LOGIN EVERY VISIT ---------- */
-  useEffect(() => {
-    const init = async () => {
-      await signOut(auth);
-      setUser(null);
-      setAuthLoading(false);
-    };
-    init();
-  }, []);
+    let score = 0;
+    let total = 0;
 
-  /* ---------- LOGIN / REGISTER ---------- */
-  const handleAuth = async () => {
-    setError("");
-    setLoginLoading(true);
+    testData.sections.forEach((section) =>
+      section.questions.forEach((q) => {
+        total++;
+        if (answers[q.id] === q.correctAnswer) score++;
+      })
+    );
 
     try {
-      const cred = isRegister
-        ? await createUserWithEmailAndPassword(auth, email, password)
-        : await signInWithEmailAndPassword(auth, email, password);
+      const ref = await addDoc(collection(db, "testResults"), {
+        userId,
+        testType,
+        score,
+        total,
+        percentage: Math.round((score / total) * 100),
+        createdAt: serverTimestamp(),
+      });
 
-      setUser(cred.user);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Authentication failed");
+      console.log("✅ SAVED:", ref.id);
+      setSubmitted(true);
+    } catch (e) {
+      console.error("❌ FIRESTORE ERROR:", e);
+      alert("Save failed");
     } finally {
-      setLoginLoading(false);
+      setSubmitting(false);
     }
   };
 
-  /* ---------- TEST SCREEN ---------- */
-  if (selectedTest && user) {
-    const testData =
-      selectedTest === "kids" ? kidsTestData : adultsTestData;
-
+  if (submitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-background">
-        <Navbar />
-        <div className="pt-24 pb-12 container mx-auto px-4">
-         <TestInterface
-  testData={selectedTest === "kids" ? kidsTestData : adultsTestData}
-  userId={user.uid}
-  onBackToSelection={() => setSelectedTest(null)}
-/>
-
-        </div>
-        <Footer />
+      <div className="text-center space-y-4">
+        <h2 className="text-3xl font-bold">Test Submitted 🎉</h2>
+        <NeumorphicButton onClick={onBack}>
+          Back to Tests
+        </NeumorphicButton>
       </div>
     );
   }
 
-  /* ---------- MAIN PAGE ---------- */
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-background via-secondary/20 to-background">
-        <Navbar />
+    <div className="space-y-6">
+      <h2 className="text-3xl font-bold">{testData.title}</h2>
 
-        <main className="pt-28 pb-20 container mx-auto px-4">
-          {/* HEADER */}
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Grammar Assessment Tests
-            </h1>
-            <p className="text-muted-foreground mt-4">
-              Login or register to take the test and save your score
-            </p>
-          </motion.div>
+      {testData.sections.map((section) => (
+        <div key={section.title} className="space-y-4">
+          <h3 className="text-xl font-semibold">{section.title}</h3>
 
-          {/* AUTH */}
-          {!user && !authLoading && (
-            <div className="max-w-md mx-auto mb-14">
-              <NeumorphicCard>
-                <div className="p-8 space-y-4">
-                  <h2 className="text-2xl font-bold text-center">
-                    {isRegister ? "Create Account" : "Login"}
-                  </h2>
+          {section.questions.map((q) => (
+            <div key={q.id}>
+              <p className="font-medium">{q.question}</p>
 
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    className="w-full px-4 py-3 rounded-xl bg-background shadow-neu"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    className="w-full px-4 py-3 rounded-xl bg-background shadow-neu"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-
-                  {error && (
-                    <p className="text-red-500 text-sm text-center">{error}</p>
-                  )}
-
-                  <NeumorphicButton
-                    className="w-full"
-                    onClick={handleAuth}
-                    disabled={loginLoading}
-                  >
-                    {loginLoading
-                      ? "Please wait..."
-                      : isRegister
-                      ? "Register"
-                      : "Login"}
-                  </NeumorphicButton>
-
-                  <p className="text-sm text-center text-muted-foreground">
-                    {isRegister ? "Already have an account?" : "New user?"}{" "}
-                    <button
-                      className="text-primary underline"
-                      onClick={() => setIsRegister(!isRegister)}
-                    >
-                      {isRegister ? "Login" : "Register"}
-                    </button>
-                  </p>
-                </div>
-              </NeumorphicCard>
+              {q.options.map((opt, idx) => {
+                const letter = String.fromCharCode(97 + idx);
+                return (
+                  <label key={idx} className="block">
+                    <input
+                      type="radio"
+                      name={`q-${q.id}`}
+                      checked={answers[q.id] === letter}
+                      onChange={() =>
+                        setAnswers({ ...answers, [q.id]: letter })
+                      }
+                    />
+                    {" "}{opt}
+                  </label>
+                );
+              })}
             </div>
-          )}
+          ))}
+        </div>
+      ))}
 
-          {/* TEST SELECTION */}
-          {user && (
-            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              <NeumorphicCard>
-                <div className="p-8 space-y-6">
-                  <BookOpen className="w-10 h-10 text-primary" />
-                  <h2 className="text-2xl font-bold">Kids Grammar Test</h2>
-                  <NeumorphicButton
-                    className="w-full"
-                    onClick={() => setSelectedTest("kids")}
-                  >
-                    Start Test
-                  </NeumorphicButton>
-                </div>
-              </NeumorphicCard>
+      <NeumorphicButton
+        onClick={handleSubmit}
+        disabled={submitting}
+      >
+        {submitting ? "Submitting..." : "Submit Test"}
+      </NeumorphicButton>
+    </div>
+  );
+};
 
-              <NeumorphicCard>
-                <div className="p-8 space-y-6">
-                  <GraduationCap className="w-10 h-10 text-accent" />
-                  <h2 className="text-2xl font-bold">
-                    Advanced Grammar Test
-                  </h2>
-                  <NeumorphicButton
-                    className="w-full"
-                    onClick={() => setSelectedTest("adults")}
-                  >
-                    Start Test
-                  </NeumorphicButton>
-                </div>
-              </NeumorphicCard>
-            </div>
-          )}
-        </main>
+/* ------------------------------------------------ */
+/* -------------------- MAIN PAGE ------------------ */
+/* ------------------------------------------------ */
 
-        <Footer />
-      </div>
-    </PageTransition>
+const Tests = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isRegister, setIsRegister] = useState(false);
+  const [selectedTest, setSelectedTest] =
+    useState<"kids" | "adults" | null>(null);
+
+  useEffect(() => {
+    signOut(auth);
+  }, []);
+
+  const handleAuth = async () => {
+    const cred = isRegister
+      ? await createUserWithEmailAndPassword(auth, email, password)
+      : await signInWithEmailAndPassword(auth, email, password);
+
+    setUser(cred.user);
+  };
+
+  if (selectedTest && user) {
+    return (
+      <TestInterface
+        testData={
+          selectedTest === "kids"
+            ? kidsTestData
+            : adultsTestData
+        }
+        testType={selectedTest}
+        userId={user.uid}
+        onBack={() => setSelectedTest(null)}
+      />
+    );
+  }
+
+  return (
+    <div className="max-w-md mx-auto space-y-6">
+      {!user && (
+        <NeumorphicCard>
+          <div className="p-6 space-y-4">
+            <input
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <NeumorphicButton onClick={handleAuth}>
+              {isRegister ? "Register" : "Login"}
+            </NeumorphicButton>
+            <button
+              onClick={() => setIsRegister(!isRegister)}
+            >
+              Switch to {isRegister ? "Login" : "Register"}
+            </button>
+          </div>
+        </NeumorphicCard>
+      )}
+
+      {user && !selectedTest && (
+        <div className="space-y-4">
+          <NeumorphicButton onClick={() => setSelectedTest("kids")}>
+            Kids Test
+          </NeumorphicButton>
+          <NeumorphicButton onClick={() => setSelectedTest("adults")}>
+            Adults Test
+          </NeumorphicButton>
+        </div>
+      )}
+    </div>
   );
 };
 
