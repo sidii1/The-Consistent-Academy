@@ -435,4 +435,32 @@
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
   }
+
+  /* ═══════════════════════════════════════════════════════════
+     📜 CUSTOM SCROLLBAR - Clean & modern
+     ═══════════════════════════════════════════════════════════ */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--secondary));
+    border-radius: 100px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary) / 0.3);
+    border-radius: 100px;
+    transition: background 0.2s ease;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.5);
+  }
+
+  /* Firefox scrollbar */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--primary) / 0.3) hsl(var(--secondary));
+  }
 }

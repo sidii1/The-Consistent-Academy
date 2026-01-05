@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Clock, Users, Star, CheckCircle } from "lucide-react";
+import { ArrowRight, CheckCircle, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
@@ -7,79 +7,545 @@ import { SectionWrapper } from "@/components/ui/section-wrapper";
 import { AnimatedHeading, AnimatedText } from "@/components/ui/animated-text";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { title } from "process";
+import ExpandableCourseCard, { Course } from "@/components/ui/expandable-course-card";
 
-const courses = [
+const courses: Course[] = [
   {
-    title: "IELTS Preparation",
-    description: "Comprehensive training for all four IELTS modules: Listening, Reading, Writing, and Speaking.",
+    title: "Global English Proficiency Master Program",
+    subtitle: "IELTS | TOEFL | PTE | CELPIP",
+    description: "Comprehensive training for all four modules with real proficiency focus, not just exam tricks.",
     image: "/courses/img1.png",
-    duration: "4 Weeks",
-    students: "200+",
-    rating: "4.9",
-    features: ["Mock tests", "Speaking practice", "Writing feedback", "Score prediction","Study materials provided"],
-    popular: true,
+    hours: "20 Hours",
+    modules: 4,
+    targetAudience: "Students & professionals aiming for international study, migration, work, or permanent residency.",
+    promise: "To build real English proficiency and test confidence, not just exam tricks.",
+    highlights: [
+      "Study material provided",
+      "Regular practice tasks",
+      "Mock tests",
+      "Writing assessments & feedback",
+      "Speaking evaluations"
+    ],
+    moduleDetails: [
+      {
+        title: "Module 1: Listening Mastery",
+        duration: "5 Hours",
+        topics: [
+          "Listening test formats (IELTS / TOEFL / PTE / CELPIP)",
+          "MCQs, Sentence completion, Form/note completion",
+          "Matching, Maps & diagrams",
+          "Identifying distractors",
+          "Handling fast speech & unfamiliar vocabulary",
+          "Note-taking strategies",
+          "Time management"
+        ]
+      },
+      {
+        title: "Module 2: Reading Mastery",
+        duration: "5 Hours",
+        topics: [
+          "Reading formats (all exams)",
+          "Skimming & scanning techniques",
+          "True/False/Not Given, Yes/No/Not Given",
+          "Matching headings",
+          "Sentence & summary completion",
+          "MCQs and vocabulary in context",
+          "Paraphrasing recognition",
+          "Time allocation per passage"
+        ]
+      },
+      {
+        title: "Module 3: Writing Mastery",
+        duration: "5 Hours",
+        topics: [
+          "Task 1: Academic (graphs, charts, processes, maps)",
+          "Task 1: General (formal/semi-formal/informal letters)",
+          "Report structure & data comparison",
+          "Task 2: Essay types (opinion, discussion, problem-solution)",
+          "Planning & paragraph structure",
+          "Introductions & conclusions",
+          "Cohesive devices",
+          "Avoiding common grammar errors"
+        ]
+      },
+      {
+        title: "Module 4: Speaking Mastery",
+        duration: "5 Hours",
+        topics: [
+          "Speaking formats (all exams)",
+          "Introductions & warm-up",
+          "Cue card / long response",
+          "Discussion & opinion questions",
+          "Fluency-building techniques",
+          "Pronunciation & intonation",
+          "Expanding answers naturally",
+          "Handling difficult questions",
+          "Thinking-time strategies"
+        ]
+      }
+    ]
   },
   {
-    title: "Spoken English",
-    description: "Build confidence in everyday communication with practical conversation skills.",
+    title: "Corporate Survival & Success Program",
+    subtitle: "Fresher-Focused",
+    description: "Transform into a corporate-ready professional with essential workplace skills and business etiquette.",
     image: "/courses/img2.png",
-    duration: "4 Weeks",
-    students: "150+",
-    rating: "4.8",
-    features: ["Daily conversations", "Pronunciation", "Fluency building", "Role plays"],
-    popular: false,
+    hours: "12 Hours",
+    modules: 6,
+    targetAudience: "Freshers, graduate trainees, management trainees, first-job professionals (0–2 years experience).",
+    promise: "Participants will think, speak, behave, and perform like corporate-ready professionals.",
+    moduleDetails: [
+      {
+        title: "Module 1: Corporate Mindset & Workplace Reality",
+        topics: [
+          "Corporate culture & unwritten rules",
+          "Professional behaviour & work ethics",
+          "Ownership, accountability & attitude",
+          "Hierarchy & reporting lines"
+        ]
+      },
+      {
+        title: "Module 2: Professional Communication Essentials",
+        topics: [
+          "Speaking professionally with seniors & colleagues",
+          "Structuring clear responses",
+          "Asking questions the right way",
+          "Telephone & virtual meeting etiquette"
+        ]
+      },
+      {
+        title: "Module 3: Email, Chat & Workplace Writing",
+        topics: [
+          "Professional emails (requests, follow-ups, apologies)",
+          "Corporate WhatsApp / Teams / Slack etiquette",
+          "Subject lines, tone & clarity",
+          "Avoiding casual or risky language"
+        ]
+      },
+      {
+        title: "Module 4: Meetings, Teamwork & Office Dynamics",
+        topics: [
+          "Behaviour in meetings",
+          "When to speak & when to stay silent",
+          "Giving updates & status reports",
+          "Team collaboration etiquette"
+        ]
+      },
+      {
+        title: "Module 5: Personal Effectiveness & Image",
+        topics: [
+          "Time management & prioritisation",
+          "Handling pressure & deadlines",
+          "Dressing, body language & presence",
+          "Managing mistakes professionally"
+        ]
+      },
+      {
+        title: "Module 6: Career Growth & Corporate Intelligence",
+        topics: [
+          "Handling feedback positively",
+          "Managing office politics ethically",
+          "Speaking up for growth",
+          "Early career goal setting"
+        ]
+      }
+    ]
   },
   {
-    title: "Writing Skills",
-    description: "Master academic and professional writing with structured practice sessions.",
+    title: "Crack Your Interview – First Attempt",
+    subtitle: "Fresher-Focused",
+    description: "Transform from nervous fresher to confident, clear, and convincing interviewee.",
     image: "/courses/img3.png",
-    duration: "2 Weeks",
-    students: "120+",
-    rating: "4.9",
-    features: ["Essay writing", "Email etiquette", "Report writing", "Grammar focus"],
-    popular: false,
+    hours: "6 Hours",
+    modules: 6,
+    targetAudience: "Final-year students, fresh graduates, job seekers (0–1 year).",
+    promise: "To transform nervous freshers into confident, clear, and convincing interviewees.",
+    moduleDetails: [
+      {
+        title: "Module 1: Interview Mindset & Recruiter Psychology",
+        topics: [
+          "What interviewers look for",
+          "Common rejection reasons",
+          "Confidence over perfection",
+          "Overcoming fear & hesitation"
+        ]
+      },
+      {
+        title: "Module 2: Self-Introduction & Personal Branding",
+        topics: [
+          '"Tell me about yourself"',
+          "Presenting education & projects",
+          "Turning weaknesses into strengths",
+          '"Why should we hire you?"'
+        ]
+      },
+      {
+        title: "Module 3: Answer Structuring & HR Questions",
+        topics: [
+          "STAR & PREP frameworks",
+          "Strengths & weaknesses",
+          "Failure & challenges",
+          "Salary & availability"
+        ]
+      },
+      {
+        title: "Module 4: Communication & Body Language",
+        topics: [
+          "Eye contact & posture",
+          "Voice modulation",
+          "Handling nervousness",
+          "Listening skills"
+        ]
+      },
+      {
+        title: "Module 5: Domain & Situational Questions",
+        topics: [
+          "Basic technical answers",
+          "Behavioral questions",
+          "Thinking on the spot",
+          'Saying "I don\'t know" professionally'
+        ]
+      },
+      {
+        title: "Module 6: Mock Interviews & Final Polishing",
+        topics: [
+          "Full mock interviews",
+          "Individual feedback",
+          "Last-round mistakes",
+          "Follow-up etiquette"
+        ]
+      }
+    ]
   },
   {
-    title: "Grammar Mastery",
-    description: "Build a strong foundation with comprehensive grammar training from basics to advanced.",
+    title: "Corporate Dining & Social Etiquette Masterclass",
+    subtitle: "Because your career is also built outside the meeting room",
+    description: "Master professional dining and social etiquette for corporate success.",
     image: "/courses/img4.png",
-    duration: "6 Weeks",
-    students: "180+",
-    rating: "4.7",
-    features: ["Tenses", "Sentence structure", "Common errors", "Practice exercises"],
-    popular: false,
+    hours: "6 Hours",
+    modules: 6,
+    targetAudience: "Freshers, management trainees, graduate hires, young professionals (0–3 years). Separate batches for boys and girls.",
+    moduleDetails: [
+      {
+        title: "Module 1: Social Presence & First Impressions",
+        topics: [
+          "Corporate social culture",
+          "Professional greetings",
+          "Confidence without arrogance"
+        ]
+      },
+      {
+        title: "Module 2: Dining Etiquette (Indian & Global)",
+        topics: [
+          "Table manners",
+          "Cutlery & seating",
+          "Ordering food",
+          "Do's & don'ts"
+        ]
+      },
+      {
+        title: "Module 3: Wine & Beverage Etiquette",
+        topics: [
+          "Beverage basics",
+          "Declining drinks gracefully",
+          "Professional boundaries"
+        ]
+      },
+      {
+        title: "Module 4: Conversation & Networking",
+        topics: [
+          "Small talk",
+          "Safe vs risky topics",
+          "Exiting conversations politely"
+        ]
+      },
+      {
+        title: "Module 5: Dress, Grooming & Presentation",
+        topics: [
+          "Event dressing",
+          "Hygiene & grooming",
+          "Cultural sensitivity"
+        ]
+      },
+      {
+        title: "Module 6: Emotional & Social Intelligence",
+        topics: [
+          "Respect & empathy",
+          "Handling awkward moments",
+          "Professional ethics"
+        ]
+      }
+    ]
   },
   {
-    title: "Business English",
-    description: "Professional communication skills for corporate environments and business contexts.",
+    title: "Advanced English & Leadership Presence for Managers",
+    subtitle: "Because managers are watched before they are heard",
+    description: "Build executive presence, clarity, and leadership communication credibility.",
     image: "/courses/img5.png",
-    duration: "4 Weeks",
-    students: "90+",
-    rating: "4.8",
-    features: ["Presentations", "Meetings", "Negotiations", "Corporate vocabulary"],
-    popular: false,
+    hours: "12 Hours",
+    modules: 12,
+    targetAudience: "Mid-level managers, team leads, first-time managers, senior executives.",
+    promise: "To build executive presence, clarity, and leadership communication credibility.",
+    moduleDetails: [
+      {
+        title: "Leadership Communication Essentials",
+        duration: "1 Hour",
+        topics: [
+          "Executive presence fundamentals",
+          "Leadership communication styles",
+          "Building credibility through communication"
+        ]
+      },
+      {
+        title: "Advanced Business Writing",
+        duration: "1 Hour",
+        topics: [
+          "Strategic emails and reports",
+          "Executive summaries",
+          "Persuasive business proposals"
+        ]
+      },
+      {
+        title: "Leading Meetings & Presentations",
+        duration: "1 Hour",
+        topics: [
+          "Facilitating productive meetings",
+          "Commanding attention in presentations",
+          "Handling difficult discussions"
+        ]
+      },
+      {
+        title: "Influencing & Persuasion",
+        duration: "1 Hour",
+        topics: [
+          "Persuasive communication techniques",
+          "Stakeholder management",
+          "Negotiation skills"
+        ]
+      },
+      {
+        title: "Conflict Resolution",
+        duration: "1 Hour",
+        topics: [
+          "Managing team conflicts",
+          "Difficult conversations",
+          "Mediation techniques"
+        ]
+      },
+      {
+        title: "Cross-Cultural Communication",
+        duration: "1 Hour",
+        topics: [
+          "Global business etiquette",
+          "Cultural sensitivity",
+          "Virtual team management"
+        ]
+      },
+      {
+        title: "Strategic Thinking & Articulation",
+        duration: "1 Hour",
+        topics: [
+          "Communicating vision",
+          "Strategic storytelling",
+          "Thought leadership"
+        ]
+      },
+      {
+        title: "Crisis Communication",
+        duration: "1 Hour",
+        topics: [
+          "Managing communication in crisis",
+          "Damage control",
+          "Transparent leadership"
+        ]
+      },
+      {
+        title: "Coaching & Feedback",
+        duration: "1 Hour",
+        topics: [
+          "Giving constructive feedback",
+          "Coaching conversations",
+          "Performance discussions"
+        ]
+      },
+      {
+        title: "Personal Branding for Leaders",
+        duration: "1 Hour",
+        topics: [
+          "Building executive brand",
+          "LinkedIn presence",
+          "Thought leadership content"
+        ]
+      },
+      {
+        title: "Public Speaking for Leaders",
+        duration: "1 Hour",
+        topics: [
+          "Conference presentations",
+          "Panel discussions",
+          "Media interactions"
+        ]
+      },
+      {
+        title: "Emotional Intelligence in Leadership",
+        duration: "1 Hour",
+        topics: [
+          "Self-awareness in communication",
+          "Empathetic leadership",
+          "Managing emotions under pressure"
+        ]
+      }
+    ]
   },
   {
-    title: "Interview Preparation",
-    description: "Ace your interviews with confident communication and structured responses.",
+    title: "Communication Skill Training",
+    description: "Clear, confident, and professional communication in interviews, meetings, and public speaking.",
     image: "/courses/img6.png",
-    duration: "4 Weeks",
-    students: "100+",
-    rating: "4.9",
-    features: ["Mock interviews", "Body language", "Common questions", "Confidence building"],
-    popular: true,
+    hours: "20 Hours",
+    modules: 8,
+    targetAudience: "Students, freshers, and early-career professionals.",
+    promise: "Master clear, confident, and professional communication for all scenarios.",
+    moduleDetails: [
+      {
+        title: "Module 1: Articulation",
+        topics: [
+          "Clear speech techniques",
+          "Word pronunciation",
+          "Accent neutralization"
+        ]
+      },
+      {
+        title: "Module 2: Fluency",
+        topics: [
+          "Speaking smoothly",
+          "Sentence flow",
+          "Natural pacing"
+        ]
+      },
+      {
+        title: "Module 3: Vocabulary Expansion",
+        topics: [
+          "Professional vocabulary",
+          "Context-appropriate words",
+          "Advanced expressions"
+        ]
+      },
+      {
+        title: "Module 4: Avoid Fillers",
+        topics: [
+          "Eliminating um, ah, like",
+          "Pause techniques",
+          "Conscious speaking"
+        ]
+      },
+      {
+        title: "Module 5: Pronunciation & Enunciation",
+        topics: [
+          "Sound production",
+          "Difficult words practice",
+          "Clarity exercises"
+        ]
+      },
+      {
+        title: "Module 6: Idioms & Phrases",
+        topics: [
+          "Common idioms",
+          "Business phrases",
+          "Contextual usage"
+        ]
+      },
+      {
+        title: "Module 7: Public Speaking",
+        topics: [
+          "Stage presence",
+          "Audience engagement",
+          "Presentation skills"
+        ]
+      },
+      {
+        title: "Module 8: Confidence Building",
+        topics: [
+          "Overcoming fear",
+          "Self-assurance techniques",
+          "Positive mindset"
+        ]
+      }
+    ]
   },
-
   {
-    title:"IELTS Writing",
-    description: "Focused training on IELTS Writing tasks to boost your scores effectively.",
+    title: "Personality Development Training",
+    description: "Build a confident personality, strong body language, professional etiquette, and leadership skills.",
     image: "/courses/img7.png",
-    duration: "2 Weeks",
-    students: "80+",
-    rating: "4.9",
-    features:["Academic & General Training","Analyze(Task 1/Academic module)","Letters (Task 1/General module)","Descriptive Essays","Essential Grammar & Vocabulary "],
-    popular: false,
+    hours: "20 Hours",
+    modules: 8,
+    targetAudience: "Students, freshers, and early-career professionals.",
+    promise: "Develop a complete professional personality with confidence and leadership qualities.",
+    moduleDetails: [
+      {
+        title: "Module 1: First Impressions",
+        topics: [
+          "Creating strong first impressions",
+          "Professional appearance",
+          "Confidence in introductions"
+        ]
+      },
+      {
+        title: "Module 2: Body Language",
+        topics: [
+          "Posture and gestures",
+          "Eye contact techniques",
+          "Non-verbal communication"
+        ]
+      },
+      {
+        title: "Module 3: Starting Conversations",
+        topics: [
+          "Ice-breaking techniques",
+          "Small talk mastery",
+          "Building rapport"
+        ]
+      },
+      {
+        title: "Module 4: Dress for Success",
+        topics: [
+          "Professional wardrobe",
+          "Grooming standards",
+          "Situation-appropriate dressing"
+        ]
+      },
+      {
+        title: "Module 5: Social & Business Etiquette",
+        topics: [
+          "Professional manners",
+          "Social grace",
+          "Business protocol"
+        ]
+      },
+      {
+        title: "Module 6: Dining Etiquette",
+        topics: [
+          "Table manners",
+          "Formal dining",
+          "Business lunch/dinner protocol"
+        ]
+      },
+      {
+        title: "Module 7: Leadership & Decision Making",
+        topics: [
+          "Leadership qualities",
+          "Decision-making frameworks",
+          "Taking initiative"
+        ]
+      },
+      {
+        title: "Module 8: Negotiation & Conflict Resolution",
+        topics: [
+          "Negotiation strategies",
+          "Conflict management",
+          "Win-win solutions"
+        ]
+      }
+    ]
   }
 ];
 
@@ -184,71 +650,7 @@ const Courses = () => {
       {/* Courses Grid */}
       <SectionWrapper className="pt-0">
         <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {courses.map((course, index) => (
-              <NeumorphicCard 
-                key={index} 
-                delay={0.05 * index} 
-                className="relative overflow-hidden group p-0"
-              >
-                {course.popular && (
-                  <div className="absolute top-4 right-4 px-3 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-primary-foreground text-xs font-medium z-20">
-                    Popular
-                  </div>
-                )}
-                
-                
-                {/* Image Section */}
-                <div className="relative h-32 w-full overflow-hidden">
-                  <img 
-                    src={course.image} 
-                    alt={course.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/80" />
-                </div>
-                
-                {/* Content */}
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
-                    {course.title}
-                  </h3>
-                  <p className="text-muted-foreground mb-4 text-sm">{course.description}</p>
-                  
-                  <div className="flex gap-4 mb-4 text-sm">
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <Clock size={14} />
-                      {course.duration}
-                    </div>
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <Users size={14} />
-                      {course.students}
-                    </div>
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <Star size={14} className="text-yellow-500 fill-yellow-500" />
-                      {course.rating}
-                    </div>
-                  </div>
-
-                  <div className="space-y-2 mb-6">
-                    {course.features.map((feature, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <CheckCircle size={14} className="text-primary" />
-                        {feature}
-                      </div>
-                    ))}
-                  </div>
-
-                  <Link to="/contact">
-                    <NeumorphicButton variant="secondary" className="w-full">
-                      Enroll Now
-                      <ArrowRight size={16} />
-                    </NeumorphicButton>
-                  </Link>
-                </div>
-              </NeumorphicCard>
-            ))}
-          </div>
+          <ExpandableCourseCard courses={courses} />
         </div>
       </SectionWrapper>
 {/* KIDS COURSES SECTION */}
