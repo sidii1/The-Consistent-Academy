@@ -58,13 +58,13 @@ const courseImages = [
 ];
 
 const courses = [
-  { title: "IELTS Preparation", description: "Comprehensive training for all four modules", icon: "📚" },
-  { title: "Spoken English", description: "Build confidence in everyday communication", icon: "🎯" },
-  { title: "Writing Skills", description: "Master academic and professional writing", icon: "✍️" },
-  { title: "Grammar Mastery", description: "Strong foundation from basics to advanced", icon: "📖" },
-  { title: "Business English", description: "Professional communication for corporate settings", icon: "💼" },
-  { title: "Interview Preparation", description: "Ace interviews with confidence", icon: "🎤" },
-  { title: "IELTS Writing", description: "Focused training to boost writing band scores", icon: "📝" },
+  { title: "IELTS | TOEFL | PTE | CELPIP Preparation Course", description: "Comprehensive training for all four modules with real proficiency focus, not just exam tricks", icon: "📚" },
+  { title: "Corporate Survival & Success Program", description: "Transform into a corporate-ready professional with essential workplace skills and business etiquette.", icon: "🎯" },
+  { title: "Crack Your Interview – First Attempt", description: "Transform from nervous fresher to confident, clear, and convincing interviewee", icon: "✍️" },
+  { title: "Corporate Dining & Social Etiquette Masterclass", description: "Master professional dining and social etiquette for corporate success", icon: "📖" },
+  { title: "Advanced English & Leadership Presence for Managers", description: "Build executive presence, clarity, and leadership communication credibility", icon: "💼" },
+  { title: "Communication Skill Training", description: "Clear, confident, and professional communication in interviews, meetings, and public speaking", icon: "🎤" },
+  { title: "Personality Development Training", description: "Build a confident personality, strong body language, professional etiquette, and leadership skills", icon: "📝" },
 ];
 
 const courseMenuItems = courses.map((course, i) => ({
