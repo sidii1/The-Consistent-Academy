@@ -7,6 +7,7 @@ import { BookCard } from "@/components/ui/book-card";
 import { sub } from "date-fns";
 
 const milestones = [
+  { year: "2007", achievements: ["Started Teaching Career"] },
   { year: "2016", achievements: ["IELTS Master Trainer Certification"] },
   { year: "2019", achievements: ["TEFL & TESOL Trainer"] },
   { year: "2022", achievements: ["Published 'Cakewalk IELTS'"] },
