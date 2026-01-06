@@ -11,8 +11,8 @@ import ExpandableCourseCard, { Course } from "@/components/ui/expandable-course-
 
 const courses: Course[] = [
   {
-    title: "Global English Proficiency Master Program",
-    subtitle: "IELTS | TOEFL | PTE | CELPIP",
+    title: " IELTS | TOEFL | PTE | CELPIP Preparation Course",
+    subtitle: "Global English Proficiency Master Program",
     description: "Comprehensive training for all four modules with real proficiency focus, not just exam tricks.",
     image: "/courses/img1.png",
     hours: "20 Hours",
