@@ -121,7 +121,7 @@ const Founder = () => {
               <div className="relative w-full max-w-lg mx-auto lg:mx-0">
                 <div className="w-full aspect-square rounded-full shadow-neu-2xl bg-gradient-to-br from-card to-secondary/30 overflow-hidden">
                   <img
-                    src="/vidya.png"
+                    src="/gallery/vidya.png"
                     alt="Vidya Wankhade"
                     className="w-full h-full object-cover"
                   />
