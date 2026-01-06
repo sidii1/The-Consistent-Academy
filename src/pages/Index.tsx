@@ -32,19 +32,19 @@ const stats = [
 ];
 
 const images = [
-  "/v8.jpeg",
-  "/v6.png",
-  "/v1.png",
-  "/v7.jpeg",
-  "/v2.png",
-  "/v3.png",
-  "/v4.png",
-  "/v5.png",
-  "/v9.jpeg",
-  "/v13.jpeg",
-  "/v10.jpeg",
-  "/v11.jpeg",
-  "/v12.jpeg"
+  "/gallery/v8.jpeg",
+  "/gallery/v6.png",
+  "/gallery/v1.png",
+  "/gallery/v7.jpeg",
+  "/gallery/v2.png",
+  "/gallery/v3.png",
+  "/gallery/v4.png",
+  "/gallery/v5.png",
+  "/gallery/v9.jpeg",
+  "/gallery/v13.jpeg",
+  "/gallery/v10.jpeg",
+  "/gallery/v11.jpeg",
+  "/gallery/v12.jpeg"
 ];
 
 const courseImages = [
