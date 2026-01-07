@@ -167,21 +167,59 @@ const Contact = () => {
                       className="w-full px-4 py-3 rounded-xl bg-background shadow-neu-inset-sm"
                     />
 
-                    <select
-                      name="course"
-                      value={formData.course}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-xl bg-background shadow-neu-inset-sm"
-                    >
-                      <option value="">Select a course</option>
-                      <option value="IELTS Preparation">IELTS Preparation</option>
-                      <option value="Spoken English">Spoken English</option>
-                      <option value="Writing Skills">Writing Skills</option>
-                      <option value="Grammar Mastery">Grammar Mastery</option>
-                      <option value="Business English">Business English</option>
-                      <option value="Interview Preparation">Interview Preparation</option>
-                      <option value="IELTS Writing">IELTS Writing</option>
-                    </select>
+                   <select
+  name="course"
+  value={formData.course}
+  onChange={handleChange}
+  className="w-full px-4 py-3 rounded-xl bg-background shadow-neu-inset-sm"
+>
+  <option value="">Select a course</option>
+
+  {/* -------- ADULTS -------- */}
+  <optgroup label="Adults">
+    <option value="IELTS | TOEFL | PTE | CELPIP Preparation Course">
+      IELTS | TOEFL | PTE | CELPIP Preparation Course
+    </option>
+    <option value="Corporate Survival & Success Program">
+      Corporate Survival & Success Program
+    </option>
+    <option value="Crack Your Interview – First Attempt">
+      Crack Your Interview – First Attempt
+    </option>
+    <option value="Corporate Dining & Social Etiquette Masterclass">
+      Corporate Dining & Social Etiquette Masterclass
+    </option>
+    <option value="Advanced English & Leadership Presence for Managers">
+      Advanced English & Leadership Presence for Managers
+    </option>
+    <option value="Communication Skill Training">
+      Communication Skill Training
+    </option>
+    <option value="Personality Development Training">
+      Personality Development Training
+    </option>
+  </optgroup>
+
+  {/* -------- KIDS -------- */}
+  <optgroup label="Kids">
+    <option value="Elocution Course ">
+      Elocution Course 
+    </option>
+    <option value="Public Speaking ">
+      Public Speaking 
+    </option>
+    <option value="Grammar Foundations ">
+      Grammar Foundations 
+    </option>
+    <option value="Creative Writing ">
+      Creative Writing 
+    </option>
+    <option value="Reading Club ">
+      Reading Club 
+    </option>
+  </optgroup>
+</select>
+
                   </div>
 
                   {/* Message */}
