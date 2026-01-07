@@ -165,7 +165,7 @@ const Careers = () => {
 
       {/* HERO */}
       <div className="pt-28 pb-2">
-        <div className="text-center max-w-3xl mx-auto">
+        <div className="text-center max-w-6xl mx-auto">
           <AnimatedHeading>
             Join The <span className="text-gradient">Consistent</span> Academy
           </AnimatedHeading>

@@ -131,7 +131,7 @@ onTestComplete={async ({ attempted, correct, wrong }) => {
               transition={{ duration: 0.5 }}
               className="max-w-md mx-auto"
             >
-              <div className="text-center mb-8">
+              <div className="text-center mb-4">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -149,7 +149,7 @@ onTestComplete={async ({ attempted, correct, wrong }) => {
               </div>
 
               <NeumorphicCard>
-                <div className="p-6 md:p-8 space-y-6">
+                <div className="p-6 md:p-6 space-y-6">
                   {/* Email Input */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground flex items-center gap-2">
@@ -257,7 +257,7 @@ onTestComplete={async ({ attempted, correct, wrong }) => {
               className="max-w-5xl mx-auto"
             >
               {/* Welcome Header */}
-              <div className="text-center mb-12">
+              <div className="text-center mb-7">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}

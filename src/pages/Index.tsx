@@ -23,7 +23,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
 import Founder from "./Founder";
-import Testimonials from "./Testimonials";
+import Testimonials from "../components/Testimonials";
 
 /* ---------------- DATA ---------------- */
 
@@ -83,17 +83,12 @@ const courseImages = [
 
 const courses = [
   { title: "IELTS | TOEFL | PTE | CELPIP ", icon: "📚" },
-  { title: "Corporate Survival & Success Program", icon: "🎯" },
-  { title: "Crack Your Interview", icon: "✍️" },
-  { title: "Dining & Social Etiquette", icon: "📖" },
-  { title: "Advanced English & Leadership for Managers",  icon: "💼" },
+  { title: "Corporate Survival & Success", icon: "🤵🏻" },
+  { title: "Crack Your Interview", icon: "🕴🏻" },
+  { title: "Dining & Social Etiquette", icon: "🍽️" },
   { title: "Communication Skill Training", icon: "🎤" },
-  { title: "Personality Development Training",icon: "📝" },
-  { title:"Elocution Course for Kids",  icon: "🗣️" },
-  { title:"Public Speaking course for Kids", icon: "🌟" },
-  { title:"Grammar Foundations for Kids", icon: "📚" },
-  { title:"Creative Writing for Kids",  icon: "✍️" },
-  { title: "Reading Club for Kids", icon: "📖" }
+  { title: "Personality Development Training",icon: "🗣️" },
+  { title: "Courses for Kids", icon: "👧🏻" }
 ];
 
 const courseMenuItems = courses.map((course, i) => ({
@@ -394,6 +389,30 @@ const Index = () => {
             borderColor="rgba(0,0,0,0.1)"
           />
         </div>
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mt-6"
+        >
+          <p className="text-lg md:text-xl text-muted-foreground font-medium mb-6">
+            and more.....
+          </p>
+          
+          <Link to="/courses">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-block"
+            >
+              <NeumorphicButton className="px-8 py-4 text-base font-semibold bg-primary text-white">
+                View All Courses
+                <ArrowRight className="w-5 h-5 ml-2 inline-block" />
+              </NeumorphicButton>
+            </motion.div>
+          </Link>
+        </motion.div>
       </SectionWrapper>
 
       {/* PHOTOS */}
