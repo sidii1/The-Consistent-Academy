@@ -100,6 +100,19 @@ const TestInterface = ({
     return String.fromCharCode(97 + index); // a, b, c, d
   };
 
+  const getSectionDescription = (section: string): string => {
+    const descriptions: { [key: string]: string } = {
+      "Fill in the Blanks": "Choose the correct word",
+      "Analogy": "Find the correct pair",
+      "Grammar": "Identify correct sentence",
+      "Synonyms": "Find words with similar meaning",
+      "Comparison": "Use comparative/superlative forms",
+      "Idioms": "Understand phrase meanings",
+      "Vocabulary": "Match words to definitions"
+    };
+    return descriptions[section] || "";
+  };
+
   // Results Screen
   if (showResults) {
     return (
@@ -180,10 +193,15 @@ const TestInterface = ({
             <NeumorphicCard className="mb-4 hover:shadow-neu">
               <div className="p-5">
                 {currentQuestion.section && (
-                  <div className="inline-block px-3 py-1 rounded-lg shadow-neu-inset bg-gradient-to-br from-primary/10 to-accent/10 mb-4">
-                    <span className="text-xs font-medium text-primary">
-                      {currentQuestion.section}
-                    </span>
+                  <div className="mb-4">
+                    <div className="inline-block px-3 py-1 rounded-lg shadow-neu-inset bg-gradient-to-br from-primary/10 to-accent/10">
+                      <span className="text-xs font-medium text-primary">
+                        {currentQuestion.section}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1 ml-1">
+                      {getSectionDescription(currentQuestion.section)}
+                    </p>
                   </div>
                 )}
 
