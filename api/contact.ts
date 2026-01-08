@@ -16,7 +16,7 @@ export default async function handler(
 
     await resend.emails.send({
       from: "Contact Form <onboarding@resend.dev>",
-      to: ["sidii0080@gmail.com"],
+      to: ["nakulccs@gmail.com"],
       replyTo: email,
       subject: `New Contact Form Submission – ${name}`,
       html: `
