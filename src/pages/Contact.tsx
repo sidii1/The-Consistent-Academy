@@ -51,15 +51,17 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      await addDoc(collection(db, "contactRequests"), {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
-        course: formData.course,
-        message: formData.message,
-        createdAt: serverTimestamp(),
-        source: "Website Contact Page",
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
       });
+
+      if (!res.ok) {
+        throw new Error("Failed to send message");
+      }
 
       toast({
         title: "Message Sent!",
@@ -74,7 +76,7 @@ const Contact = () => {
         message: "",
       });
     } catch (error) {
-      console.error("Firestore error:", error);
+      console.error("Contact form error:", error);
       toast({
         title: "Something went wrong",
         description: "Please try again later.",
@@ -84,6 +86,7 @@ const Contact = () => {
       setIsSubmitting(false);
     }
   };
+
 
   const handleChange = (
     e: React.ChangeEvent<

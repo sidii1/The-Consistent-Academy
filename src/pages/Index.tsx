@@ -22,7 +22,7 @@ import { AnimatedHeading, AnimatedText } from "@/components/ui/animated-text";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
-import Founder from "./Founder";
+import Founder from "../components/Founder";
 import Testimonials from "../components/Testimonials";
 
 /* ---------------- DATA ---------------- */
