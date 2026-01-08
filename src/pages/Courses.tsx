@@ -554,6 +554,7 @@ const kidsCourses = [
     title: "Elocution Course",
     description: "Helps children speak clearly, confidently, and expressively.",
     duration: "4 Weeks",
+    image: "/courses/img8.png",
     features: [
       "Clarity in speech & pronunciation",
       "Expressive reading & storytelling",
@@ -566,6 +567,7 @@ const kidsCourses = [
     title: "Public Speaking",
     description: "Builds confidence and stage presence in young learners.",
     duration: "4 Weeks",
+    image: "/courses/img9.png",
     features: [
       "Reduced stage fear",
       "Improved body language & projection",
@@ -579,6 +581,7 @@ const kidsCourses = [
     title: "Grammar Foundations",
     description: "Strong grammar basics for clear and correct communication.",
     duration: "4 Weeks",
+    image: "/courses/img10.png",
     features: [
       "Sentence construction",
       "Correct punctuation",
@@ -592,6 +595,7 @@ const kidsCourses = [
     title: "Creative Writing",
     description: "Encourages imagination and expressive writing skills.",
     duration: "4 Weeks",
+    image: "/courses/img11.png",
     features: [
       "Idea generation & imagination",
       "Story structure (Beginning–Middle–End)",
@@ -604,6 +608,7 @@ const kidsCourses = [
     title: "Reading Club",
     description: "Develops love for reading and critical thinking.",
     duration: "Ongoing",
+    image: "/courses/img8.png",
     features: [
       "Reading for pleasure",
       "Vocabulary in context",
@@ -673,6 +678,16 @@ const Courses = () => {
           delay={0.05 * index}
           className="p-6"
         >
+          {course.image && (
+            <div className="mb-4 rounded-lg overflow-hidden">
+              <img 
+                src={course.image} 
+                alt={course.title}
+                className="w-full h-32 object-cover"
+              />
+            </div>
+          )}
+          
           <h3 className="text-xl font-semibold mb-2 text-foreground">
             {course.title}
           </h3>
