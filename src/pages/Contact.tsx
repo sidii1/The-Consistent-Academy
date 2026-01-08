@@ -46,46 +46,73 @@ const Contact = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!res.ok) {
-        throw new Error("Failed to send message");
+  try {
+    // 1️⃣ Prepare Firebase promise
+    const firebasePromise = addDoc(
+      collection(db, "contactRequests"),
+      {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        course: formData.course,
+        message: formData.message,
+        createdAt: serverTimestamp(),
+        source: "Website Contact Page",
       }
+    );
 
-      toast({
-        title: "Message Sent!",
-        description: "Thank you for your inquiry. We'll get back to you soon.",
-      });
+    // 2️⃣ Prepare API promise
+    const apiPromise = fetch("/api/contact", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
 
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        course: "",
-        message: "",
-      });
-    } catch (error) {
-      console.error("Contact form error:", error);
-      toast({
-        title: "Something went wrong",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
+    // 3️⃣ Run BOTH in parallel
+    const [firebaseResult, apiResponse] = await Promise.all([
+      firebasePromise,
+      apiPromise,
+    ]);
+
+    // 4️⃣ Validate API response
+    if (!apiResponse.ok) {
+      throw new Error("API request failed");
     }
-  };
+
+    // 5️⃣ Success toast
+    toast({
+      title: "Message Sent!",
+      description: "Thank you for your inquiry. We'll get back to you soon.",
+    });
+
+    // 6️⃣ Reset form
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      course: "",
+      message: "",
+    });
+
+  } catch (error) {
+    console.error("Contact form error:", error);
+
+    toast({
+      title: "Something went wrong",
+      description: "Please try again later.",
+      variant: "destructive",
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
 
   const handleChange = (
