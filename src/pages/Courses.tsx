@@ -608,7 +608,7 @@ const kidsCourses = [
     title: "Reading Club",
     description: "Develops love for reading and critical thinking.",
     duration: "Ongoing",
-    image: "/courses/img8.png",
+    image: "/courses/img12.png",
     features: [
       "Reading for pleasure",
       "Vocabulary in context",
