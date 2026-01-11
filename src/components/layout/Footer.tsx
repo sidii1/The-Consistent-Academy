@@ -135,15 +135,37 @@ export const Footer = () => {
 
         {/* Bottom */}
         <motion.div
-          className="mt-16 pt-8 border-t border-primary/20 flex flex-col md:flex-row justify-between items-center gap-4"
+          className="mt-16 pt-8 border-t border-primary/20 flex flex-col md:flex-row justify-between items-center gap-6"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <p className="text-sm text-muted-foreground">
-            © {currentYear} The Consistent Academy. All rights reserved.
-          </p>
+          <div className="flex flex-col items-center md:items-start gap-3">
+            <p className="text-sm text-muted-foreground">
+              © {currentYear} The Consistent Academy. All rights reserved.
+            </p>
+            <p className="text-sm text-foreground font-medium">
+              Designed & Developed by{" "}
+              <a 
+                href="https://www.linkedin.com/in/nakul-bhadade/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:text-accent transition-colors underline"
+              >
+                Nakul Bhadade
+              </a>
+              {" "}&{" "}
+              <a 
+                href="https://www.linkedin.com/in/siddhi-dhoke-53b7b432b/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:text-accent transition-colors underline"
+              >
+                Siddhi Dhoke
+              </a>
+            </p>
+          </div>
           <div className="flex gap-6">
             <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Privacy Policy

@@ -367,7 +367,6 @@ const Index = () => {
         </div>
       </section>
 
-      <Founder />
 
       {/* COURSES */}
       <SectionWrapper id="courses">
@@ -414,6 +413,8 @@ const Index = () => {
           </Link>
         </motion.div>
       </SectionWrapper>
+
+      <Founder />
 
       {/* PHOTOS */}
       <SectionWrapper>

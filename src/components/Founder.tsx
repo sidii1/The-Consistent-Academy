@@ -162,12 +162,12 @@ const Founder = () => {
               Journey of Excellence
             </AnimatedText>
             
-            <div className="relative px-4">
+            <div className="relative px-2 sm:px-4">
               {/* Timeline Line */}
-              <div className="absolute top-8 left-8 right-8 h-1 bg-gradient-to-r from-primary/20 via-primary/40 to-primary/20 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]" />
+              <div className="absolute top-6 sm:top-8 left-4 sm:left-8 right-4 sm:right-8 h-0.5 sm:h-1 bg-gradient-to-r from-primary/20 via-primary/40 to-primary/20 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]" />
               
               {/* Timeline Items */}
-              <div className="relative flex justify-between items-start gap-4">
+              <div className="relative flex justify-between items-start gap-1 sm:gap-2 md:gap-4">
                 {milestones.map((milestone, index) => (
                   <motion.div
                     key={milestone.year}
@@ -178,22 +178,22 @@ const Founder = () => {
                     transition={{ delay: 0.7 + index * 0.15, duration: 0.6 }}
                   >
                     {/* Year Indicator */}
-                    <div className="relative z-10 w-16 h-16 rounded-full shadow-neu bg-gradient-to-br from-card via-background to-secondary/30 flex items-center justify-center mb-4 group hover:shadow-neu-lg hover:scale-105 transition-all duration-300">
-                      <div className="absolute inset-2 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center group-hover:from-primary/30 group-hover:to-accent/30 transition-all duration-300">
-                        <span className="text-primary font-bold text-sm group-hover:scale-110 transition-transform duration-300">
+                    <div className="relative z-10 w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full shadow-neu bg-gradient-to-br from-card via-background to-secondary/30 flex items-center justify-center mb-2 sm:mb-3 md:mb-4 group hover:shadow-neu-lg hover:scale-105 transition-all duration-300">
+                      <div className="absolute inset-1 sm:inset-1.5 md:inset-2 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center group-hover:from-primary/30 group-hover:to-accent/30 transition-all duration-300">
+                        <span className="text-primary font-bold text-[0.6rem] sm:text-xs md:text-sm group-hover:scale-110 transition-transform duration-300">
                           {milestone.year}
                         </span>
                       </div>
                     </div>
                     
                     {/* Achievement Card */}
-                    <div className="w-full px-2">
-                      <div className="relative p-4 rounded-xl shadow-neu bg-gradient-to-br from-card/80 via-background/90 to-secondary/20 backdrop-blur-sm hover:shadow-neu-lg transition-all duration-400 hover:-translate-y-1 group">
-                        <div className="space-y-2">
+                    <div className="w-full px-0.5 sm:px-1 md:px-2">
+                      <div className="relative p-1.5 sm:p-2 md:p-4 rounded-lg sm:rounded-xl shadow-neu bg-gradient-to-br from-card/80 via-background/90 to-secondary/20 backdrop-blur-sm hover:shadow-neu-lg transition-all duration-400 hover:-translate-y-1 group">
+                        <div className="space-y-1 sm:space-y-1.5 md:space-y-2">
                           {milestone.achievements.map((achievement, i) => (
                             <p 
                               key={i} 
-                              className="text-sm font-semibold text-foreground leading-tight text-center group-hover:text-primary transition-colors duration-300"
+                              className="text-[0.5rem] sm:text-xs md:text-sm font-semibold text-foreground leading-tight text-center group-hover:text-primary transition-colors duration-300"
                             >
                               {achievement}
                             </p>
