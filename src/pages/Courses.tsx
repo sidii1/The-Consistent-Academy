@@ -562,7 +562,7 @@ const courses: Course[] = [
     subtitle: "IELTS | Spoken English | ESL / TESOL / TEFL Trainer Certification",
     description: "Equip yourself with the skills to become an effective trainer and facilitator.",
     targetAudience: "Aspiring trainers, educators, and professionals looking to enhance their training skills.",
-    image: "/courses/img13.png",
+    image: "/courses/img14.png",
     hours: "15 Hours",
     price:"15000/-",
     modules: 8,
