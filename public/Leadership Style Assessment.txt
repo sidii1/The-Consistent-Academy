@@ -1,0 +1,141 @@
+Comprehensive Leadership Style Assessment 
+Purpose: This assessment is designed to identify an individual�s dominant leadership style(s) based on behavior, decision-making, communication, people management, vision, ethics, and adaptability.
+Leadership styles covered: - Autocratic - Democratic (Participative) - Laissez-Faire - Transformational - Transactional - Servant Leadership - Situational Leadership - Coaching Leadership - Visionary Leadership - Bureaucratic Leadership
+
+INSTRUCTIONS (description)
+* There are 60 questions.
+* Choose the option that best reflects what you actually do, not what you believe is ideal.
+* There are no right or wrong answers.
+* Be honest for accurate results.
+Response Scale (use MCQ grid / Linear scale): 1 � Strongly Disagree 2 � Disagree 3 � Neutral 4 � Agree 5 � Strongly Agree
+
+SECTION A: DECISION-MAKING STYLE (Q1�Q10)
+1. I prefer to make decisions on my own rather than involve the team.
+2. I consult my team before finalizing important decisions.
+3. I adjust my decision-making style based on the competence of my team.
+4. I follow established rules and procedures while making decisions.
+5. I make quick decisions even with limited information.
+6. I encourage team members to challenge my decisions.
+7. I reward or penalize team members based on results achieved.
+8. I focus on long-term impact rather than short-term outcomes.
+9. I delegate decision-making authority freely.
+10. I believe leaders must sometimes take unpopular decisions.
+
+SECTION B: COMMUNICATION & INFLUENCE (Q11�Q20)
+11. I clearly communicate expectations and performance standards.
+12. I actively listen to my team members� ideas and concerns.
+13. I inspire people through vision and purpose.
+14. I believe communication should follow formal channels.
+15. I regularly give constructive feedback.
+16. I motivate people through rewards and recognition.
+17. I adapt my communication style to different individuals.
+18. I encourage open and transparent communication.
+19. I focus more on instructions than discussions.
+20. I mentor team members for their long-term growth.
+
+SECTION C: PEOPLE & TEAM MANAGEMENT (Q21�Q30)
+21. I trust my team to work independently without close supervision.
+22. I closely monitor team performance.
+23. I focus on developing people, not just achieving targets.
+24. I intervene immediately when performance drops.
+25. I put my team�s needs before my own.
+26. I believe discipline is essential for team success.
+27. I encourage collaboration and teamwork.
+28. I coach team members instead of directing them.
+29. I treat mistakes as learning opportunities.
+30. I believe authority is necessary to manage people effectively.
+
+SECTION D: CHANGE, VISION & INNOVATION (Q31�Q40)
+31. I enjoy leading change initiatives.
+32. I am comfortable experimenting with new ideas.
+33. I prefer stability over frequent change.
+34. I help people see the bigger picture.
+35. I encourage innovation even if it involves risk.
+36. I strictly adhere to organizational policies.
+37. I inspire people to exceed expectations.
+38. I prefer proven methods over creative approaches.
+39. I help individuals adapt during change.
+40. I challenge the status quo.
+
+SECTION E: ETHICS, VALUES & RESPONSIBILITY (Q41�Q50)
+41. I lead by example.
+42. I believe leadership is about serving others.
+43. I hold people accountable for their actions.
+44. I take responsibility for team failures.
+45. I ensure fairness and transparency.
+46. I prioritize organizational goals over individual needs.
+47. I empower others to grow into leaders.
+48. I believe authority comes from position.
+49. I encourage ethical decision-making.
+50. I focus on building trust.
+
+SECTION F: SELF-AWARENESS & ADAPTABILITY (Q51�Q60)
+51. I reflect on my leadership behavior regularly.
+52. I seek feedback from my team.
+53. I change my leadership approach based on situations.
+54. I remain calm under pressure.
+55. I am open to learning new leadership skills.
+56. I believe one leadership style does not fit all.
+57. I handle conflicts constructively.
+58. I am confident in my leadership ability.
+59. I encourage autonomy.
+60. I focus on continuous improvement.
+
+SCORING GUIDE (FOR RESPONSE SHEET)
+Assign each question to leadership styles. Add scores for each style.
+Leadership Style Mapping
+* Autocratic: 1,5,19,22,30,48
+* Democratic: 2,6,12,18,27,52
+* Laissez-Faire: 9,21,59
+* Transformational: 8,13,31,34,37,40
+* Transactional: 7,16,24,43
+* Servant Leadership: 25,42,44,47,50
+* Situational: 3,17,39,53,56
+* Coaching Leadership: 15,20,28,29
+* Visionary Leadership: 13,34,37,40
+* Bureaucratic: 4,14,26,36,38
+Highest score = Dominant style Second-highest = Secondary style
+
+LEADERSHIP STYLE INTERPRETATION
+1. Autocratic Leader
+Decisive, control-oriented, efficient in crises. May limit creativity and engagement.
+2. Democratic Leader
+Inclusive, collaborative, trust-building. Slower decision-making in urgent situations.
+3. Laissez-Faire Leader
+Empowers autonomy, suits expert teams. Risk of lack of direction.
+4. Transformational Leader
+Vision-driven, inspirational, change-oriented. Requires emotional intelligence and consistency.
+5. Transactional Leader
+Performance-focused, structured, result-oriented. Limited emotional connection.
+6. Servant Leader
+People-first, ethical, trust-based. May struggle with authority enforcement.
+7. Situational Leader
+Flexible, adaptive, context-driven. Requires high awareness.
+8. Coaching Leader
+Development-focused, patient, growth-oriented. Time-intensive.
+9. Visionary Leader
+Future-focused, innovative, purpose-driven. Needs strong execution support.
+10. Bureaucratic Leader
+Process-driven, reliable, compliance-focused. Low flexibility.
+
+SELF-IMPROVEMENT RECOMMENDATIONS FOR ASPIRING LEADERS
+Core Skills to Develop
+* Emotional Intelligence
+* Active Listening
+* Strategic Thinking
+* Conflict Management
+* Decision-Making Under Pressure
+* Feedback & Coaching Skills
+* Ethical Leadership
+* Adaptability
+Actionable Growth Plan
+* Seek 360-degree feedback
+* Practice reflective journaling
+* Learn situational leadership models
+* Take up mentoring roles
+* Attend leadership workshops
+* Read leadership case studies
+* Observe and model effective leaders
+
+Suggested Use: - Corporate leadership assessments - MBA / PGDM leadership diagnostics - Managerial development programs - Executive coaching sessions
+(You may add automated result descriptions �Response validation ? Go to section based on answer�.)
