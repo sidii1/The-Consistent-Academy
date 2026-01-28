@@ -7,16 +7,49 @@ export interface Question {
   section?: string;
 }
 
+export interface LeadershipQuestion {
+  id: number;
+  question: string;
+  section?: string;
+  leadershipStyle: LeadershipStyle;
+}
+
+export type LeadershipStyle = 
+  | "autocratic"
+  | "democratic"
+  | "laissezFaire"
+  | "transformational"
+  | "transactional"
+  | "servant"
+  | "situational"
+  | "coaching"
+  | "visionary"
+  | "bureaucratic";
+
 export interface TestData {
   title: string;
   description: string;
   sections: TestSection[];
   totalQuestions: number;
+  testType?: "mcq" | "leadership";
 }
 
 export interface TestSection {
   title: string;
   questions: Question[];
+}
+
+export interface LeadershipTestSection {
+  title: string;
+  questions: LeadershipQuestion[];
+}
+
+export interface LeadershipTestData {
+  title: string;
+  description: string;
+  sections: LeadershipTestSection[];
+  totalQuestions: number;
+  testType: "leadership";
 }
 
 // Kids Test Data (Age 5-17)

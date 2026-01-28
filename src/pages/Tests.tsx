@@ -25,10 +25,12 @@ import {
 
 import { db, auth } from "@/lib/firebase";
 import { kidsTestData, adultsTestData } from "@/lib/testData";
+import { leadershipTestData } from "@/lib/leadershipTestData";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { Navbar } from "@/components/layout/Navbar";
 import TestInterface from "@/components/TestInterface";
+import LeadershipTestInterface from "@/components/LeadershipTestInterface";
 
 /* ------------------------------------------------ */
 /* -------------------- MAIN PAGE ------------------ */
@@ -39,7 +41,7 @@ const Tests = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
-  const [selectedTest, setSelectedTest] = useState<"kids" | "adults" | null>(null);
+  const [selectedTest, setSelectedTest] = useState<"kids" | "adults" | "leadership" | null>(null);
   const [authError, setAuthError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -77,6 +79,41 @@ const Tests = () => {
 
   // Test Interface with Firebase Integration
   if (selectedTest && user) {
+    // Leadership test uses different interface
+    if (selectedTest === "leadership") {
+      return (
+        <div className="min-h-screen pt-24 px-4">
+          <LeadershipTestInterface
+            testData={leadershipTestData}
+            onBackToSelection={() => setSelectedTest(null)}
+            onTestComplete={async ({ scores, dominantStyle, secondaryStyle }) => {
+              console.log("🔥 LEADERSHIP TEST COMPLETE", {
+                dominantStyle,
+                secondaryStyle,
+                scores,
+                user: user.email,
+              });
+
+              try {
+                const docRef = await addDoc(collection(db, "leadershipResults"), {
+                  userId: user.uid,
+                  testType: "leadership",
+                  dominantStyle,
+                  secondaryStyle,
+                  scores,
+                  createdAt: serverTimestamp(),
+                });
+                console.log("✅ Leadership results saved, doc ID:", docRef.id);
+              } catch (err) {
+                console.error("❌ Firestore write FAILED:", err);
+              }
+            }}
+          />
+        </div>
+      );
+    }
+
+    // Grammar tests
     const testData = selectedTest === "kids" ? kidsTestData : adultsTestData;
     
     return (
@@ -270,12 +307,12 @@ onTestComplete={async ({ attempted, correct, wrong }) => {
                   Choose Your Test
                 </h1>
                 <p className="text-lg text-muted-foreground">
-                  Select the appropriate grammar test based on your age group
+                  Select a test to begin your assessment
                 </p>
               </div>
 
               {/* Test Cards */}
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {/* Kids Test Card */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
@@ -375,6 +412,58 @@ onTestComplete={async ({ attempted, correct, wrong }) => {
                         className="w-full"
                       >
                         Start Adults Test
+                      </NeumorphicButton>
+                    </div>
+                  </NeumorphicCard>
+                </motion.div>
+
+                {/* Leadership Test Card */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <NeumorphicCard className="h-full hover:shadow-neu-xl transition-all duration-300">
+                    <div className="p-8 h-full flex flex-col">
+                      <div className="flex items-center gap-4 mb-6">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-neu-lg">
+                          <Award className="w-8 h-8 text-white" />
+                        </div>
+                        <div>
+                          <h2 className="text-2xl font-bold text-foreground">Leadership</h2>
+                          <p className="text-sm text-muted-foreground">Style Assessment</p>
+                        </div>
+                      </div>
+
+                      <div className="flex-1 space-y-4 mb-6">
+                        <div className="space-y-2">
+                          <div className="flex items-start gap-2">
+                            <TrendingUp className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
+                              <strong className="text-foreground">60 Questions</strong> across 6 leadership dimensions
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <TrendingUp className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
+                              Discover your dominant leadership style
+                            </p>
+                          </div>
+                          <div className="flex items-start gap-2">
+                            <TrendingUp className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
+                            <p className="text-sm text-muted-foreground">
+                              Psychometric self-assessment
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <NeumorphicButton
+                        variant="primary"
+                        onClick={() => setSelectedTest("leadership")}
+                        className="w-full"
+                      >
+                        Start Leadership Test
                       </NeumorphicButton>
                     </div>
                   </NeumorphicCard>
