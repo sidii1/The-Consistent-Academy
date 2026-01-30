@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import type { LeadershipTestData, LeadershipStyle } from "@/lib/leadershipTestData";
 import LeadershipResults from "./LeadershipResults";
 
+type ConfidenceLevel = "low" | "medium" | "high";
 
 interface LeadershipTestInterfaceProps {
   testData: LeadershipTestData;
@@ -15,6 +16,7 @@ interface LeadershipTestInterfaceProps {
     scores: Record<LeadershipStyle, number>;
     dominantStyle: LeadershipStyle;
     secondaryStyle: LeadershipStyle;
+    confidence: ConfidenceLevel;
   }) => void;
 }
 
@@ -54,6 +56,11 @@ const currentQuestion = allQuestions[currentQuestionIndex];
 const totalQuestions = allQuestions.length;
 
 const calculateResults = () => {
+    const answeredCount = Object.keys(userResponses).length;
+    const nonNeutralCount = Object.values(userResponses).filter(
+      (v) => v !== 3
+    ).length;
+
     const scores: Record<LeadershipStyle, number> = {
       autocratic: 0,
       democratic: 0,
@@ -67,9 +74,9 @@ const calculateResults = () => {
       bureaucratic: 0,
     };
 
-
+    
     const styleCounts: Record<LeadershipStyle, number> = { ...scores };
-
+   
     
     allQuestions.forEach((q) => {
       styleCounts[q.leadershipStyle]++;
@@ -85,9 +92,20 @@ const calculateResults = () => {
         scores[style] = scores[style] / styleCounts[style];
       }
     });
-    
 
-    // Opposing leadership balancing
+    const answeredRatio = answeredCount / totalQuestions;
+const decisivenessRatio =
+  answeredCount > 0 ? nonNeutralCount / answeredCount : 0;
+
+let confidence: ConfidenceLevel = "low";
+
+if (answeredRatio >= 0.7 && decisivenessRatio >= 0.6) {
+  confidence = "high";
+} else if (answeredRatio >= 0.4 && decisivenessRatio >= 0.4) {
+  confidence = "medium";
+}
+
+// Opposing leadership balancing
     const opposites: [LeadershipStyle, LeadershipStyle][] = [
       ["autocratic", "democratic"],
       ["transactional", "transformational"],
@@ -107,8 +125,6 @@ const calculateResults = () => {
 
    const MIN_ANSWERS_REQUIRED = Math.ceil(totalQuestions * 0.4);
 
-const answeredCount = Object.keys(userResponses).length;
-
 const sorted = (Object.keys(scores) as LeadershipStyle[]).sort(
   (a, b) => scores[b] - scores[a]
 );
@@ -117,9 +133,12 @@ const topScore = scores[sorted[0]];
 const secondScore = scores[sorted[1]];
 
 const dominantStyle: LeadershipStyle =
-  Math.abs(topScore - secondScore) < 0.3
+  confidence === "low"
+    ? "situational"
+    : Math.abs(topScore - secondScore) < 0.3
     ? "situational"
     : sorted[0];
+
 
 const secondaryStyle: LeadershipStyle = sorted[1];
 
@@ -127,8 +146,11 @@ const secondaryStyle: LeadershipStyle = sorted[1];
     scores,
     dominantStyle,
     secondaryStyle,
+    confidence,
   };
 };
+
+
 
 const handleResponseSelect = (value: number) => {
   setUserResponses((prev) => ({
@@ -174,6 +196,7 @@ if (showResults) {
       scores={results.scores}
       dominantStyle={results.dominantStyle}
       secondaryStyle={results.secondaryStyle}
+      confidence={results.confidence}
       onRetry={handleRetry}
       onBackToSelection={onBackToSelection}
     />

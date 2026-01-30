@@ -12,6 +12,7 @@ interface LeadershipResultsProps {
   scores: Record<LeadershipStyle, number>;
   dominantStyle: LeadershipStyle;
   secondaryStyle: LeadershipStyle;
+  confidence: "low" | "medium" | "high";
   onRetry: () => void;
   onBackToSelection?: () => void;
 }
@@ -21,9 +22,31 @@ const LeadershipResults = ({
   scores,
   dominantStyle,
   secondaryStyle,
+  confidence,
   onRetry,
   onBackToSelection,
 }: LeadershipResultsProps) => {
+  const confidenceMeta = {
+  high: {
+    label: "High Confidence",
+    color: "text-green-600",
+    bg: "bg-green-100",
+    message: "Your responses were consistent and decisive.",
+  },
+  medium: {
+    label: "Moderate Confidence",
+    color: "text-yellow-600",
+    bg: "bg-yellow-100",
+    message: "Your results are fairly reliable, but more answers can improve accuracy.",
+  },
+  low: {
+    label: "Low Confidence",
+    color: "text-red-600",
+    bg: "bg-red-100",
+    message: "Answer more questions or avoid neutral responses for clearer results.",
+  },
+};
+
   const dominantInfo = leadershipStyleDescriptions[dominantStyle];
   const secondaryInfo = leadershipStyleDescriptions[secondaryStyle];
 
@@ -101,7 +124,17 @@ const LeadershipResults = ({
                 <p className="text-lg text-muted-foreground max-w-2xl mb-4">
                   {dominantInfo.description}
                 </p>
-                
+                <div
+  className={`mt-4 rounded-xl px-4 py-3 text-sm ${confidenceMeta[confidence].bg}`}
+>
+  <div className={`font-semibold ${confidenceMeta[confidence].color}`}>
+    {confidenceMeta[confidence].label}
+  </div>
+  <p className="text-foreground/80 mt-1">
+    {confidenceMeta[confidence].message}
+  </p>
+</div>
+
                 <div className="flex flex-wrap gap-3">
                   <div className="px-3 py-2 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
                     <div className="text-xl font-bold text-primary">{scores[dominantStyle]}</div>
