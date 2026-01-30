@@ -49,18 +49,11 @@ const LeadershipTestInterface = ({
   const [isTestCompleted, setIsTestCompleted] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
-  const allQuestions = testData.sections.flatMap((s) => s.questions);
-  const currentQuestion = allQuestions[currentQuestionIndex];
-  const totalQuestions = allQuestions.length;
+const allQuestions = testData.sections.flatMap((s) => s.questions);
+const currentQuestion = allQuestions[currentQuestionIndex];
+const totalQuestions = allQuestions.length;
 
-  const handleResponseSelect = (value: number) => {
-    setUserResponses((prev) => ({
-      ...prev,
-      [currentQuestion.id]: value,
-    }));
-  };
-
-  const calculateResults = () => {
+const calculateResults = () => {
     const scores: Record<LeadershipStyle, number> = {
       autocratic: 0,
       democratic: 0,
@@ -74,8 +67,10 @@ const LeadershipTestInterface = ({
       bureaucratic: 0,
     };
 
+
     const styleCounts: Record<LeadershipStyle, number> = { ...scores };
 
+    
     allQuestions.forEach((q) => {
       styleCounts[q.leadershipStyle]++;
       const response = userResponses[q.id];
@@ -90,6 +85,7 @@ const LeadershipTestInterface = ({
         scores[style] = scores[style] / styleCounts[style];
       }
     });
+    
 
     // Opposing leadership balancing
     const opposites: [LeadershipStyle, LeadershipStyle][] = [
@@ -99,24 +95,49 @@ const LeadershipTestInterface = ({
       ["laissezFaire", "coaching"],
     ];
 
-    opposites.forEach(([a, b]) => {
-      const diff = scores[a] - scores[b];
-      scores[a] = diff > 0 ? diff : 0;
-      scores[b] = diff < 0 ? Math.abs(diff) : 0;
-    });
+  opposites.forEach(([a, b]) => {
+  if (styleCounts[a] >= 2 && styleCounts[b] >= 2) {
+    const diff = scores[a] - scores[b];
+    scores[a] = diff > 0 ? diff : 0;
+    scores[b] = diff < 0 ? Math.abs(diff) : 0;
+  }
+});
 
-    const sorted = (Object.keys(scores) as LeadershipStyle[]).sort(
-      (a, b) => scores[b] - scores[a]
-    );
 
-    return {
-      scores,
-      dominantStyle: sorted[0],
-      secondaryStyle: sorted[1],
-    };
+
+   const MIN_ANSWERS_REQUIRED = Math.ceil(totalQuestions * 0.4);
+
+const answeredCount = Object.keys(userResponses).length;
+
+const sorted = (Object.keys(scores) as LeadershipStyle[]).sort(
+  (a, b) => scores[b] - scores[a]
+);
+
+const topScore = scores[sorted[0]];
+const secondScore = scores[sorted[1]];
+
+const dominantStyle: LeadershipStyle =
+  Math.abs(topScore - secondScore) < 0.3
+    ? "situational"
+    : sorted[0];
+
+const secondaryStyle: LeadershipStyle = sorted[1];
+
+  return {
+    scores,
+    dominantStyle,
+    secondaryStyle,
   };
+};
 
-  const handleNext = () => {
+const handleResponseSelect = (value: number) => {
+  setUserResponses((prev) => ({
+    ...prev,
+    [currentQuestion.id]: value,
+  }));
+};
+
+const handleNext = () => {
     if (currentQuestionIndex < totalQuestions - 1) {
       setCurrentQuestionIndex((i) => i + 1);
     } else {
@@ -132,7 +153,9 @@ const LeadershipTestInterface = ({
 
   const handleSubmit = () => {
     const results = calculateResults();
-    onTestComplete?.(results);
+    if (onTestComplete) {
+      onTestComplete(results);
+    }
     setShowResults(true);
   };
 
@@ -143,23 +166,21 @@ const LeadershipTestInterface = ({
     setShowResults(false);
   };
 
-  if (showResults) {
-    const results = calculateResults();
-    return (
-      <LeadershipResults
-        testData={testData}
-        scores={results.scores}
-        dominantStyle={results.dominantStyle}
-        secondaryStyle={results.secondaryStyle}
-        onRetry={handleRetry}
-        onBackToSelection={onBackToSelection}
-      />
-    );
-  }
+if (showResults) {
+  const results = calculateResults();
+  return (
+    <LeadershipResults
+      testData={testData}
+      scores={results.scores}
+      dominantStyle={results.dominantStyle}
+      secondaryStyle={results.secondaryStyle}
+      onRetry={handleRetry}
+      onBackToSelection={onBackToSelection}
+    />
+  );
+}
 
- 
-
-  const handleClearResponse = () => {
+const handleClearResponse = () => {
   setUserResponses((prev) => {
     const updated = { ...prev };
     delete updated[currentQuestion.id];
