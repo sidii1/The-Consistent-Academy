@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
@@ -6,6 +6,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { cn } from "@/lib/utils";
 import type { LeadershipTestData, LeadershipStyle } from "@/lib/leadershipTestData";
 import LeadershipResults from "./LeadershipResults";
+
 
 interface LeadershipTestInterfaceProps {
   testData: LeadershipTestData;
@@ -22,27 +23,21 @@ interface UserResponses {
 }
 
 const LIKERT_OPTIONS = [
-  { 
-    value: 1, 
-    label: "Strongly Disagree",
-  },
-  { 
-    value: 2, 
-    label: "Disagree",
-  },
-  { 
-    value: 3, 
-    label: "Neutral",
-  },
-  { 
-    value: 4, 
-    label: "Agree",
-  },
-  { 
-    value: 5, 
-    label: "Strongly Agree",
-  },
+  { value: 1, label: "Strongly Disagree" },
+  { value: 2, label: "Disagree" },
+  { value: 3, label: "Neutral" },
+  { value: 4, label: "Agree" },
+  { value: 5, label: "Strongly Agree" },
 ];
+
+// Likert → Intent weights
+const WEIGHT_MAP: Record<number, number> = {
+  1: -2,
+  2: -1,
+  3: 0,
+  4: 1,
+  5: 2,
+};
 
 const LeadershipTestInterface = ({
   testData,
@@ -54,15 +49,15 @@ const LeadershipTestInterface = ({
   const [isTestCompleted, setIsTestCompleted] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
-  const allQuestions = testData.sections.flatMap((section) => section.questions);
+  const allQuestions = testData.sections.flatMap((s) => s.questions);
   const currentQuestion = allQuestions[currentQuestionIndex];
   const totalQuestions = allQuestions.length;
 
   const handleResponseSelect = (value: number) => {
-    setUserResponses({
-      ...userResponses,
+    setUserResponses((prev) => ({
+      ...prev,
       [currentQuestion.id]: value,
-    });
+    }));
   };
 
   const calculateResults = () => {
@@ -79,33 +74,51 @@ const LeadershipTestInterface = ({
       bureaucratic: 0,
     };
 
-    allQuestions.forEach((question) => {
-      const response = userResponses[question.id];
-      if (response) {
-        scores[question.leadershipStyle] += response;
+    const styleCounts: Record<LeadershipStyle, number> = { ...scores };
+
+    allQuestions.forEach((q) => {
+      styleCounts[q.leadershipStyle]++;
+      const response = userResponses[q.id];
+      if (response !== undefined) {
+        scores[q.leadershipStyle] += WEIGHT_MAP[response];
       }
     });
 
-    const sortedStyles = (Object.keys(scores) as LeadershipStyle[]).sort(
+    // Normalize safely
+    (Object.keys(scores) as LeadershipStyle[]).forEach((style) => {
+      if (styleCounts[style] > 0) {
+        scores[style] = scores[style] / styleCounts[style];
+      }
+    });
+
+    // Opposing leadership balancing
+    const opposites: [LeadershipStyle, LeadershipStyle][] = [
+      ["autocratic", "democratic"],
+      ["transactional", "transformational"],
+      ["bureaucratic", "visionary"],
+      ["laissezFaire", "coaching"],
+    ];
+
+    opposites.forEach(([a, b]) => {
+      const diff = scores[a] - scores[b];
+      scores[a] = diff > 0 ? diff : 0;
+      scores[b] = diff < 0 ? Math.abs(diff) : 0;
+    });
+
+    const sorted = (Object.keys(scores) as LeadershipStyle[]).sort(
       (a, b) => scores[b] - scores[a]
     );
 
     return {
       scores,
-      dominantStyle: sortedStyles[0],
-      secondaryStyle: sortedStyles[1],
+      dominantStyle: sorted[0],
+      secondaryStyle: sorted[1],
     };
-  };
-
-  const handleClearResponse = () => {
-    const newResponses = { ...userResponses };
-    delete newResponses[currentQuestion.id];
-    setUserResponses(newResponses);
   };
 
   const handleNext = () => {
     if (currentQuestionIndex < totalQuestions - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentQuestionIndex((i) => i + 1);
     } else {
       setIsTestCompleted(true);
     }
@@ -113,7 +126,7 @@ const LeadershipTestInterface = ({
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setCurrentQuestionIndex((i) => i - 1);
     }
   };
 
@@ -130,7 +143,6 @@ const LeadershipTestInterface = ({
     setShowResults(false);
   };
 
-  // Results Screen
   if (showResults) {
     const results = calculateResults();
     return (
@@ -144,6 +156,19 @@ const LeadershipTestInterface = ({
       />
     );
   }
+
+ 
+
+  const handleClearResponse = () => {
+  setUserResponses((prev) => {
+    const updated = { ...prev };
+    delete updated[currentQuestion.id];
+    return updated;
+  });
+};
+
+
+
 
   // Submit Confirmation Screen
   if (isTestCompleted) {
