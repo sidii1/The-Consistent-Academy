@@ -188,25 +188,25 @@ const LeadershipResults = ({
             <div className="lg:col-span-2">
               <NeumorphicCard className="h-full">
                 <div className="p-4">
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-5">
                     <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
                       <TrendingUp className="w-4 h-4 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-base font-bold text-foreground">Your Dominant Leadership Style</h3>
+                      <h3 className="text-base font-bold text-foreground">Leadership Style Breakdown</h3>
                       <p className="text-xs text-muted-foreground">Key characteristics and development insights</p>
                     </div>
                   </div>
 
                   {/* All Details in One Section - Reduced Spacing */}
-                  <div className="space-y-3">
+                  <div className="space-y-5">
                     {/* Strengths Section */}
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500/20 to-green-500/20 flex items-center justify-center">
                           <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
                         </div>
-                        <h4 className="text-sm font-bold text-foreground">Key Strengths</h4>
+                        <h4 className="text-m font-bold text-foreground">Key Strengths</h4>
                       </div>
                       <div className="grid md:grid-cols-2 gap-2">
                         {dominantInfo.strengths.map((strength, index) => (
@@ -219,7 +219,7 @@ const LeadershipResults = ({
                           >
                             <div className="flex items-start gap-2">
                               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1 flex-shrink-0" />
-                              <span className="text-xs">{strength}</span>
+                              <span className="text-[0.8rem] leading-snug">{strength}</span>
                             </div>
                           </motion.div>
                         ))}
@@ -232,7 +232,7 @@ const LeadershipResults = ({
                         <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center">
                           <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
                         </div>
-                        <h4 className="text-sm font-bold text-foreground">Areas to Watch</h4>
+                        <h4 className="text-m font-bold text-foreground">Areas to Watch</h4>
                       </div>
                       <div className="grid md:grid-cols-2 gap-2">
                         {dominantInfo.limitations.map((limitation, index) => (
@@ -245,7 +245,7 @@ const LeadershipResults = ({
                           >
                             <div className="flex items-start gap-2">
                               <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1 flex-shrink-0" />
-                              <span className="text-xs">{limitation}</span>
+                              <span className="text-[0.8rem] leading-snug">{limitation}</span>
                             </div>
                           </motion.div>
                         ))}
@@ -258,9 +258,9 @@ const LeadershipResults = ({
                         <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-sky-500/20 to-cyan-500/20 flex items-center justify-center">
                           <Lightbulb className="w-3.5 h-3.5 text-sky-500" />
                         </div>
-                        <h4 className="text-sm font-bold text-foreground">Growth Recommendations</h4>
+                        <h4 className="text-m font-bold text-foreground">Growth Recommendations</h4>
                       </div>
-                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
                         {dominantInfo.growthSuggestions.map((suggestion, index) => (
                           <motion.div
                             key={index}
@@ -269,7 +269,7 @@ const LeadershipResults = ({
                             transition={{ delay: index * 0.05 + 0.2 }}
                             className="p-2.5 rounded-lg bg-gradient-to-br from-sky-500/5 to-transparent border border-sky-500/10"
                           >
-                            <div className="text-xs">{suggestion}</div>
+                            <div className="text-[0.8rem] leading-snug">{suggestion}</div>
                           </motion.div>
                         ))}
                       </div>
@@ -318,7 +318,7 @@ const LeadershipResults = ({
                     
                     {/* Title Overlay - Better contrast with solid background */}
                     <div className="absolute bottom-0 left-0 right-0 p-3 bg-background/95 backdrop-blur-sm border-t border-border/20">
-                      <h2 className="text-base font-bold text-foreground mb-1">
+                      <h2 className="text-lg font-bold text-foreground mb-1">
                         {secondaryInfo.name}
                       </h2>
                       <div className="flex items-center justify-between">
@@ -346,7 +346,7 @@ const LeadershipResults = ({
                       <ul className="space-y-1.5 pl-1">
                         {secondaryInfo.strengths.slice(0, 3).map((strength, index) => (
                           <li key={index} className="flex items-start gap-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-secondary mt-1.5 flex-shrink-0" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
                             <span className="text-xs">{strength}</span>
                           </li>
                         ))}
