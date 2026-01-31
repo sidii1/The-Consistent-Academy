@@ -64,8 +64,9 @@ const Tests = () => {
         : await signInWithEmailAndPassword(auth, email, password);
 
       setUser(cred.user);
-    } catch (error: any) {
-      setAuthError(error.message || "Authentication failed");
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Authentication failed";
+      setAuthError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -86,28 +87,15 @@ const Tests = () => {
           <LeadershipTestInterface
             testData={leadershipTestData}
             onBackToSelection={() => setSelectedTest(null)}
-            onTestComplete={async ({ scores, dominantStyle, secondaryStyle }) => {
-              console.log("🔥 LEADERSHIP TEST COMPLETE", {
-                dominantStyle,
-                secondaryStyle,
-                scores,
-                user: user.email,
-              });
+            onTestComplete={({ scores, dominantStyle, secondaryStyle }) => {
+  console.log("🔥 LEADERSHIP TEST COMPLETE", {
+    dominantStyle,
+    secondaryStyle,
+    scores,
+    user: user.email,
+  });
+}}
 
-              try {
-                const docRef = await addDoc(collection(db, "leadershipResults"), {
-                  userId: user.uid,
-                  testType: "leadership",
-                  dominantStyle,
-                  secondaryStyle,
-                  scores,
-                  createdAt: serverTimestamp(),
-                });
-                console.log("✅ Leadership results saved, doc ID:", docRef.id);
-              } catch (err) {
-                console.error("❌ Firestore write FAILED:", err);
-              }
-            }}
           />
         </div>
       );

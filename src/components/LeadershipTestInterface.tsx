@@ -6,6 +6,10 @@ import { Navbar } from "@/components/layout/Navbar";
 import { cn } from "@/lib/utils";
 import type { LeadershipTestData, LeadershipStyle } from "@/lib/leadershipTestData";
 import LeadershipResults from "./LeadershipResults";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { db } from "@/lib/firebase";
+
 
 type ConfidenceLevel = "low" | "medium" | "high";
 
@@ -142,12 +146,15 @@ const dominantStyle: LeadershipStyle =
 
 const secondaryStyle: LeadershipStyle = sorted[1];
 
-  return {
-    scores,
-    dominantStyle,
-    secondaryStyle,
-    confidence,
-  };
+ return {
+  scores,
+  dominantStyle,
+  secondaryStyle,
+  answeredCount,
+  totalQuestions,
+  confidence,
+};
+
 };
 
 
@@ -173,13 +180,42 @@ const handleNext = () => {
     }
   };
 
-  const handleSubmit = () => {
-    const results = calculateResults();
-    if (onTestComplete) {
-      onTestComplete(results);
-    }
-    setShowResults(true);
-  };
+ const handleSubmit = async () => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("Please log in to save your test results.");
+    return;
+  }
+
+  const results = calculateResults();
+
+  try {
+    await addDoc(collection(db, "leadershipTestResults"), {
+      userId: user.uid, // ✅ NEVER null
+      dominantStyle: results.dominantStyle,
+      secondaryStyle: results.secondaryStyle,
+      scores: results.scores,
+      confidence: results.confidence,
+      answeredQuestions: results.answeredCount,
+      totalQuestions: results.totalQuestions,
+      createdAt: serverTimestamp(),
+    });
+
+    console.log("✅ Test results saved");
+  } catch (error) {
+    console.error("❌ Firestore write FAILED:", error);
+  }
+
+  if (onTestComplete) {
+    onTestComplete(results);
+  }
+
+  setShowResults(true);
+};
+
+
 
   const handleRetry = () => {
     setUserResponses({});
