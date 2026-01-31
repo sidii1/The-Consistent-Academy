@@ -24,13 +24,13 @@ import {
 } from "lucide-react";
 
 import { db, auth } from "@/lib/firebase";
-import { kidsTestData, adultsTestData } from "@/lib/testData";
-import { leadershipTestData } from "@/lib/leadershipTestData";
+import { kidsTestData, adultsTestData } from "@/lib/tests/testData";
+import { leadershipTestData } from "@/lib/tests/leadershipTestData";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { Navbar } from "@/components/layout/Navbar";
-import TestInterface from "@/components/TestInterface";
-import LeadershipTestInterface from "@/components/LeadershipTestInterface";
+import TestInterface from "@/components/tests/TestInterface";
+import LeadershipTestInterface from "@/components/tests/LeadershipTestInterface";
 
 /* ------------------------------------------------ */
 /* -------------------- MAIN PAGE ------------------ */

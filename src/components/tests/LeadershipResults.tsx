@@ -4,8 +4,8 @@ import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { Navbar } from "@/components/layout/Navbar";
 import { Award, TrendingUp, AlertCircle, Lightbulb, RotateCcw, Home, ChevronDown, ChevronRight, Star, Zap, Users, Target, BarChart } from "lucide-react";
-import type { LeadershipTestData, LeadershipStyle } from "@/lib/leadershipTestData";
-import { leadershipStyleDescriptions } from "@/lib/leadershipTestData";
+import type { LeadershipTestData, LeadershipStyle } from "@/lib/tests/leadershipTestData";
+import { leadershipStyleDescriptions } from "@/lib/tests/leadershipTestData";
 
 interface LeadershipResultsProps {
   testData: LeadershipTestData;
@@ -124,24 +124,25 @@ const LeadershipResults = ({
                 <p className="text-lg text-muted-foreground max-w-2xl mb-4">
                   {dominantInfo.description}
                 </p>
-                <div
-  className={`mt-4 rounded-xl px-4 py-3 text-sm ${confidenceMeta[confidence].bg}`}
->
-  <div className={`font-semibold ${confidenceMeta[confidence].color}`}>
-    {confidenceMeta[confidence].label}
-  </div>
-  <p className="text-foreground/80 mt-1">
-    {confidenceMeta[confidence].message}
-  </p>
-</div>
+
+          <div
+              className={`mt-4 rounded-xl px-4 py-3 mb-3 text-sm ${confidenceMeta[confidence].bg}`}
+          >
+                <div className={`font-semibold ${confidenceMeta[confidence].color}`}>
+                  {confidenceMeta[confidence].label}
+                </div>
+                <p className="text-foreground/80 mt-1">
+                  {confidenceMeta[confidence].message}
+                </p>
+          </div>
 
                 <div className="flex flex-wrap gap-3">
-                  <div className="px-3 py-2 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
-                    <div className="text-xl font-bold text-primary">{scores[dominantStyle]}</div>
+                  <div className="px-3 py-2 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/90">
+                    <div className="text-xl font-bold text-primary">{scores[dominantStyle].toFixed(3)}</div>
                     <div className="text-xs text-muted-foreground">Dominant Score</div>
                   </div>
-                  <div className="px-3 py-2 rounded-xl bg-gradient-to-br from-secondary/10 to-secondary/5 border border-secondary/20">
-                    <div className="text-xl font-bold text-secondary">{scores[secondaryStyle]}</div>
+                  <div className="px-3 py-2 rounded-xl bg-gradient-to-br from-secondary/100 to-secondary/100 border border-black/20">
+                    <div className="text-xl font-bold text-black">{scores[secondaryStyle].toFixed(3)}</div>
                     <div className="text-xs text-muted-foreground">Secondary Score</div>
                   </div>
                 </div>
@@ -186,39 +187,39 @@ const LeadershipResults = ({
             {/* Dominant Style Details - Left Side (2/3 width) */}
             <div className="lg:col-span-2">
               <NeumorphicCard className="h-full">
-                <div className="p-5">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
-                      <TrendingUp className="w-5 h-5 text-primary" />
+                <div className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                      <TrendingUp className="w-4 h-4 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-foreground">Leadership Style Breakdown</h3>
-                      <p className="text-xs text-muted-foreground">Detailed analysis of your dominant leadership approach</p>
+                      <h3 className="text-base font-bold text-foreground">Your Dominant Leadership Style</h3>
+                      <p className="text-xs text-muted-foreground">Key characteristics and development insights</p>
                     </div>
                   </div>
 
                   {/* All Details in One Section - Reduced Spacing */}
-                  <div className="space-y-5">
+                  <div className="space-y-3">
                     {/* Strengths Section */}
                     <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500/20 to-green-500/20 flex items-center justify-center">
-                          <TrendingUp className="w-4 h-4 text-emerald-500" />
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500/20 to-green-500/20 flex items-center justify-center">
+                          <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
                         </div>
-                        <h4 className="font-bold text-foreground">Key Strengths</h4>
+                        <h4 className="text-sm font-bold text-foreground">Key Strengths</h4>
                       </div>
-                      <div className="grid md:grid-cols-2 gap-3">
+                      <div className="grid md:grid-cols-2 gap-2">
                         {dominantInfo.strengths.map((strength, index) => (
                           <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 5 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            className="p-3 rounded-lg bg-gradient-to-br from-emerald-500/5 to-transparent border border-emerald-500/10"
+                            className="p-2.5 rounded-lg bg-gradient-to-br from-emerald-500/5 to-transparent border border-emerald-500/10"
                           >
                             <div className="flex items-start gap-2">
-                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0" />
-                              <span className="text-sm">{strength}</span>
+                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1 flex-shrink-0" />
+                              <span className="text-xs">{strength}</span>
                             </div>
                           </motion.div>
                         ))}
@@ -227,24 +228,24 @@ const LeadershipResults = ({
 
                     {/* Areas to Watch Section */}
                     <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center">
-                          <AlertCircle className="w-4 h-4 text-amber-500" />
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center">
+                          <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
                         </div>
-                        <h4 className="font-bold text-foreground">Areas to Watch</h4>
+                        <h4 className="text-sm font-bold text-foreground">Areas to Watch</h4>
                       </div>
-                      <div className="grid md:grid-cols-2 gap-3">
+                      <div className="grid md:grid-cols-2 gap-2">
                         {dominantInfo.limitations.map((limitation, index) => (
                           <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 5 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 + 0.1 }}
-                            className="p-3 rounded-lg bg-gradient-to-br from-amber-500/5 to-transparent border border-amber-500/10"
+                            className="p-2.5 rounded-lg bg-gradient-to-br from-amber-500/5 to-transparent border border-amber-500/10"
                           >
                             <div className="flex items-start gap-2">
-                              <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
-                              <span className="text-sm">{limitation}</span>
+                              <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1 flex-shrink-0" />
+                              <span className="text-xs">{limitation}</span>
                             </div>
                           </motion.div>
                         ))}
@@ -253,22 +254,22 @@ const LeadershipResults = ({
 
                     {/* Growth Recommendations Section */}
                     <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-sky-500/20 to-cyan-500/20 flex items-center justify-center">
-                          <Lightbulb className="w-4 h-4 text-sky-500" />
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-sky-500/20 to-cyan-500/20 flex items-center justify-center">
+                          <Lightbulb className="w-3.5 h-3.5 text-sky-500" />
                         </div>
-                        <h4 className="font-bold text-foreground">Growth Recommendations</h4>
+                        <h4 className="text-sm font-bold text-foreground">Growth Recommendations</h4>
                       </div>
-                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+                      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
                         {dominantInfo.growthSuggestions.map((suggestion, index) => (
                           <motion.div
                             key={index}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: index * 0.05 + 0.2 }}
-                            className="p-3 rounded-lg bg-gradient-to-br from-sky-500/5 to-transparent border border-sky-500/10"
+                            className="p-2.5 rounded-lg bg-gradient-to-br from-sky-500/5 to-transparent border border-sky-500/10"
                           >
-                            <div className="text-sm">{suggestion}</div>
+                            <div className="text-xs">{suggestion}</div>
                           </motion.div>
                         ))}
                       </div>
@@ -312,17 +313,17 @@ const LeadershipResults = ({
                         }
                       }}
                     />
-                    {/* Reduced overlay opacity for better image visibility */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-background/5 to-transparent" />
+                    {/* Subtle overlay for image depth */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-background/5 via-transparent to-background/80" />
                     
-                    {/* Title Overlay - Moved to bottom with better contrast */}
-                    <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-background/90 to-transparent">
-                      <h2 className="text-lg font-bold text-foreground mb-0.5">
+                    {/* Title Overlay - Better contrast with solid background */}
+                    <div className="absolute bottom-0 left-0 right-0 p-3 bg-background/95 backdrop-blur-sm border-t border-border/20">
+                      <h2 className="text-base font-bold text-foreground mb-1">
                         {secondaryInfo.name}
                       </h2>
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">Your Score</span>
-                        <span className="text-base font-bold text-secondary">{scores[secondaryStyle]}</span>
+                        <span className="text-sm font-bold text-foreground">{scores[secondaryStyle].toFixed(3)}</span>
                       </div>
                     </div>
                   </div>
@@ -444,7 +445,7 @@ const LeadershipResults = ({
                               {styleInfo.name}
                             </span>
                             <span className={`text-xs font-medium ${isTop2 ? 'text-foreground' : 'text-muted-foreground'}`}>
-                              {score}
+                              {score.toFixed(3)}
                             </span>
                           </div>
                           <div className="h-1.5 rounded-full bg-secondary/20 overflow-hidden">

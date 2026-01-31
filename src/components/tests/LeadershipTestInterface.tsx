@@ -4,7 +4,7 @@ import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { Navbar } from "@/components/layout/Navbar";
 import { cn } from "@/lib/utils";
-import type { LeadershipTestData, LeadershipStyle } from "@/lib/leadershipTestData";
+import type { LeadershipTestData, LeadershipStyle } from "@/lib/tests/leadershipTestData";
 import LeadershipResults from "./LeadershipResults";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
@@ -65,6 +65,7 @@ const calculateResults = () => {
       (v) => v !== 3
     ).length;
 
+    // Use raw cumulative scores instead of normalized scores
     const scores: Record<LeadershipStyle, number> = {
       autocratic: 0,
       democratic: 0,
@@ -77,23 +78,12 @@ const calculateResults = () => {
       visionary: 0,
       bureaucratic: 0,
     };
-
     
-    const styleCounts: Record<LeadershipStyle, number> = { ...scores };
-   
-    
+    // Calculate raw scores by summing weighted responses
     allQuestions.forEach((q) => {
-      styleCounts[q.leadershipStyle]++;
       const response = userResponses[q.id];
       if (response !== undefined) {
         scores[q.leadershipStyle] += WEIGHT_MAP[response];
-      }
-    });
-
-    // Normalize safely
-    (Object.keys(scores) as LeadershipStyle[]).forEach((style) => {
-      if (styleCounts[style] > 0) {
-        scores[style] = scores[style] / styleCounts[style];
       }
     });
 
@@ -109,14 +99,12 @@ if (answeredRatio >= 0.7 && decisivenessRatio >= 0.6) {
   confidence = "medium";
 }
 
-// Opposing leadership balancing
-    const opposites: [LeadershipStyle, LeadershipStyle][] = [
-      ["autocratic", "democratic"],
-      ["transactional", "transformational"],
-      ["bureaucratic", "visionary"],
-      ["laissezFaire", "coaching"],
-    ];
+    // Sort leadership styles by score (highest to lowest)
+    const sorted = (Object.keys(scores) as LeadershipStyle[]).sort(
+      (a, b) => scores[b] - scores[a]
+    );
 
+<<<<<<< HEAD:src/components/LeadershipTestInterface.tsx
   opposites.forEach(([a, b]) => {
   if (styleCounts[a] >= 2 && styleCounts[b] >= 2) {
     const diff = scores[a] - scores[b];
@@ -151,6 +139,14 @@ if (isSituational) {
 
 
 const secondaryStyle: LeadershipStyle = sorted[1];
+=======
+    const dominantStyle: LeadershipStyle = sorted[0];
+    const secondaryStyle: LeadershipStyle = sorted[1];
+    
+    console.log("🎯 Leadership Scores:", scores);
+    console.log("🏆 Dominant Style:", dominantStyle, "Score:", scores[dominantStyle]);
+    console.log("🥈 Secondary Style:", secondaryStyle, "Score:", scores[secondaryStyle]);
+>>>>>>> 47830d3ab1e39ae6dd33efdb20ac6d5d33c3b0d7:src/components/tests/LeadershipTestInterface.tsx
 
  return {
   scores,

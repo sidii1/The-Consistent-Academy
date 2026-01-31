@@ -15,7 +15,7 @@ import {
   ArrowLeft 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { TestData, Question } from "@/lib/testData";
+import type { TestData, Question } from "@/lib/tests/testData";
 import { Navbar } from "@/components/layout/Navbar";
 
 interface TestResultsProps {
