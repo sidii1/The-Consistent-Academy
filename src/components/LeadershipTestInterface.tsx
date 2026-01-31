@@ -135,13 +135,19 @@ const sorted = (Object.keys(scores) as LeadershipStyle[]).sort(
 
 const topScore = scores[sorted[0]];
 const secondScore = scores[sorted[1]];
+const SCORE_GAP_THRESHOLD = 0.15;
+const MIN_TOP_SCORE = 0.25;
 
-const dominantStyle: LeadershipStyle =
-  confidence === "low"
-    ? "situational"
-    : Math.abs(topScore - secondScore) < 0.3
-    ? "situational"
-    : sorted[0];
+let dominantStyle: LeadershipStyle = sorted[0];
+
+const isSituational =
+  Math.abs(topScore - secondScore) < SCORE_GAP_THRESHOLD &&
+  topScore >= MIN_TOP_SCORE &&
+  confidence !== "low";
+
+if (isSituational) {
+  dominantStyle = "situational";
+}
 
 
 const secondaryStyle: LeadershipStyle = sorted[1];
