@@ -104,12 +104,49 @@ if (answeredRatio >= 0.7 && decisivenessRatio >= 0.6) {
       (a, b) => scores[b] - scores[a]
     );
 
+<<<<<<< HEAD:src/components/LeadershipTestInterface.tsx
+  opposites.forEach(([a, b]) => {
+  if (styleCounts[a] >= 2 && styleCounts[b] >= 2) {
+    const diff = scores[a] - scores[b];
+    scores[a] = diff > 0 ? diff : 0;
+    scores[b] = diff < 0 ? Math.abs(diff) : 0;
+  }
+});
+
+
+
+   const MIN_ANSWERS_REQUIRED = Math.ceil(totalQuestions * 0.4);
+
+const sorted = (Object.keys(scores) as LeadershipStyle[]).sort(
+  (a, b) => scores[b] - scores[a]
+);
+
+const topScore = scores[sorted[0]];
+const secondScore = scores[sorted[1]];
+const SCORE_GAP_THRESHOLD = 0.15;
+const MIN_TOP_SCORE = 0.25;
+
+let dominantStyle: LeadershipStyle = sorted[0];
+
+const isSituational =
+  Math.abs(topScore - secondScore) < SCORE_GAP_THRESHOLD &&
+  topScore >= MIN_TOP_SCORE &&
+  confidence !== "low";
+
+if (isSituational) {
+  dominantStyle = "situational";
+}
+
+
+const secondaryStyle: LeadershipStyle = sorted[1];
+=======
     const dominantStyle: LeadershipStyle = sorted[0];
     const secondaryStyle: LeadershipStyle = sorted[1];
     
     console.log("🎯 Leadership Scores:", scores);
     console.log("🏆 Dominant Style:", dominantStyle, "Score:", scores[dominantStyle]);
     console.log("🥈 Secondary Style:", secondaryStyle, "Score:", scores[secondaryStyle]);
+>>>>>>> 47830d3ab1e39ae6dd33efdb20ac6d5d33c3b0d7:src/components/tests/LeadershipTestInterface.tsx
 
  return {
   scores,
