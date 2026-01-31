@@ -4,7 +4,7 @@ import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { Navbar } from "@/components/layout/Navbar";
 import { cn } from "@/lib/utils";
-import type { LeadershipTestData, LeadershipStyle } from "@/lib/leadershipTestData";
+import type { LeadershipTestData, LeadershipStyle } from "@/lib/tests/leadershipTestData";
 import LeadershipResults from "./LeadershipResults";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { getAuth } from "firebase/auth";

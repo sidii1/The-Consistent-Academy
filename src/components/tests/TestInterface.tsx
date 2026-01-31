@@ -5,8 +5,8 @@ import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { Navbar } from "@/components/layout/Navbar";
 import { XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { TestData } from "@/lib/testData";
-import TestResults from "@/components/TestResults";
+import type { TestData } from "@/lib/tests/testData";
+import TestResults from "./TestResults";
 
 interface TestInterfaceProps {
   testData: TestData;

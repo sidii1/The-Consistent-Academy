@@ -4,8 +4,8 @@ import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { Navbar } from "@/components/layout/Navbar";
 import { Award, TrendingUp, AlertCircle, Lightbulb, RotateCcw, Home, ChevronDown, ChevronRight, Star, Zap, Users, Target, BarChart } from "lucide-react";
-import type { LeadershipTestData, LeadershipStyle } from "@/lib/leadershipTestData";
-import { leadershipStyleDescriptions } from "@/lib/leadershipTestData";
+import type { LeadershipTestData, LeadershipStyle } from "@/lib/tests/leadershipTestData";
+import { leadershipStyleDescriptions } from "@/lib/tests/leadershipTestData";
 
 interface LeadershipResultsProps {
   testData: LeadershipTestData;
