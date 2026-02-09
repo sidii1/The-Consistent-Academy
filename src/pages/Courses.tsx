@@ -651,7 +651,7 @@ const kidsCourses = [
     ],
   },
   {
-    title: "Public Speaking",
+    title: "TedX & Toastmaster Training ",
     description: "Builds confidence and stage presence in young learners.",
     duration: "4 Weeks",
     price:"3000/-",
@@ -660,7 +660,7 @@ const kidsCourses = [
       "Reduced stage fear",
       "Improved body language & projection",
       "Speech structuring techniques",
-      "Speaking confidence",
+      "Toastmaster like confidence",
       "TED Talk style preparation",
       "Holistic personality development",
     ],
