@@ -13,6 +13,7 @@ import Careers from "./pages/Careers";
 import Contact from "./pages/Contact";
 import Tests from "./pages/Tests";
 import NotFound from "./pages/NotFound";
+import Blog from "./pages/Blog";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const AnimatedRoutes = () => {
         <Route path="/careers" element={<Careers />} />
         <Route path="/tests" element={<Tests />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/blog" element={<Blog/>}/>
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
