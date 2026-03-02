@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, User, CalendarDays, PenSquare } from 'lucide-react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import {
   getDocs,
   query,
@@ -86,11 +87,12 @@ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
   try {
-    await addDoc(collection(db, "blogs"), {
-      ...formData,
-      status: "pending",
-      createdAt: serverTimestamp(),
-    });
+  await addDoc(collection(db, "blogs"), {
+  ...formData,
+  userId: auth.currentUser?.uid,
+  status: "pending",
+  createdAt: serverTimestamp(),
+});
 
     alert("Blog submitted for approval!");
     setFormData({ title: "", content: "", author: "" });
