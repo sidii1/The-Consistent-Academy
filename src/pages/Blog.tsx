@@ -4,6 +4,12 @@ import { Sparkles, User, CalendarDays, PenSquare } from 'lucide-react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { auth } from '@/lib/firebase';
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  User as FirebaseUser
+} from "firebase/auth";
 import {
   getDocs,
   query,
@@ -26,6 +32,10 @@ interface BlogFormData {
 }
 
 const Blog: React.FC = () => {
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [isRegistering, setIsRegistering] = useState(false);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState<BlogFormData>({
@@ -36,8 +46,12 @@ const Blog: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchApprovedBlogs();
-  }, []);
+  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    setUser(currentUser);
+  });
+
+  return () => unsubscribe();
+}, []);
 
 const fetchApprovedBlogs = async () => {
   try {
@@ -82,10 +96,32 @@ const fetchApprovedBlogs = async () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-
+const handleAuth = async () => {
+  try {
+    if (isRegistering) {
+      await createUserWithEmailAndPassword(auth, email, password);
+      alert("Account created!");
+    } else {
+      await signInWithEmailAndPassword(auth, email, password);
+      alert("Logged in!");
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      alert(error.message);
+    }
+  }
+};
+if (!user) {
+  alert("Please login first");
+  return;
+}
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-
+   if (!user) {
+      alert("Please login first");
+      return;
+    }
+  
   try {
   await addDoc(collection(db, "blogs"), {
   ...formData,
@@ -124,13 +160,16 @@ const handleSubmit = async (e: React.FormEvent) => {
 
         {/* Write Blog Button */}
         <div className="text-center mb-10">
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white shadow-neu-lg hover:shadow-neu-xl transition-all"
-          >
-            <PenSquare className="w-5 h-5" />
-            {showForm ? 'Cancel' : 'Write a Blog'}
-          </button>
+         <button
+  onClick={() => {
+  
+    setShowForm(!showForm);
+  }}
+  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white shadow-neu-lg hover:shadow-neu-xl transition-all"
+>
+  <PenSquare className="w-5 h-5" />
+  {showForm ? 'Cancel' : 'Write a Blog'}
+</button>
         </div>
 
         {/* Blog Form */}
