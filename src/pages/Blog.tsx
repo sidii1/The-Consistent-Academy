@@ -165,7 +165,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       <button
   onClick={() => {
     if (!user) {
-      navigate("/login?redirect=blog");
+      navigate("/Login?redirect=blog");
       return;
     }
     setShowForm(true);
