@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, User, CalendarDays, PenSquare } from 'lucide-react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useNavigate } from "react-router-dom";
 import { auth } from '@/lib/firebase';
 import { 
   signInWithEmailAndPassword, 
@@ -34,6 +35,7 @@ interface BlogFormData {
 const Blog: React.FC = () => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
 const [email, setEmail] = useState("");
+const navigate = useNavigate();
 const [password, setPassword] = useState("");
 const [isRegistering, setIsRegistering] = useState(false);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
@@ -111,24 +113,22 @@ const handleAuth = async () => {
     }
   }
 };
-if (!user) {
-  alert("Please login first");
-  return;
-}
+
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-   if (!user) {
-      alert("Please login first");
-      return;
-    }
-  
+
+  if (!user) {
+    navigate("/login?redirect=blog");
+    return;
+  }
+
   try {
-  await addDoc(collection(db, "blogs"), {
-  ...formData,
-  userId: auth.currentUser?.uid,
-  status: "pending",
-  createdAt: serverTimestamp(),
-});
+    await addDoc(collection(db, "blogs"), {
+      ...formData,
+      userId: user.uid,
+      status: "pending",
+      createdAt: serverTimestamp(),
+    });
 
     alert("Blog submitted for approval!");
     setFormData({ title: "", content: "", author: "" });
@@ -138,6 +138,8 @@ const handleSubmit = async (e: React.FormEvent) => {
     console.error("Error submitting blog:", error);
   }
 };
+
+  
   return (
     <div className="min-h-screen pt-24 px-6 bg-gradient-to-br from-background to-secondary/30">
       <div className="max-w-6xl mx-auto">
@@ -160,15 +162,18 @@ const handleSubmit = async (e: React.FormEvent) => {
 
         {/* Write Blog Button */}
         <div className="text-center mb-10">
-         <button
+      <button
   onClick={() => {
-  
-    setShowForm(!showForm);
+    if (!user) {
+      navigate("/login?redirect=blog");
+      return;
+    }
+    setShowForm(true);
   }}
   className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white shadow-neu-lg hover:shadow-neu-xl transition-all"
 >
   <PenSquare className="w-5 h-5" />
-  {showForm ? 'Cancel' : 'Write a Blog'}
+  Write a Blog
 </button>
         </div>
 
