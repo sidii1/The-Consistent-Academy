@@ -2,21 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, User, CalendarDays, PenSquare } from 'lucide-react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { useNavigate } from "react-router-dom";
-import { auth } from '@/lib/firebase';
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  User as FirebaseUser
-} from "firebase/auth";
-import {
-  getDocs,
-  query,
-  where,
-  orderBy
-} from "firebase/firestore";
+import { db, auth } from '@/lib/firebase';
+import { useNavigate, Link } from "react-router-dom";
+import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
+import { getDocs, query, where, orderBy } from "firebase/firestore";
+import { toast } from "sonner";
+import { Navbar } from "@/components/layout/Navbar";
+
 interface BlogPost {
   id: string;
   title: string;
@@ -34,10 +26,7 @@ interface BlogFormData {
 
 const Blog: React.FC = () => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
-const [email, setEmail] = useState("");
-const navigate = useNavigate();
-const [password, setPassword] = useState("");
-const [isRegistering, setIsRegistering] = useState(false);
+  const navigate = useNavigate();
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState<BlogFormData>({
@@ -48,102 +37,85 @@ const [isRegistering, setIsRegistering] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-    setUser(currentUser);
-  });
-
-  return () => unsubscribe();
-}, []);
-
-const fetchApprovedBlogs = async () => {
-  try {
-    setLoading(true);
-
-    const q = query(
-      collection(db, "blogs"),
-      where("status", "==", "approved")    
-    );
-
-    const snapshot = await getDocs(q);
-
-    const blogData = snapshot.docs.map((doc) => {
-      const data = doc.data();
-
-      return {
-        id: doc.id,
-        title: data.title,
-        content: data.content,
-        author: data.author,
-        status: data.status,
-        createdAt: data.createdAt
-          ? data.createdAt.toDate().toISOString()
-          : new Date().toISOString(),
-      };
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
     });
+    return () => unsubscribe();
+  }, []);
 
-    console.log("BLOGS:", blogData);
-    setBlogs(blogData);
+  useEffect(() => {
+    fetchApprovedBlogs();
+  }, []);
 
-  } catch (error) {
-    console.error("Error fetching blogs:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+  const fetchApprovedBlogs = async () => {
+    try {
+      setLoading(true);
+      const q = query(
+        collection(db, "blogs"),
+        where("status", "==", "approved"),
+        orderBy("createdAt", "desc")
+      );
+      const snapshot = await getDocs(q);
+      const blogData = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title,
+          content: data.content,
+          author: data.author,
+          status: data.status,
+          createdAt: data.createdAt
+            ? data.createdAt.toDate().toISOString()
+            : new Date().toISOString(),
+        };
+      });
+      setBlogs(blogData);
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+      toast.error("Failed to load blogs");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-   
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
-const handleAuth = async () => {
-  try {
-    if (isRegistering) {
-      await createUserWithEmailAndPassword(auth, email, password);
-      alert("Account created!");
-    } else {
-      await signInWithEmailAndPassword(auth, email, password);
-      alert("Logged in!");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!user) {
+      navigate("/login?redirect=blog");
+      return;
     }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      alert(error.message);
+
+    try {
+      await addDoc(collection(db, "blogs"), {
+        ...formData,
+        userId: user.uid,
+        status: "pending",
+        createdAt: serverTimestamp(),
+      });
+
+      toast.success("Blog submitted for approval!");
+      setFormData({ title: "", content: "", author: "" });
+      setShowForm(false);
+    } catch (error) {
+      console.error("Error submitting blog:", error);
+      toast.error("Failed to submit blog");
     }
-  }
-};
+  };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (!user) {
-    navigate("/login?redirect=blog");
-    return;
-  }
-
-  try {
-    await addDoc(collection(db, "blogs"), {
-      ...formData,
-      userId: user.uid,
-      status: "pending",
-      createdAt: serverTimestamp(),
-    });
-
-    alert("Blog submitted for approval!");
-    setFormData({ title: "", content: "", author: "" });
-    setShowForm(false);
-
-  } catch (error) {
-    console.error("Error submitting blog:", error);
-  }
-};
-
-  
   return (
-    <div className="min-h-screen pt-24 px-6 bg-gradient-to-br from-background to-secondary/30">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
+    <>
+      <Navbar />
+      <div className="min-h-screen pt-24 px-6 bg-gradient-to-br from-background to-secondary/30">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -162,19 +134,19 @@ const handleSubmit = async (e: React.FormEvent) => {
 
         {/* Write Blog Button */}
         <div className="text-center mb-10">
-      <button
-  onClick={() => {
-    if (!user) {
-      navigate("/login?redirect=blog");
-      return;
-    }
-    setShowForm(true);
-  }}
-  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white shadow-neu-lg hover:shadow-neu-xl transition-all"
->
-  <PenSquare className="w-5 h-5" />
-  Write a Blog
-</button>
+          <button
+            onClick={() => {
+              if (!user) {
+                navigate("/login?redirect=blog");
+                return;
+              }
+              setShowForm(true);
+            }}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white shadow-neu-lg hover:shadow-neu-xl transition-all"
+          >
+            <PenSquare className="w-5 h-5" />
+            Write a Blog
+          </button>
         </div>
 
         {/* Blog Form */}
@@ -221,12 +193,21 @@ const handleSubmit = async (e: React.FormEvent) => {
                 className="w-full px-4 py-3 rounded-xl shadow-neu-inset bg-secondary/20 border-2 border-transparent focus:border-primary outline-none"
               />
 
-              <button
-                type="submit"
-                className="w-full bg-primary text-white py-3 rounded-2xl shadow-neu-lg hover:shadow-neu-xl transition"
-              >
-                Submit for Approval
-              </button>
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  className="flex-1 bg-primary text-white py-3 rounded-2xl shadow-neu-lg hover:shadow-neu-xl transition"
+                >
+                  Submit for Approval
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="px-6 py-3 rounded-2xl shadow-neu-lg hover:shadow-neu-xl transition bg-secondary text-foreground"
+                >
+                  Cancel
+                </button>
+              </div>
             </motion.form>
           )}
         </AnimatePresence>
@@ -266,18 +247,19 @@ const handleSubmit = async (e: React.FormEvent) => {
                   {blog.content}
                 </p>
 
-                <a
-                  href={`/blog/${blog.id}`}
+                <Link
+                  to={`/blog/${blog.id}`}
                   className="mt-auto text-primary font-semibold hover:underline"
                 >
                   Read More →
-                </a>
+                </Link>
               </motion.article>
             ))}
           </div>
         )}
       </div>
     </div>
+    </>
   );
 };
 

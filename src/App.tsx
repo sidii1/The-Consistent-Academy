@@ -15,6 +15,8 @@ import Tests from "./pages/Tests";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+import AdminBlogs from "./pages/AdminBlogs";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +33,8 @@ const AnimatedRoutes = () => {
         <Route path="/tests" element={<Tests />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/blog" element={<Blog/>}/>
+        <Route path="/blog/:id" element={<BlogPost />} />
+        <Route path="/admin/blogs" element={<AdminBlogs />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
@@ -41,7 +45,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
-      <Sonner />
+      <Sonner position="top-right" />
       <BrowserRouter>
         {/* 🔥 This fixes the scroll bug */}
         <ScrollToTop />

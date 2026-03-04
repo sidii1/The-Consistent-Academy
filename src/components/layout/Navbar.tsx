@@ -13,9 +13,8 @@ type NavItem = {
 
 const navLinks: NavItem[] = [
   { name: "Home", sectionId: "home" },
-  { name: "Founder", sectionId: "founder" },
   { name: "Courses", path: "/courses" },
-  { name:"Blog",path: "/blog"},
+  { name: "Blog", path: "/blog" },
   { name: "Careers", path: "/careers" },
   { name: "Tests", path: "/tests" },
   { name: "Contact", path: "/contact" },
