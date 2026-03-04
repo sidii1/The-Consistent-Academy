@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
-import { db } from "../config/firebase";
+import { db } from "../src/lib/firebase";
 
 
 interface BlogPost {

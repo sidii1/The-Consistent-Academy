@@ -10,10 +10,10 @@ import ScrollToTop from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import Courses from "./pages/Courses";
 import Careers from "./pages/Careers";
-import Contact from "./pages/Contact";
+import Contact from "./pages/Contact"; 
 import Tests from "./pages/Tests";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/login";
+import Login from "./pages/Login";
 import Blog from "./pages/Blog";
 
 const queryClient = new QueryClient();
