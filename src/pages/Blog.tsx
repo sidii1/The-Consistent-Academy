@@ -8,6 +8,7 @@ import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
 import { getDocs, query, where, orderBy } from "firebase/firestore";
 import { toast } from "sonner";
 import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 
 interface BlogPost {
   id: string;
@@ -256,8 +257,11 @@ const Blog: React.FC = () => {
               </motion.article>
             ))}
           </div>
+        
         )}
+    
       </div>
+     <Footer />
     </div>
     </>
   );
