@@ -37,7 +37,12 @@ const Login: React.FC = () => {
         await signInWithEmailAndPassword(auth, email, password);
         toast.success("Logged in successfully!");
       }
-      navigate(redirect ? `/${redirect}` : "/");
+      // Admin gets redirected to admin dashboard
+      if (email === import.meta.env.VITE_ADMIN_EMAIL) {
+        navigate("/admin/blogs");
+      } else {
+        navigate(redirect ? `/${redirect}` : "/");
+      }
     } catch (error: unknown) {
       const msg =
         error instanceof Error ? error.message : "Authentication failed";

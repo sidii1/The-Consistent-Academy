@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, User, CalendarDays, PenSquare } from 'lucide-react';
+import { Sparkles, User, CalendarDays, PenSquare, LogIn, LogOut, Shield } from 'lucide-react';
+import { signOut } from 'firebase/auth';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
 import { useNavigate, Link } from "react-router-dom";
@@ -8,6 +9,7 @@ import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
 import { getDocs, query, where, orderBy } from "firebase/firestore";
 import { toast } from "sonner";
 import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 
 interface BlogPost {
   id: string;
@@ -35,6 +37,16 @@ const Blog: React.FC = () => {
     author: ''
   });
   const [loading, setLoading] = useState(false);
+  const isAdmin = user?.email === import.meta.env.VITE_ADMIN_EMAIL;
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast.success("Logged out successfully");
+    } catch {
+      toast.error("Failed to log out");
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -121,10 +133,10 @@ const Blog: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-neu-lg">
-            <Sparkles className="w-10 h-10 text-white" />
+          <div className="w-10 h-10 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-neu-lg">
+            <Sparkles className="w-5 h-5 text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
             Community Blog
           </h1>
           <p className="text-muted-foreground mt-2">
@@ -132,21 +144,56 @@ const Blog: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Write Blog Button */}
-        <div className="text-center mb-10">
-          <button
-            onClick={() => {
-              if (!user) {
-                navigate("/login?redirect=blog");
-                return;
-              }
-              setShowForm(true);
-            }}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white shadow-neu-lg hover:shadow-neu-xl transition-all"
-          >
-            <PenSquare className="w-5 h-5" />
-            Write a Blog
-          </button>
+        {/* Auth + Action Buttons */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
+          {user ? (
+            <>
+              <button
+                onClick={() => {
+                  setShowForm(true);
+                }}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white shadow-neu-lg hover:shadow-neu-xl transition-all"
+              >
+                <PenSquare className="w-5 h-5" />
+                Write a Blog
+              </button>
+              {isAdmin && (
+                <Link
+                  to="/admin/blogs"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-accent text-white shadow-neu-lg hover:shadow-neu-xl transition-all"
+                >
+                  <Shield className="w-5 h-5" />
+                  Admin Dashboard
+                </Link>
+              )}
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl shadow-neu-lg hover:shadow-neu-xl transition-all bg-secondary text-foreground"
+              >
+                <LogOut className="w-5 h-5" />
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => {
+                  navigate("/login?redirect=blog");
+                }}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white shadow-neu-lg hover:shadow-neu-xl transition-all"
+              >
+                <PenSquare className="w-5 h-5" />
+                Write a Blog
+              </button>
+              <button
+                onClick={() => navigate("/login?redirect=blog")}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl shadow-neu-lg hover:shadow-neu-xl transition-all bg-secondary text-foreground"
+              >
+                <LogIn className="w-5 h-5" />
+                Login / Register
+              </button>
+            </>
+          )}
         </div>
 
         {/* Blog Form */}
@@ -256,8 +303,11 @@ const Blog: React.FC = () => {
               </motion.article>
             ))}
           </div>
+        
         )}
+    
       </div>
+     <Footer />
     </div>
     </>
   );
