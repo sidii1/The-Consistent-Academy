@@ -37,7 +37,7 @@ const Blog: React.FC = () => {
     author: ''
   });
   const [loading, setLoading] = useState(false);
-  const isAdmin = user?.email === import.meta.env.VITE_ADMIN_EMAIL;
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -49,8 +49,18 @@ const Blog: React.FC = () => {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        try {
+          const token = await currentUser.getIdTokenResult();
+          setIsAdmin(!!token.claims.admin);
+        } catch {
+          setIsAdmin(false);
+        }
+      } else {
+        setIsAdmin(false);
+      }
     });
     return () => unsubscribe();
   }, []);

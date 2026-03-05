@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  getIdTokenResult,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -37,8 +38,9 @@ const Login: React.FC = () => {
         await signInWithEmailAndPassword(auth, email, password);
         toast.success("Logged in successfully!");
       }
-      // Admin gets redirected to admin dashboard
-      if (email === import.meta.env.VITE_ADMIN_EMAIL) {
+      // Check custom claims to determine if admin
+      const tokenResult = await getIdTokenResult(auth.currentUser!, true);
+      if (tokenResult.claims.admin) {
         navigate("/admin/blogs");
       } else {
         navigate(redirect ? `/${redirect}` : "/");

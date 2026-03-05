@@ -16,8 +16,6 @@ import { Shield, Check, X, CalendarDays, User, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/layout/Navbar";
 
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
-
 interface PendingBlog {
   id: string;
   title: string;
@@ -64,7 +62,7 @@ useEffect(() => {
 
   // Fetch pending blogs once admin is verified
   useEffect(() => {
-    if (user && user.email === ADMIN_EMAIL) {
+    if (user) {
       fetchPendingBlogs();
     }
   }, [user]);
