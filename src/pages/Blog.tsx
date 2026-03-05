@@ -317,8 +317,8 @@ const Blog: React.FC = () => {
         )}
     
       </div>
-     <Footer />
     </div>
+   <Footer />
     </>
   );
 };
