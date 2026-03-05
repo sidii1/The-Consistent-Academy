@@ -8,6 +8,7 @@ import {
   orderBy,
   doc,
   updateDoc,
+  deleteDoc
 } from "firebase/firestore";
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
@@ -72,7 +73,6 @@ useEffect(() => {
       setLoading(true);
       const q = query(
         collection(db, "blogs"),
-        where("status", "==", "pending"),
         orderBy("createdAt", "desc")
       );
       const snapshot = await getDocs(q);
@@ -118,6 +118,17 @@ useEffect(() => {
       toast.error("Failed to reject blog");
     }
   };
+
+  const handleDelete = async (id: string) => {
+  try {
+    await deleteDoc(doc(db, "blogs", id));
+    setBlogs((prev) => prev.filter((b) => b.id !== id));
+    toast.success("Blog deleted successfully");
+  } catch (error) {
+    console.error("Error deleting blog:", error);
+    toast.error("Failed to delete blog");
+  }
+};
 
   // Don't render until auth check completes
   if (!authChecked) {
@@ -219,21 +230,29 @@ useEffect(() => {
                     </div>
 
                     <div className="flex gap-3 md:flex-col md:ml-4 shrink-0">
-                      <button
-                        onClick={() => handleApprove(blog.id)}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-green-600 text-white shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
-                      >
-                        <Check className="w-4 h-4" />
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => handleReject(blog.id)}
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-red-600 text-white shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
-                      >
-                        <X className="w-4 h-4" />
-                        Reject
-                      </button>
-                    </div>
+  <button
+    onClick={() => handleApprove(blog.id)}
+    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-green-600 text-white shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
+  >
+    <Check className="w-4 h-4" />
+    Approve
+  </button>
+
+  <button
+    onClick={() => handleReject(blog.id)}
+    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-yellow-500 text-white shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
+  >
+    <X className="w-4 h-4" />
+    Reject
+  </button>
+
+  <button
+    onClick={() => handleDelete(blog.id)}
+    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-red-600 text-white shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
+  >
+    Delete
+  </button>
+</div>
                   </div>
                 </motion.div>
               ))}
