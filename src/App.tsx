@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 
+
 import ScrollToTop from "@/components/ScrollToTop";
 
 import Index from "./pages/Index";
@@ -17,6 +18,7 @@ import Login from "./pages/Login";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import AdminBlogs from "./pages/AdminBlogs";
+import AdminRoute from "@/components/AdminRoute";
 
 const queryClient = new QueryClient();
 
@@ -34,7 +36,14 @@ const AnimatedRoutes = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/blog" element={<Blog/>}/>
         <Route path="/blog/:id" element={<BlogPost />} />
-        <Route path="/admin/blogs" element={<AdminBlogs />} />
+        <Route
+  path="/admin/blogs"
+  element={
+    <AdminRoute>
+      <AdminBlogs />
+    </AdminRoute>
+  }
+/>
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
