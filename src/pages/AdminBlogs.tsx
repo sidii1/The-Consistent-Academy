@@ -33,19 +33,34 @@ const AdminBlogs: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Check auth & admin status
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setAuthChecked(true);
+// Check auth & admin status
+useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    setAuthChecked(true);
 
-      if (!currentUser || currentUser.email !== ADMIN_EMAIL) {
+    if (!currentUser) {
+      navigate("/");
+      return;
+    }
+
+    try {
+      const token = await currentUser.getIdTokenResult();
+
+      if (!token.claims.admin) {
         toast.error("Access denied. Admin only.");
         navigate("/");
+        return;
       }
-    });
-    return () => unsubscribe();
-  }, [navigate]);
+
+      setUser(currentUser);
+    } catch (err) {
+      console.error("Error checking admin claim:", err);
+      navigate("/");
+    }
+  });
+
+  return () => unsubscribe();
+}, [navigate]);
 
   // Fetch pending blogs once admin is verified
   useEffect(() => {
@@ -119,9 +134,12 @@ const AdminBlogs: React.FC = () => {
   }
 
   // Non-admin users are redirected in useEffect, but guard here too
-  if (!user || user.email !== ADMIN_EMAIL) {
-    return null;
-  }
+  // if (!user || user.email !== ADMIN_EMAIL) {
+  //   return null;
+  // }
+  if (!user) {
+  return null;
+}
 
   return (
     <>
