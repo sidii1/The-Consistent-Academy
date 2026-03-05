@@ -121,6 +121,7 @@ onTestComplete={async ({ attempted, correct, wrong }) => {
   try {
     const docRef = await addDoc(collection(db, "testResults"), {
   userId: user.uid,
+  email: user.email,
   testType: selectedTest,
   score: correct,
   total: attempted,
