@@ -13,7 +13,7 @@ import {
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, Check, X, CalendarDays, User, FileText } from "lucide-react";
+import { Shield, Check, X, CalendarDays, User, FileText, Pencil, Save } from "lucide-react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/layout/Navbar";
 
@@ -25,11 +25,19 @@ interface PendingBlog {
   createdAt: string;
 }
 
+interface EditForm {
+  title: string;
+  content: string;
+  author: string;
+}
+
 const AdminBlogs: React.FC = () => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [blogs, setBlogs] = useState<PendingBlog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<EditForm>({ title: "", content: "", author: "" });
   const navigate = useNavigate();
 
 // Check auth & admin status
@@ -120,15 +128,50 @@ useEffect(() => {
   };
 
   const handleDelete = async (id: string) => {
-  try {
-    await deleteDoc(doc(db, "blogs", id));
-    setBlogs((prev) => prev.filter((b) => b.id !== id));
-    toast.success("Blog deleted successfully");
-  } catch (error) {
-    console.error("Error deleting blog:", error);
-    toast.error("Failed to delete blog");
-  }
-};
+    try {
+      await deleteDoc(doc(db, "blogs", id));
+      setBlogs((prev) => prev.filter((b) => b.id !== id));
+      toast.success("Blog deleted successfully");
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+      toast.error("Failed to delete blog");
+    }
+  };
+
+  const handleEditStart = (blog: PendingBlog) => {
+    setEditingId(blog.id);
+    setEditForm({ title: blog.title, content: blog.content, author: blog.author });
+  };
+
+  const handleEditCancel = () => {
+    setEditingId(null);
+    setEditForm({ title: "", content: "", author: "" });
+  };
+
+  const handleEditSave = async (id: string) => {
+    if (!editForm.title.trim() || !editForm.content.trim()) {
+      toast.error("All fields are required");
+      return;
+    }
+    try {
+      await updateDoc(doc(db, "blogs", id), {
+        title: editForm.title.trim(),
+        content: editForm.content.trim(),
+      });
+      setBlogs((prev) =>
+        prev.map((b) =>
+          b.id === id
+            ? { ...b, title: editForm.title.trim(), content: editForm.content.trim() }
+            : b
+        )
+      );
+      setEditingId(null);
+      toast.success("Blog updated successfully!");
+    } catch (error) {
+      console.error("Error updating blog:", error);
+      toast.error("Failed to update blog");
+    }
+  };
 
   // Don't render until auth check completes
   if (!authChecked) {
@@ -202,57 +245,109 @@ useEffect(() => {
                 >
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-xl font-bold text-foreground mb-2">
-                        {blog.title}
-                      </h3>
 
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                        <div className="flex items-center gap-1">
-                          <User className="w-4 h-4" />
-                          {blog.author}
+                      {editingId === blog.id ? (
+                        /* ── Inline edit form ── */
+                        <div className="space-y-3">
+                          <input
+                            type="text"
+                            value={editForm.title}
+                            onChange={(e) => setEditForm((f) => ({ ...f, title: e.target.value }))}
+                            placeholder="Title"
+                            className="w-full px-4 py-2.5 rounded-xl shadow-neu-inset bg-secondary/20 border-2 border-primary/30 focus:border-primary outline-none text-foreground font-semibold"
+                          />
+                          <textarea
+                            value={editForm.content}
+                            onChange={(e) => setEditForm((f) => ({ ...f, content: e.target.value }))}
+                            placeholder="Content"
+                            rows={8}
+                            className="w-full px-4 py-2.5 rounded-xl shadow-neu-inset bg-secondary/20 border-2 border-transparent focus:border-primary outline-none text-foreground resize-y"
+                          />
                         </div>
-                        <div className="flex items-center gap-1">
-                          <CalendarDays className="w-4 h-4" />
-                          {new Date(blog.createdAt).toLocaleDateString(
-                            "en-US",
-                            {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )}
-                        </div>
-                      </div>
+                      ) : (
+                        /* ── Read-only view ── */
+                        <>
+                          <h3 className="text-xl font-bold text-foreground mb-2">
+                            {blog.title}
+                          </h3>
 
-                      <p className="text-muted-foreground line-clamp-4 whitespace-pre-wrap">
-                        {blog.content}
-                      </p>
+                          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                            <div className="flex items-center gap-1">
+                              <User className="w-4 h-4" />
+                              {blog.author}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <CalendarDays className="w-4 h-4" />
+                              {new Date(blog.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )}
+                            </div>
+                          </div>
+
+                          <p className="text-muted-foreground line-clamp-4 whitespace-pre-wrap">
+                            {blog.content}
+                          </p>
+                        </>
+                      )}
                     </div>
 
                     <div className="flex gap-3 md:flex-col md:ml-4 shrink-0">
-  <button
-    onClick={() => handleApprove(blog.id)}
-    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-green-600 text-white shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
-  >
-    <Check className="w-4 h-4" />
-    Approve
-  </button>
-
-  <button
-    onClick={() => handleReject(blog.id)}
-    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-yellow-500 text-white shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
-  >
-    <X className="w-4 h-4" />
-    Reject
-  </button>
-
-  <button
-    onClick={() => handleDelete(blog.id)}
-    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-red-600 text-white shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
-  >
-    Delete
-  </button>
-</div>
+                      {editingId === blog.id ? (
+                        /* Save / Cancel when editing */
+                        <>
+                          <button
+                            onClick={() => handleEditSave(blog.id)}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-primary text-white shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
+                          >
+                            <Save className="w-4 h-4" />
+                            Save
+                          </button>
+                          <button
+                            onClick={handleEditCancel}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-secondary text-foreground shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
+                          >
+                            <X className="w-4 h-4" />
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        /* Normal action buttons */
+                        <>
+                          <button
+                            onClick={() => handleApprove(blog.id)}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-green-600 text-white shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
+                          >
+                            <Check className="w-4 h-4" />
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => handleEditStart(blog)}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-blue-600 text-white shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
+                          >
+                            <Pencil className="w-4 h-4" />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleReject(blog.id)}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-yellow-500 text-white shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
+                          >
+                            <X className="w-4 h-4" />
+                            Reject
+                          </button>
+                          <button
+                            onClick={() => handleDelete(blog.id)}
+                            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-red-600 text-white shadow-neu-lg hover:shadow-neu-xl transition-all text-sm font-semibold"
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               ))}
