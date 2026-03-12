@@ -119,8 +119,6 @@ const AdminBlogs: React.FC = () => {
 
       toast.success("Blog approved and published!");
 
-      setSelectedBlog(null);
-
     } catch (error) {
       console.error(error);
       toast.error("Failed to approve blog");
@@ -136,8 +134,6 @@ const AdminBlogs: React.FC = () => {
       setBlogs(prev => prev.filter(b => b.id !== id));
 
       toast.success("Blog rejected");
-
-      setSelectedBlog(null);
 
     } catch (error) {
       console.error(error);
@@ -375,10 +371,10 @@ const AdminBlogs: React.FC = () => {
               ))}
             </AnimatePresence>
           </div>
+        )}
 
         </div>
-
-      )}
+      </div>
 
     </>
   );
