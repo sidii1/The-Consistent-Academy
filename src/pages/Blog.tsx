@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, User, CalendarDays, PenSquare, LogIn, LogOut, Shield } from 'lucide-react';
+import RichTextEditor from '@/components/ui/rich-text-editor';
 import { signOut } from 'firebase/auth';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
@@ -105,6 +106,12 @@ const Blog: React.FC = () => {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const stripHtml = (html: string) => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -240,14 +247,11 @@ const Blog: React.FC = () => {
                 className="w-full px-4 py-3 rounded-xl shadow-neu-inset bg-secondary/20 border-2 border-transparent focus:border-primary outline-none"
               />
 
-              <textarea
-                name="content"
+              <RichTextEditor
+                content={formData.content}
+                onChange={(html) => setFormData((prev) => ({ ...prev, content: html }))}
                 placeholder="Write your blog content..."
-                value={formData.content}
-                onChange={handleInputChange}
-                rows={6}
-                required
-                className="w-full px-4 py-3 rounded-xl shadow-neu-inset bg-secondary/20 border-2 border-transparent focus:border-primary outline-none"
+                minHeight="260px"
               />
 
               <div className="flex gap-3">
@@ -301,7 +305,7 @@ const Blog: React.FC = () => {
                 </div>
 
                 <p className="text-muted-foreground line-clamp-4 mb-4">
-                  {blog.content}
+                  {stripHtml(blog.content)}
                 </p>
 
                 <Link

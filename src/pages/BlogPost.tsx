@@ -143,9 +143,10 @@ const BlogPost: React.FC = () => {
             </div>
           </div>
 
-          <div className="prose prose-lg max-w-none text-foreground whitespace-pre-wrap leading-relaxed">
-            {blog.content}
-          </div>
+          <div
+            className="blog-content max-w-none text-foreground leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: blog.content }}
+          />
         </article>
       </motion.div>
     </div>

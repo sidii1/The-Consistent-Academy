@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Shield, Check, X, CalendarDays, User, FileText, Pencil, Save } from "lucide-react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/layout/Navbar";
+import RichTextEditor from "@/components/ui/rich-text-editor";
 
 interface PendingBlog {
   id: string;
@@ -274,12 +275,11 @@ const AdminBlogs: React.FC = () => {
                             placeholder="Title"
                             className="w-full px-4 py-2.5 rounded-xl shadow-neu-inset bg-secondary/20 border-2 border-primary/30 focus:border-primary outline-none text-foreground font-semibold"
                           />
-                          <textarea
-                            value={editForm.content}
-                            onChange={(e) => setEditForm((f) => ({ ...f, content: e.target.value }))}
+                          <RichTextEditor
+                            content={editForm.content}
+                            onChange={(html) => setEditForm((f) => ({ ...f, content: html }))}
                             placeholder="Content"
-                            rows={8}
-                            className="w-full px-4 py-2.5 rounded-xl shadow-neu-inset bg-secondary/20 border-2 border-transparent focus:border-primary outline-none text-foreground resize-y"
+                            minHeight="220px"
                           />
                         </div>
                       ) : (
@@ -307,8 +307,8 @@ const AdminBlogs: React.FC = () => {
                             </div>
                           </div>
 
-                          <p className="text-muted-foreground line-clamp-4 whitespace-pre-wrap">
-                            {blog.content}
+                          <p className="text-muted-foreground line-clamp-4">
+                            {blog.content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()}
                           </p>
                         </>
                       )}
