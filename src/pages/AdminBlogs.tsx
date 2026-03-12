@@ -4,7 +4,6 @@ import {
   collection,
   getDocs,
   query,
-  where,
   orderBy,
   doc,
   updateDoc,
@@ -32,6 +31,7 @@ interface EditForm {
 }
 
 const AdminBlogs: React.FC = () => {
+
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [blogs, setBlogs] = useState<PendingBlog[]>([]);
@@ -40,52 +40,54 @@ const AdminBlogs: React.FC = () => {
   const [editForm, setEditForm] = useState<EditForm>({ title: "", content: "", author: "" });
   const navigate = useNavigate();
 
-// Check auth & admin status
-useEffect(() => {
-  const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-    setAuthChecked(true);
+  // AUTH CHECK
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      setAuthChecked(true);
 
-    if (!currentUser) {
-      navigate("/");
-      return;
-    }
-
-    try {
-      const token = await currentUser.getIdTokenResult();
-
-      if (!token.claims.admin) {
-        toast.error("Access denied. Admin only.");
+      if (!currentUser) {
         navigate("/");
         return;
       }
 
-      setUser(currentUser);
-    } catch (err) {
-      console.error("Error checking admin claim:", err);
-      navigate("/");
-    }
-  });
+      try {
+        const token = await currentUser.getIdTokenResult();
 
-  return () => unsubscribe();
-}, [navigate]);
+        if (!token.claims.admin) {
+          toast.error("Access denied. Admin only.");
+          navigate("/");
+          return;
+        }
 
-  // Fetch pending blogs once admin is verified
+        setUser(currentUser);
+      } catch (err) {
+        console.error("Error checking admin claim:", err);
+        navigate("/");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
+
+  // FETCH BLOGS
   useEffect(() => {
-    if (user) {
-      fetchPendingBlogs();
-    }
+    if (user) fetchBlogs();
   }, [user]);
 
-  const fetchPendingBlogs = async () => {
+  const fetchBlogs = async () => {
     try {
       setLoading(true);
+
       const q = query(
         collection(db, "blogs"),
         orderBy("createdAt", "desc")
       );
+
       const snapshot = await getDocs(q);
+
       const data = snapshot.docs.map((d) => {
         const blogData = d.data();
+
         return {
           id: d.id,
           title: blogData.title,
@@ -96,37 +98,54 @@ useEffect(() => {
             : new Date().toISOString(),
         };
       });
+
       setBlogs(data);
+
     } catch (error) {
-      console.error("Error fetching pending blogs:", error);
-      toast.error("Failed to load pending blogs");
+      console.error("Error fetching blogs:", error);
+      toast.error("Failed to load blogs");
     } finally {
       setLoading(false);
     }
   };
 
+  // APPROVE
   const handleApprove = async (id: string) => {
     try {
+
       await updateDoc(doc(db, "blogs", id), { status: "approved" });
-      setBlogs((prev) => prev.filter((b) => b.id !== id));
+
+      setBlogs(prev => prev.filter(b => b.id !== id));
+
       toast.success("Blog approved and published!");
+
+      setSelectedBlog(null);
+
     } catch (error) {
-      console.error("Error approving blog:", error);
+      console.error(error);
       toast.error("Failed to approve blog");
     }
   };
 
+  // REJECT
   const handleReject = async (id: string) => {
     try {
+
       await updateDoc(doc(db, "blogs", id), { status: "rejected" });
-      setBlogs((prev) => prev.filter((b) => b.id !== id));
+
+      setBlogs(prev => prev.filter(b => b.id !== id));
+
       toast.success("Blog rejected");
+
+      setSelectedBlog(null);
+
     } catch (error) {
-      console.error("Error rejecting blog:", error);
+      console.error(error);
       toast.error("Failed to reject blog");
     }
   };
 
+  // DELETE
   const handleDelete = async (id: string) => {
     try {
       await deleteDoc(doc(db, "blogs", id));
@@ -173,47 +192,50 @@ useEffect(() => {
     }
   };
 
-  // Don't render until auth check completes
   if (!authChecked) {
     return (
       <>
         <Navbar />
         <div className="min-h-screen pt-24 px-6 bg-gradient-to-br from-background to-secondary/30">
-          <p className="text-center text-muted-foreground">Checking access...</p>
+          <p className="text-center text-muted-foreground">
+            Checking access...
+          </p>
         </div>
       </>
     );
   }
 
-  // Non-admin users are redirected in useEffect, but guard here too
-  // if (!user || user.email !== ADMIN_EMAIL) {
-  //   return null;
-  // }
-  if (!user) {
-  return null;
-}
+  if (!user) return null;
 
   return (
     <>
-    <Navbar />
-    <div className="min-h-screen pt-24 px-6 bg-gradient-to-br from-background to-secondary/30">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
-          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-neu-lg">
-            <Shield className="w-10 h-10 text-white" />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Admin Dashboard
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Moderate pending blog submissions
-          </p>
-        </motion.div>
+      <Navbar />
+
+      <div className="min-h-screen pt-24 px-6 bg-gradient-to-br from-background to-secondary/30">
+
+        <div className="max-w-6xl mx-auto">
+
+          {/* HEADER */}
+
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-12"
+          >
+
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-neu-lg">
+              <Shield className="w-10 h-10 text-white" />
+            </div>
+
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Admin Dashboard
+            </h1>
+
+            <p className="text-muted-foreground mt-2">
+              Moderate blog submissions
+            </p>
+
+          </motion.div>
 
         {/* Content */}
         {loading ? (
@@ -353,9 +375,11 @@ useEffect(() => {
               ))}
             </AnimatePresence>
           </div>
-        )}
-      </div>
-    </div>
+
+        </div>
+
+      )}
+
     </>
   );
 };
