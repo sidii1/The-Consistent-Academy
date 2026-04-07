@@ -68,7 +68,17 @@ const images = [
   "/gallery/v13.jpeg",
   "/gallery/v10.jpeg",
   "/gallery/v11.jpeg",
-  "/gallery/v12.jpeg"
+  "/gallery/v12.jpeg",
+  "/gallery/v13.jpeg",
+  "/gallery/v14.jpeg",
+  "/gallery/v15.jpeg",
+  "/gallery/v16.jpeg",
+  "/gallery/v17.jpeg",
+  "/gallery/v18.jpeg",
+  "/gallery/v19.jpeg",
+  "/gallery/v20.jpeg",
+  "/gallery/v21.jpeg",
+  "/gallery/v22.jpeg"
 ];
 
 const courseImages = [
