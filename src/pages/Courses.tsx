@@ -558,77 +558,64 @@ const courses: Course[] = [
     ]
   },
   {
-    title:"Train the Trainer Course",
-    subtitle: "IELTS | Spoken English | ESL / TESOL / TEFL Trainer Certification",
-    description: "Equip yourself with the skills to become an effective trainer and facilitator.",
-    targetAudience: "Aspiring trainers, educators, and professionals looking to enhance their training skills.",
-    image: "/courses/img14.png",
-    hours: "15 Hours",
-    price:"15000/-",
-    modules: 8,
-    moduleDetails: [
-      {
-        title: "Module 1: Training Fundamentals",
-        topics: [
-          "Understanding adult learning",
-          "Training methodologies",
-          "Learning objectives"
-        ]
-      },
-      {
-        title: "Module 2: Curriculum Design",
-        topics: [
-          "Course structure planning",
-          "Content development",
-          "Assessment strategies"
-        ]
-      },
-      {
-        title: "Module 3: Facilitation Skills",
-        topics: [
-          "Interactive teaching techniques",
-          "Group dynamics management",
-          "Effective questioning"
-        ]
-      },
-      {
-        title: "Module 4: Presentation & Delivery",
-        topics: [
-          "Engaging presentations",
-          "Visual aids usage",
-          "Confidence building"
-        ]
-      },
-      {
-        title: "Module 5: Feedback & Evaluation",
-        topics: [
-          "Providing constructive feedback",
-          "Evaluating training effectiveness",
-          "Continuous improvement"
-        ]
-      },
-      {
-        title: "Module 6: Coaching & Mentoring",
-        topics: [
-          "Coaching techniques for trainers",
-          "Mentoring strategies for learners",
-          "Supportive learning environment"
-        ]
-      },
-      {
-        title: "Module 7: Technology Integration in Training",
-        topics: [
-          "Digital tools for training delivery",
-          "Online learning platforms usage",
-          "Blended learning approaches"
-        ]
-      },
-      {
-        title: "Module 8: Advanced Trainer Competencies",
-        topics: [
-          "Leadership in training environments",
-          "Innovation in training design and delivery methods.",
-          ""
+    title:"EELTA - Experiential English Language Teaching Approach",
+  description: "India’s First Experiential English Teaching Certification for Global Classrooms",
+    targetAudience: [
+    "Pre-Primary Teachers",
+    "Primary School Educators",
+    "Secondary School Teachers",
+    "Senior Secondary Faculty",
+    "Academic Coordinators & School Leaders"
+  ],
+  image: "/courses/img14.png",
+  hours: "15 Hours",
+  price: "15000/-",
+  modules: 5,
+
+  moduleDetails: [
+    {
+      title: "Module 1: Learners, Teachers & the Global Learning Context",
+      topics: [
+        "Understanding learners as global communicators",
+        "Role of the teacher as a facilitator, not instructor",
+        "Creating classrooms aligned with international learning environments",
+        "Preparing students for foreign universities and multicultural settings"
+      ]
+    },
+    {
+      title: "Module 2: Language Awareness for Real Communication",
+      topics: [
+        "Understanding how English works in real-life communication",
+        "Moving beyond grammar to functional language use",
+        "Teaching vocabulary, structure, and meaning through context and usage",
+        "Building awareness for language proficiency tests (IELTS, TOEFL, PTE)"
+      ]
+    },
+    {
+      title: "Module 3: Core Language Skills for Global Competence",
+      topics: [
+        "Developing Reading, Listening, Speaking, and Writing as integrated skills",
+        "Teaching students to think, respond, and express ideas clearly",
+        "Activity-based strategies to build fluency and comprehension",
+        "Aligning classroom practice with international assessment standards"
+      ]
+    },
+    {
+      title: "Module 4: Planning, Resources & Global Classroom Design",
+      topics: [
+        "Designing lessons for real-world communication outcomes",
+        "Using authentic materials (videos, conversations, tasks)",
+        "Creating immersive and English-rich environments",
+        "Structuring lessons for skill-building and test readiness"
+      ]
+    },
+    {
+      title: "Module 5: Developing Professional Teaching Excellence",
+      topics: [
+        "Building teacher confidence and communication skills",
+        "Continuous improvement through reflection and feedback",
+        "Adapting to diverse learners and global expectations",
+        "Becoming a 21st-century English educator"
         ]
       }
     ]
