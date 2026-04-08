@@ -51,7 +51,7 @@ export const FloatingCreators = () => {
         </div>
 
         {/* Hover Image Pop-up */}
-        <div className="absolute top-[85%] left-1/2 -translate-x-1/2 mt-4 w-[180px] md:w-[150px] pointer-events-none opacity-0 translate-y-[-15px] scale-90 group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100 transition-all duration-400 ease-out rounded-2xl overflow-hidden shadow-neu-2xl bg-gradient-to-br from-primary/10 to-accent/10 border border-white/20">
+        <div className="absolute top-[85%] left-1/2 -translate-x-1/2 mt-4 w-[180px] md:w-[150px] pointer-events-none opacity-0 translate-y-[-15px] scale-90 group-hover:opacity-100 group-hover:translate-y-0 group-hover:scale-100 transition-all duration-400 ease-out rounded-2xl overflow-hidden shadow-neu-2xl">
           <img 
             src="/developers.png" 
             alt="Nakul & Siddhi" 
