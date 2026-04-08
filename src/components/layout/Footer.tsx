@@ -145,26 +145,7 @@ export const Footer = () => {
             <p className="text-sm text-muted-foreground">
               © {currentYear} The Consistent Academy. All rights reserved.
             </p>
-            <p className="text-sm text-foreground font-medium">
-              Designed & Developed by{" "}
-              <a 
-                href="https://www.linkedin.com/in/nakul-bhadade/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:text-accent transition-colors underline"
-              >
-                Nakul Bhadade
-              </a>
-              {" "}&{" "}
-              <a 
-                href="https://www.linkedin.com/in/siddhi-dhoke-53b7b432b/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:text-accent transition-colors underline"
-              >
-                Siddhi Dhoke
-              </a>
-            </p>
+
           </div>
           <div className="flex gap-6">
             <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">

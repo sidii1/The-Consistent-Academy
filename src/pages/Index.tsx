@@ -24,6 +24,7 @@ import { Footer } from "@/components/layout/Footer";
 
 import Founder from "../components/Founder";
 import Testimonials from "../components/Testimonials";
+import { FloatingCreators } from "../components/FloatingCreators";
 
 /* ---------------- DATA ---------------- */
 
@@ -231,6 +232,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <Navbar />
+      <FloatingCreators />
 
       {/* ENHANCED HERO SECTION */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 md:pt-24 overflow-hidden">

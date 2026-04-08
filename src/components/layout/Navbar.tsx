@@ -118,7 +118,7 @@ export const Navbar = () => {
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 pl-[15px] md:pl-[15px] lg:pl-4 lg:max-w-6xl">
           <motion.nav
             className={cn(
               "rounded-3xl px-6 py-4 transition-all duration-500",
