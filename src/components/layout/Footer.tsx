@@ -148,6 +148,9 @@ export const Footer = () => {
 
           </div>
           <div className="flex gap-6">
+            <Link to="/login?redirect=admin" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              Admin Login
+            </Link>
             <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Privacy Policy
             </a>

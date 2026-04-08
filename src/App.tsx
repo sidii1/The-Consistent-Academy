@@ -18,6 +18,7 @@ import Login from "./pages/Login";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import AdminBlogs from "./pages/AdminBlogs";
+import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "@/components/AdminRoute";
 
 const queryClient = new QueryClient();
@@ -37,13 +38,21 @@ const AnimatedRoutes = () => {
         <Route path="/blog" element={<Blog/>}/>
         <Route path="/blog/:id" element={<BlogPost />} />
         <Route
-  path="/admin/blogs"
-  element={
-    <AdminRoute>
-      <AdminBlogs />
-    </AdminRoute>
-  }
-/>
+          path="/admin/blogs"
+          element={
+            <AdminRoute>
+              <AdminBlogs />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>

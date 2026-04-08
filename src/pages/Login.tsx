@@ -41,7 +41,11 @@ const Login: React.FC = () => {
       // Check custom claims to determine if admin
       const tokenResult = await getIdTokenResult(auth.currentUser!, true);
       if (tokenResult.claims.admin) {
-        navigate("/admin/blogs");
+        if (redirect === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/admin/blogs");
+        }
       } else {
         navigate(redirect ? `/${redirect}` : "/");
       }
