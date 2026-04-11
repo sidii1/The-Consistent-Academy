@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, onSnapshot, QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,12 +22,14 @@ export const AdminDashboard: React.FC = () => {
   const [authChecked, setAuthChecked] = useState(false);
   const [activeTab, setActiveTab] = useState<CollectionName>("contactRequests");
   
-  const [data, setData] = useState<Record<string, any[]>>({
-    contactRequests: [],
-    careerApplications: [],
-    leadershipTestResults: [],
-    testResults: []
-  });
+  type FirestoreRecord = { id: string; [key: string]: any };
+
+const [data, setData] = useState<Record<CollectionName, FirestoreRecord[]>>({
+  contactRequests: [],
+  careerApplications: [],
+  leadershipTestResults: [],
+  testResults: []
+});
   const [loading, setLoading] = useState(true);
   const [selectedRecord, setSelectedRecord] = useState<any | null>(null);
 
@@ -58,56 +60,84 @@ export const AdminDashboard: React.FC = () => {
   }, [navigate]);
 
   // Fetch all collections
-  useEffect(() => {
-    if (user) {
-      fetchAllData();
-    }
-  }, [user]);
+ useEffect(() => {
+  if (!user) return;
+  const unsubscribe = fetchAllData();
+  return () => {
+    if (unsubscribe) unsubscribe();
+  };
+}, [user]);
 
-  const fetchAllData = async () => {
-    try {
-      setLoading(true);
-      const results: Record<string, any[]> = {
-        contactRequests: [],
-        careerApplications: [],
-        leadershipTestResults: [],
-        testResults: []
-      };
+  const fetchAllData = () => {
+  setLoading(true);
 
-      for (const tab of TABS) {
-        const snap = await getDocs(collection(db, tab.id));
-        const docsData = snap.docs.map((d) => ({
-          id: d.id,
-          ...d.data()
+  const unsubscribers: (() => void)[] = [];
+
+  TABS.forEach((tab) => {
+    const unsubscribe = onSnapshot(
+      collection(db, tab.id),
+      (snapshot) => {
+        const docsData: FirestoreRecord[] = snapshot.docs.map(
+          (d: QueryDocumentSnapshot<DocumentData>) => ({
+            id: d.id,
+            ...d.data(),
+          })
+        );
+
+        // Sort by timestamp (latest first)
+        docsData.sort((a, b) => extractTime(b) - extractTime(a));
+
+        setData((prev) => ({
+          ...prev,
+          [tab.id]: docsData,
         }));
 
-        // Try sorting by some form of timestamp descending
-        docsData.sort((a, b) => {
-          const tA = extractTime(a);
-          const tB = extractTime(b);
-          return tB - tA;
-        });
-
-        results[tab.id] = docsData;
+        setLoading(false);
+      },
+      (error) => {
+        console.error(`Error fetching ${tab.id}:`, error);
+        toast.error(`Failed to load ${tab.label}`);
+        setLoading(false);
       }
-      setData(results);
-    } catch (error) {
-      console.error("Error fetching admin data:", error);
-      toast.error("Failed to load some data. Check console.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    );
 
-  const extractTime = (obj: any) => {
-    if (obj?.createdAt?.seconds) return obj.createdAt.seconds;
-    if (obj?.timestamp?.seconds) return obj.timestamp.seconds;
-    if (obj?.date) {
-      const d = new Date(obj.date).getTime();
-      if (!isNaN(d)) return d / 1000;
-    }
-    return 0;
+    unsubscribers.push(unsubscribe);
+  });
+
+  // Cleanup listeners when component unmounts
+  return () => {
+    unsubscribers.forEach((unsubscribe) => unsubscribe());
   };
+};
+
+const extractTime = (obj: any): number => {
+  const possibleFields = [
+    "createdAt",
+    "timestamp",
+    "submittedAt",
+    "date",
+    "updatedAt",
+  ];
+
+  for (const field of possibleFields) {
+    const value = obj?.[field];
+
+    if (value?.seconds) {
+      return value.seconds;
+    }
+
+    if (value instanceof Date) {
+      return value.getTime() / 1000;
+    }
+
+    if (typeof value === "string") {
+      const parsed = new Date(value).getTime();
+      if (!isNaN(parsed)) return parsed / 1000;
+    }
+  }
+
+  return 0;
+};
 
   if (!authChecked) {
     return (
@@ -224,10 +254,17 @@ export const AdminDashboard: React.FC = () => {
                         >
                           <div>
                             <div className="font-semibold text-foreground truncate mb-1">
-                              {doc.name || doc.fullName || doc.email || doc.title || `Record #${doc.id.slice(0, 6)}`}
+                              {doc.name ||
+  doc.fullName ||
+  doc.email ||
+  doc.title ||
+  doc.subject ||
+  `Record #${doc.id.slice(0, 6)}`}
                             </div>
                             <div className="text-xs text-muted-foreground line-clamp-2">
-                              {doc.message || doc.phone || doc.score !== undefined ? `Score: ${doc.score}` : 'Click to view details'}
+                              {doc.message ||
+  doc.phone ||
+  (doc.score !== undefined ? `Score: ${doc.score}` : "Click to view details")}
                             </div>
                           </div>
                           
