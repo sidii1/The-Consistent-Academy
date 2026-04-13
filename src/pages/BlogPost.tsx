@@ -120,7 +120,7 @@ const BlogPost: React.FC = () => {
       >
         <Link
           to="/blog"
-          className="inline-flex items-center gap-2 text-primary font-semibold hover:underline mb-8 block"
+          className="inline-flex items-center gap-2 text-primary font-semibold hover:underline mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Blog
