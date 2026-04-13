@@ -24,6 +24,7 @@ interface AdminBlogData {
   title: string;
   content: string;
   author: string;
+  coverImageUrl?: string;
   createdAt: string;
 }
 
@@ -64,6 +65,7 @@ const AdminBlogs: React.FC = () => {
         title: blogData.title,
         content: blogData.content,
         author: blogData.author,
+        coverImageUrl: blogData.coverImageUrl,
         createdAt: blogData.createdAt
           ? blogData.createdAt.toDate().toISOString()
           : new Date().toISOString(),
@@ -279,6 +281,13 @@ const AdminBlogs: React.FC = () => {
                         ) : (
                           /* ── Read-only view ── */
                           <>
+                            {blog.coverImageUrl && (
+                              <img 
+                                src={blog.coverImageUrl} 
+                                alt={blog.title} 
+                                className="w-full aspect-video object-cover rounded-xl mb-4 max-w-sm shadow-sm"
+                              />
+                            )}
                             <h3 className="text-xl font-bold text-foreground mb-2">
                               {blog.title}
                             </h3>

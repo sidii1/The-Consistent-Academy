@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs, onSnapshot, QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
+import { collection, onSnapshot, QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, FileText, FileSearch, ArrowRight, X } from "lucide-react";
+import { Shield, FileSearch, ArrowRight, X, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { Navbar } from "@/components/layout/Navbar";
 
+// --- Types ---
 type CollectionName = "contactRequests" | "careerApplications" | "leadershipTestResults" | "testResults";
+
+interface FirestoreRecord {
+  id: string;
+  [key: string]: any;
+}
 
 const TABS: { id: CollectionName; label: string }[] = [
   { id: "contactRequests", label: "Contact Requests" },
@@ -21,25 +27,37 @@ export const AdminDashboard: React.FC = () => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [activeTab, setActiveTab] = useState<CollectionName>("contactRequests");
-  
-  type FirestoreRecord = { id: string; [key: string]: any };
-
-const [data, setData] = useState<Record<CollectionName, FirestoreRecord[]>>({
-  contactRequests: [],
-  careerApplications: [],
-  leadershipTestResults: [],
-  testResults: []
-});
   const [loading, setLoading] = useState(true);
-  const [selectedRecord, setSelectedRecord] = useState<any | null>(null);
+  const [selectedRecord, setSelectedRecord] = useState<FirestoreRecord | null>(null);
+  const [data, setData] = useState<Record<CollectionName, FirestoreRecord[]>>({
+    contactRequests: [],
+    careerApplications: [],
+    leadershipTestResults: [],
+    testResults: []
+  });
 
   const navigate = useNavigate();
 
-  // Validate Admin logic
+  // Helper: Extract timestamp for sorting
+  const extractTime = (obj: any): number => {
+    const possibleFields = ["createdAt", "timestamp", "submittedAt", "date", "updatedAt"];
+    for (const field of possibleFields) {
+      const value = obj?.[field];
+      if (value?.seconds) return value.seconds;
+      if (value instanceof Date) return value.getTime() / 1000;
+      if (typeof value === "string") {
+        const parsed = new Date(value).getTime();
+        if (!isNaN(parsed)) return parsed / 1000;
+      }
+    }
+    return 0;
+  };
+
+  // Auth & Admin Check
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setAuthChecked(true);
       if (!currentUser) {
+        setAuthChecked(true);
         navigate("/");
         return;
       }
@@ -51,6 +69,7 @@ const [data, setData] = useState<Record<CollectionName, FirestoreRecord[]>>({
           return;
         }
         setUser(currentUser);
+        setAuthChecked(true);
       } catch (err) {
         console.error("Error checking admin claim:", err);
         navigate("/");
@@ -59,94 +78,40 @@ const [data, setData] = useState<Record<CollectionName, FirestoreRecord[]>>({
     return () => unsubscribe();
   }, [navigate]);
 
-  // Fetch all collections
- useEffect(() => {
-  if (!user) return;
-  const unsubscribe = fetchAllData();
-  return () => {
-    if (unsubscribe) unsubscribe();
-  };
-}, [user]);
+  // Data Fetching
+  useEffect(() => {
+    if (!user) return;
 
-  const fetchAllData = () => {
-  setLoading(true);
+    const unsubscribers = TABS.map((tab) => {
+      return onSnapshot(
+        collection(db, tab.id),
+        (snapshot) => {
+          const docsData: FirestoreRecord[] = snapshot.docs.map(
+            (d: QueryDocumentSnapshot<DocumentData>) => ({
+              id: d.id,
+              ...d.data(),
+            })
+          );
+          docsData.sort((a, b) => extractTime(b) - extractTime(a));
+          
+          setData((prev) => ({ ...prev, [tab.id]: docsData }));
+          setLoading(false);
+        },
+        (error) => {
+          console.error(`Error fetching ${tab.id}:`, error);
+          toast.error(`Failed to load ${tab.label}`);
+        }
+      );
+    });
 
-  const unsubscribers: (() => void)[] = [];
-
-  TABS.forEach((tab) => {
-    const unsubscribe = onSnapshot(
-      collection(db, tab.id),
-      (snapshot) => {
-        const docsData: FirestoreRecord[] = snapshot.docs.map(
-          (d: QueryDocumentSnapshot<DocumentData>) => ({
-            id: d.id,
-            ...d.data(),
-          })
-        );
-
-        // Sort by timestamp (latest first)
-        docsData.sort((a, b) => extractTime(b) - extractTime(a));
-
-        setData((prev) => ({
-          ...prev,
-          [tab.id]: docsData,
-        }));
-
-        setLoading(false);
-      },
-      (error) => {
-        console.error(`Error fetching ${tab.id}:`, error);
-        toast.error(`Failed to load ${tab.label}`);
-        setLoading(false);
-      }
-    );
-
-    unsubscribers.push(unsubscribe);
-  });
-
-  // Cleanup listeners when component unmounts
-  return () => {
-    unsubscribers.forEach((unsubscribe) => unsubscribe());
-  };
-};
-
-const extractTime = (obj: any): number => {
-  const possibleFields = [
-    "createdAt",
-    "timestamp",
-    "submittedAt",
-    "date",
-    "updatedAt",
-  ];
-
-  for (const field of possibleFields) {
-    const value = obj?.[field];
-
-    if (value?.seconds) {
-      return value.seconds;
-    }
-
-    if (value instanceof Date) {
-      return value.getTime() / 1000;
-    }
-
-    if (typeof value === "string") {
-      const parsed = new Date(value).getTime();
-      if (!isNaN(parsed)) return parsed / 1000;
-    }
-  }
-
-  return 0;
-};
+    return () => unsubscribers.forEach((unsub) => unsub());
+  }, [user]);
 
   if (!authChecked) {
     return (
-      <>
-        <Navbar />
-        <div className="min-h-screen pt-24 px-6 bg-gradient-to-br from-background to-secondary/30 flex items-center justify-center">
-          <p className="text-muted-foreground">Checking access...</p>
-        </div>
-      </>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-pulse text-muted-foreground">Verifying credentials...</div>
+      </div>
     );
   }
 
@@ -155,172 +120,150 @@ const extractTime = (obj: any): number => {
   const currentData = data[activeTab] || [];
 
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
       <Navbar />
 
-      <div className="min-h-screen pt-24 px-4 md:px-6 bg-gradient-to-br from-background to-secondary/30">
-        <div className="max-w-7xl mx-auto">
-          
-          {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-4"
-            >
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-neu-lg">
-                <Shield className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  Admin Master Dashboard
-                </h1>
-                <p className="text-muted-foreground">View and manage all system data.</p>
-              </div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-            >
-              <button 
-                onClick={() => navigate("/admin/blogs")}
-                className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 text-primary font-semibold hover:bg-primary hover:text-white transition-all shadow-neu-sm hover:shadow-neu-lg"
-              >
-                Go to Blogs Admin
-                <ArrowRight size={18} />
-              </button>
-            </motion.div>
+      <main className="max-w-7xl mx-auto pt-28 px-4 pb-12">
+        {/* Header Section */}
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+              <Shield className="w-7 h-7 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Admin Portal</h1>
+              <p className="text-muted-foreground text-sm">Centralized system management</p>
+            </div>
           </div>
+          
+          <button 
+            onClick={() => navigate("/admin/blogs")}
+            className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-card border border-border hover:border-primary/50 transition-all shadow-sm"
+          >
+            <span>Manage Blogs</span>
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          </button>
+        </header>
 
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Sidebar Tabs */}
-            <div className="w-full lg:w-64 shrink-0 flex flex-nowrap lg:flex-col gap-3 overflow-x-auto pb-4 lg:pb-0 scrollbar-hide">
-              {TABS.map((tab) => (
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* FIXED SIDEBAR TABS */}
+          <aside className="w-full lg:w-72 flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-hide">
+            {TABS.map((tab) => {
+              const isActive = activeTab === tab.id;
+              const count = data[tab.id]?.length || 0;
+              
+              return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-shrink-0 px-5 py-4 rounded-2xl text-left font-semibold transition-all duration-300 flex items-center justify-between ${
-                    activeTab === tab.id
-                      ? "bg-primary text-white shadow-neu-lg scale-105 ml-2 lg:ml-4"
-                      : "bg-card text-muted-foreground shadow-neu hover:shadow-neu-md hover:text-foreground"
-                  }`}
+                  className={`
+                    relative flex items-center justify-between min-w-[160px] lg:min-w-0 px-4 py-3.5 rounded-xl font-medium transition-all
+                    ${isActive 
+                      ? "bg-primary text-primary-foreground shadow-md ring-1 ring-primary" 
+                      : "bg-card text-muted-foreground hover:bg-secondary/50 border border-transparent"}
+                  `}
                 >
-                  <span className="whitespace-nowrap">{tab.label}</span>
-                  {data[tab.id]?.length > 0 && (
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${
-                      activeTab === tab.id ? "bg-white/20" : "bg-primary/10 text-primary"
+                  <span className="truncate mr-2">{tab.label}</span>
+                  {count > 0 && (
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                      isActive ? "bg-white/20 text-white" : "bg-primary/10 text-primary"
                     }`}>
-                      {data[tab.id].length}
+                      {count}
                     </span>
                   )}
                 </button>
-              ))}
-            </div>
+              );
+            })}
+          </aside>
 
-            {/* List Content */}
-            <div className="flex-1">
-              <div className="bg-card rounded-3xl p-6 shadow-neu-xl min-h-[60vh]">
-                <div className="mb-6 pb-4 border-b border-primary/10 flex justify-between items-center">
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                    {TABS.find(t => t.id === activeTab)?.label} ({currentData.length})
-                  </h2>
-                  <button onClick={fetchAllData} className="text-sm text-primary hover:underline font-medium">
-                    Refresh
-                  </button>
+          {/* Main Content Area */}
+          <section className="flex-1 min-h-[600px]">
+            <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-xl font-semibold capitalize">
+                  {activeTab.replace(/([A-Z])/g, ' $1')}
+                </h2>
+                <div className="text-xs text-muted-foreground flex items-center gap-2">
+                  <span>{currentData.length} records</span>
                 </div>
-
-                {loading ? (
-                  <div className="flex flex-col items-center justify-center py-20 opacity-50">
-                    <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-                    <p>Loading data...</p>
-                  </div>
-                ) : currentData.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-                    <FileSearch className="w-16 h-16 opacity-20 mb-4" />
-                    <p>No records found in this collection.</p>
-                  </div>
-                ) : (
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <AnimatePresence mode="popLayout">
-                      {currentData.map((doc, idx) => (
-                        <motion.div
-                          key={doc.id}
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ delay: idx * 0.02 }}
-                          className="p-5 rounded-2xl bg-secondary/10 border border-primary/5 shadow-neu-inset-sm flex flex-col justify-between hover:shadow-neu hover:bg-secondary/20 transition-all cursor-pointer"
-                          onClick={() => setSelectedRecord(doc)}
-                        >
-                          <div>
-                            <div className="font-semibold text-foreground truncate mb-1">
-                              {doc.name ||
-  doc.fullName ||
-  doc.email ||
-  doc.title ||
-  doc.subject ||
-  `Record #${doc.id.slice(0, 6)}`}
-                            </div>
-                            <div className="text-xs text-muted-foreground line-clamp-2">
-                              {doc.message ||
-  doc.phone ||
-  (doc.score !== undefined ? `Score: ${doc.score}` : "Click to view details")}
-                            </div>
-                          </div>
-                          
-                          <div className="mt-4 flex justify-between items-center text-xs font-medium border-t border-primary/10 pt-3">
-                            <span className="text-primary truncate mr-2">ID: {doc.id}</span>
-                            <span className="shrink-0 bg-primary/10 px-2 py-1 rounded text-primary hover:bg-primary hover:text-white transition-colors">
-                              View Details
-                            </span>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                )}
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Record Details Modal */}
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-32 text-muted-foreground">
+                  <RefreshCw className="w-8 h-8 animate-spin mb-4 text-primary" />
+                  <p>Syncing with Firestore...</p>
+                </div>
+              ) : currentData.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-32 text-muted-foreground border-2 border-dashed border-border rounded-2xl">
+                  <FileSearch className="w-12 h-12 mb-3 opacity-20" />
+                  <p>No entries found</p>
+                </div>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2">
+                  <AnimatePresence mode="popLayout">
+                    {currentData.map((doc, idx) => (
+                      <motion.div
+                        key={doc.id}
+                        layout
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.03 }}
+                        onClick={() => setSelectedRecord(doc)}
+                        className="group p-5 rounded-2xl bg-secondary/5 border border-border hover:border-primary/30 hover:bg-secondary/10 transition-all cursor-pointer"
+                      >
+                        <div className="mb-3">
+                          <h4 className="font-bold text-foreground truncate">
+                            {doc.name || doc.fullName || doc.email || `ID: ${doc.id.slice(0, 8)}`}
+                          </h4>
+                          <p className="text-sm text-muted-foreground line-clamp-1 italic">
+                            {doc.subject || doc.message || (doc.score !== undefined ? `Score: ${doc.score}` : "View entry")}
+                          </p>
+                        </div>
+                        <div className="flex justify-between items-center pt-3 border-t border-border/50">
+                          <span className="text-[10px] font-mono text-muted-foreground">ID: {doc.id.slice(0, 12)}</span>
+                          <span className="text-xs font-semibold text-primary group-hover:underline">Details →</span>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+      </main>
+
+      {/* Detail Modal */}
       <AnimatePresence>
         {selectedRecord && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 pb-20">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }} 
-              className="absolute inset-0 bg-background/60 backdrop-blur-sm"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-background/80 backdrop-blur-md"
               onClick={() => setSelectedRecord(null)}
             />
             <motion.div
-              initial={{ opacity: 0, y: 50, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              className="relative w-full max-w-2xl max-h-full flex flex-col bg-card rounded-3xl overflow-hidden shadow-neu-2xl"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-2xl bg-card border border-border rounded-3xl shadow-2xl overflow-hidden"
             >
-              <div className="flex justify-between items-center p-6 border-b border-primary/10 bg-gradient-to-r from-card to-secondary/20">
-                <h3 className="text-lg font-bold text-foreground">Record Details</h3>
-                <button 
-                  onClick={() => setSelectedRecord(null)}
-                  className="p-2 rounded-full hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
-                >
+              <div className="flex justify-between items-center p-6 border-b border-border">
+                <h3 className="font-bold">Record Inspection</h3>
+                <button onClick={() => setSelectedRecord(null)} className="p-2 hover:bg-secondary rounded-full transition-colors">
                   <X size={20} />
                 </button>
               </div>
-              <div className="p-6 overflow-y-auto custom-scrollbar">
-                <div className="bg-secondary/10 p-4 rounded-xl font-mono text-sm overflow-x-auto whitespace-pre-wrap text-foreground/80 border border-primary/10 shadow-neu-inset-sm">
+              <div className="p-6 overflow-y-auto max-h-[70vh]">
+                <pre className="p-4 rounded-xl bg-secondary/30 font-mono text-xs overflow-x-auto leading-relaxed border border-border text-foreground">
                   {JSON.stringify(selectedRecord, null, 2)}
-                </div>
+                </pre>
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 };
 

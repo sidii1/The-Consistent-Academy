@@ -12,6 +12,7 @@ interface BlogPostData {
   title: string;
   content: string;
   author: string;
+  coverImageUrl?: string;
   createdAt: string;
   status: string;
 }
@@ -44,6 +45,7 @@ const BlogPost: React.FC = () => {
               title: data.title,
               content: data.content,
               author: data.author,
+              coverImageUrl: data.coverImageUrl,
               status: data.status,
               createdAt: data.createdAt
                 ? data.createdAt.toDate().toISOString()
@@ -143,6 +145,14 @@ const BlogPost: React.FC = () => {
               })}
             </div>
           </div>
+
+          {blog.coverImageUrl && (
+            <img 
+              src={blog.coverImageUrl} 
+              alt={blog.title} 
+              className="w-full rounded-2xl object-cover max-h-[400px] shadow-md mb-8"
+            />
+          )}
 
           <div
             className="blog-content max-w-none text-foreground leading-relaxed"

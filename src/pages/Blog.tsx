@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, User, CalendarDays, PenSquare, LogIn, LogOut, Shield } from 'lucide-react';
+import { Sparkles, User, CalendarDays, PenSquare, LogIn, LogOut, Shield, X, Image as ImageIcon } from 'lucide-react';
 import RichTextEditor from '@/components/ui/rich-text-editor';
+import imageCompression from 'browser-image-compression';
 import { signOut } from 'firebase/auth';
 import { collection, addDoc, serverTimestamp, getDocs, query, where, orderBy, limit, startAfter } from 'firebase/firestore';
 import { db, auth } from '@/lib/firebase';
@@ -17,6 +18,7 @@ interface BlogPost {
   title: string;
   content: string;
   author: string;
+  coverImageUrl?: string;
   excerpt?: string;
   createdAt: string;
   status: 'approved' | 'pending' | 'rejected';
@@ -39,6 +41,10 @@ const Blog: React.FC = () => {
   });
   const [isAdmin, setIsAdmin] = useState(false);
   const queryClient = useQueryClient();
+  
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -91,6 +97,7 @@ const Blog: React.FC = () => {
         id: doc.id,
         title: data.title,
         content: data.content,
+        coverImageUrl: data.coverImageUrl,
         excerpt: data.excerpt,
         author: data.author,
         status: data.status,
@@ -134,6 +141,19 @@ const Blog: React.FC = () => {
     return div.textContent || div.innerText || '';
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -143,11 +163,41 @@ const Blog: React.FC = () => {
     }
 
     try {
+      setIsUploadingImage(true);
+      let coverImageUrl = "";
+
+      if (imageFile) {
+        // Compress Image
+        const compressedFile = await imageCompression(imageFile, {
+          maxSizeMB: 0.5,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+        });
+
+        // Upload to Cloudinary
+        const cloudinaryData = new FormData();
+        cloudinaryData.append("file", compressedFile);
+        cloudinaryData.append("upload_preset", "tca_blogs");
+
+        const response = await fetch("https://api.cloudinary.com/v1_1/dftodlkkt/image/upload", {
+          method: "POST",
+          body: cloudinaryData,
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to upload image");
+        }
+
+        const json = await response.json();
+        coverImageUrl = json.secure_url;
+      }
+
       const plainText = stripHtml(formData.content);
       const excerpt = plainText.length > 150 ? plainText.substring(0, 150) + "..." : plainText;
 
       await addDoc(collection(db, "blogs"), {
         ...formData,
+        coverImageUrl,
         excerpt,
         userId: user.uid,
         status: "pending",
@@ -156,10 +206,13 @@ const Blog: React.FC = () => {
 
       toast.success("Blog submitted for approval!");
       setFormData({ title: "", content: "", author: "" });
+      removeImage();
       setShowForm(false);
     } catch (error) {
       console.error("Error submitting blog:", error);
-      toast.error("Failed to submit blog");
+      toast.error("Failed to submit blog. Please check your connection or image size.");
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -261,6 +314,34 @@ const Blog: React.FC = () => {
                   className="w-full px-4 py-3 rounded-xl shadow-neu-inset bg-secondary/20 border-2 border-transparent focus:border-primary outline-none"
                 />
 
+                {/* Cover Image Input */}
+                <div className="space-y-4">
+                  {imagePreview ? (
+                    <div className="relative w-full h-48 md:h-64 rounded-xl overflow-hidden shadow-neu-lg">
+                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+                      >
+                        <X className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-primary/30 rounded-xl bg-secondary/10 hover:bg-secondary/20 transition-colors cursor-pointer text-muted-foreground p-4 text-center">
+                      <ImageIcon className="w-8 h-8 mb-2 opacity-50" />
+                      <span className="text-sm font-semibold">Upload Cover Image</span>
+                      <span className="text-xs opacity-70">JPG, PNG, WEBP (Max: 500KB)</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageChange}
+                      />
+                    </label>
+                  )}
+                </div>
+
                 <input
                   type="text"
                   name="title"
@@ -281,13 +362,24 @@ const Blog: React.FC = () => {
                 <div className="flex gap-3">
                   <button
                     type="submit"
-                    className="flex-1 bg-primary text-white py-3 rounded-2xl shadow-neu-lg hover:shadow-neu-xl transition"
+                    disabled={isUploadingImage}
+                    className="flex-1 bg-primary text-white py-3 rounded-2xl shadow-neu-lg hover:shadow-neu-xl transition disabled:opacity-70 disabled:cursor-not-allowed flex justify-center items-center gap-2"
                   >
-                    Submit for Approval
+                    {isUploadingImage ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Uploading...
+                      </>
+                    ) : (
+                      "Submit for Approval"
+                    )}
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowForm(false)}
+                    onClick={() => {
+                      setShowForm(false);
+                      removeImage();
+                    }}
                     className="px-6 py-3 rounded-2xl shadow-neu-lg hover:shadow-neu-xl transition bg-secondary text-foreground"
                   >
                     Cancel
@@ -315,6 +407,14 @@ const Blog: React.FC = () => {
                     transition={{ delay: index * 0.1 }}
                     className="p-6 rounded-3xl shadow-neu-lg bg-card hover:shadow-neu-xl transition-all flex flex-col"
                   >
+                    {blog.coverImageUrl && (
+                      <img 
+                        src={blog.coverImageUrl} 
+                        alt={blog.title} 
+                        className="w-full aspect-video object-cover rounded-t-2xl rounded-b-md mb-4 -mt-2 -mx-2 max-w-[calc(100%+16px)] shadow-sm"
+                      />
+                    )}
+                    
                     <h3 className="text-xl font-bold text-foreground mb-3">
                       {blog.title}
                     </h3>
