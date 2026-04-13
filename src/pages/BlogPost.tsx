@@ -5,6 +5,7 @@ import { db } from "@/lib/firebase";
 import { motion } from "framer-motion";
 import { ArrowLeft, User, CalendarDays } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
+import DOMPurify from 'dompurify';
 
 interface BlogPostData {
   id: string;
@@ -145,7 +146,7 @@ const BlogPost: React.FC = () => {
 
           <div
             className="blog-content max-w-none text-foreground leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: blog.content }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(blog.content) }}
           />
         </article>
       </motion.div>

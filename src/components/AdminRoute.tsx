@@ -1,9 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactNode } from "react";
 import { getAuth } from "firebase/auth";
 import { Navigate } from "react-router-dom";
 
-const AdminRoute = ({ children }) => {
-  const [isAdmin, setIsAdmin] = useState(null);
+interface AdminRouteProps {
+  children: ReactNode;
+}
+
+const AdminRoute = ({ children }: AdminRouteProps) => {
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
     const checkAdmin = async () => {
