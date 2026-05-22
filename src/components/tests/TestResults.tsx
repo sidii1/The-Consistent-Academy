@@ -51,8 +51,15 @@ const TestResults = ({
     return {
       correct,
       total: allQuestions.length,
+      // ✅ Percentage always over total questions, not just attempted
       percentage: Math.round((correct / allQuestions.length) * 100),
     };
+  };
+
+  const getLevel = (percentage: number) => {
+    if (percentage >= 85) return { label: "Advanced", color: "from-green-500 to-emerald-500" };
+    if (percentage >= 60) return { label: "Intermediate", color: "from-blue-500 to-cyan-500" };
+    return { label: "Basic", color: "from-orange-500 to-amber-500" };
   };
 
   const generateAIReview = () => {
@@ -433,6 +440,25 @@ const TestResults = ({
                 <div className="text-xs text-muted-foreground">Attempted</div>
               </div>
             </div>
+
+            {/* Level Badge */}
+            {(() => {
+              const level = getLevel(score.percentage);
+              return (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="mb-6"
+                >
+                  <span
+                    className={`inline-block px-6 py-2 rounded-full text-white font-bold text-lg bg-gradient-to-r ${level.color} shadow-neu-lg`}
+                  >
+                    {level.label} Level
+                  </span>
+                </motion.div>
+              );
+            })()}
 
             {/* Performance Message */}
             <div className="mb-6">
