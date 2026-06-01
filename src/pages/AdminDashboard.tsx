@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { collection, onSnapshot, QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, FileSearch, ArrowRight, X, RefreshCw } from "lucide-react";
+import { Shield, FileSearch, ArrowRight, X, RefreshCw, Download, Printer, Building2, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 import { Navbar } from "@/components/layout/Navbar";
 
-// --- Types ---
 type CollectionName = "contactRequests" | "careerApplications" | "leadershipTestResults" | "testResults";
 
 interface FirestoreRecord {
@@ -23,108 +24,258 @@ const TABS: { id: CollectionName; label: string }[] = [
   { id: "testResults", label: "Other Tests" },
 ];
 
+const deriveLevel = (item: FirestoreRecord): string => {
+  if (item.level) return item.level;
+  const pct =
+    item.percentage ??
+    (item.score && item.totalQuestions
+      ? Math.round((item.score / item.totalQuestions) * 100)
+      : null);
+  if (pct === null) return "N/A";
+  if (pct >= 75) return "Advanced";
+  if (pct >= 45) return "Intermediate";
+  return "Basic";
+};
+
+const levelColor = (level: string) => {
+  if (level === "Advanced") return "#16a34a";
+  if (level === "Intermediate") return "#d97706";
+  return "#dc2626";
+};
+
 export const AdminDashboard: React.FC = () => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [activeTab, setActiveTab] = useState<CollectionName>("contactRequests");
   const [loading, setLoading] = useState(true);
   const [selectedRecord, setSelectedRecord] = useState<FirestoreRecord | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<string>("All");
   const [data, setData] = useState<Record<CollectionName, FirestoreRecord[]>>({
     contactRequests: [],
     careerApplications: [],
     leadershipTestResults: [],
-    testResults: []
+    testResults: [],
   });
 
   const navigate = useNavigate();
 
-  // Helper: Extract timestamp for sorting
   const extractTime = (obj: any): number => {
-    const possibleFields = ["createdAt", "timestamp", "submittedAt", "date", "updatedAt"];
-    for (const field of possibleFields) {
-      const value = obj?.[field];
-      if (value?.seconds) return value.seconds;
-      if (value instanceof Date) return value.getTime() / 1000;
-      if (typeof value === "string") {
-        const parsed = new Date(value).getTime();
-        if (!isNaN(parsed)) return parsed / 1000;
+    for (const field of ["createdAt", "timestamp", "submittedAt", "date", "updatedAt"]) {
+      const v = obj?.[field];
+      if (v?.seconds) return v.seconds;
+      if (v instanceof Date) return v.getTime() / 1000;
+      if (typeof v === "string") {
+        const p = new Date(v).getTime();
+        if (!isNaN(p)) return p / 1000;
       }
     }
     return 0;
   };
 
-  // Auth & Admin Check
+  // Derived company list from testResults
+  const companyList = useMemo(() => {
+    const companies = new Set(
+      data.testResults.map((r) => r.company || "Unknown").filter(Boolean)
+    );
+    return ["All", ...Array.from(companies).sort()];
+  }, [data.testResults]);
+
+  // Filtered results based on dropdown
+  const filteredTestResults = useMemo(() => {
+    if (selectedCompany === "All") return data.testResults;
+    return data.testResults.filter((r) => (r.company || "Unknown") === selectedCompany);
+  }, [data.testResults, selectedCompany]);
+
+  // Export XLSX (respects filter)
+  const exportXLSX = () => {
+    const rows = filteredTestResults.map((item) => ({
+      Name: item.name || "N/A",
+      Email: item.email || "N/A",
+      Company: item.company || "N/A",
+      Test: item.testType || "Grammar",
+      Score: `${item.score || 0}/${item.totalQuestions || item.total || 0}`,
+      Percentage: `${item.percentage || 0}%`,
+      Level: deriveLevel(item),
+      Date: item.createdAt?.seconds
+        ? new Date(item.createdAt.seconds * 1000).toLocaleDateString()
+        : "",
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Test Results");
+    const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const file = new Blob([buf], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const label = selectedCompany === "All" ? "All_Companies" : selectedCompany.replace(/\s+/g, "_");
+    saveAs(file, `Test_Report_${label}_${new Date().toISOString().split("T")[0]}.xlsx`);
+  };
+
+  // Print report (respects filter)
+  const printReport = () => {
+    const rows = filteredTestResults;
+    if (rows.length === 0) { toast.error("No results to print for this selection."); return; }
+
+    const today = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+
+    const grouped: Record<string, FirestoreRecord[]> = {};
+    rows.forEach((item) => {
+      const co = item.company || "Unknown";
+      if (!grouped[co]) grouped[co] = [];
+      grouped[co].push(item);
+    });
+
+    const tableRows = (items: FirestoreRecord[]) =>
+      items.map((item, i) => {
+        const level = deriveLevel(item);
+        const color = levelColor(level);
+        const score = item.score ?? 0;
+        const total = item.totalQuestions || item.total || 0;
+        const pct = item.percentage ?? (total ? Math.round((score / total) * 100) : 0);
+        return `<tr>
+          <td>${i + 1}</td>
+          <td><strong>${item.name || "—"}</strong></td>
+          <td>${item.email || "—"}</td>
+          <td>${item.testType || "Grammar"}</td>
+          <td style="text-align:center">${score}/${total}</td>
+          <td style="text-align:center">${pct}%</td>
+          <td style="text-align:center"><span style="background:${color}22;color:${color};border:1px solid ${color}66;padding:2px 10px;border-radius:20px;font-weight:700;font-size:11px;">${level}</span></td>
+          <td>${item.createdAt?.seconds ? new Date(item.createdAt.seconds * 1000).toLocaleDateString("en-IN") : "—"}</td>
+        </tr>`;
+      }).join("");
+
+    const companySections = Object.entries(grouped).map(([co, items]) => `
+      <div class="company-section">
+        <div class="company-header">
+          <span class="company-name">🏢 ${co}</span>
+          <span class="company-count">${items.length} employee${items.length !== 1 ? "s" : ""}</span>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Test</th><th>Score</th><th>%</th><th>Level</th><th>Date</th></tr></thead>
+          <tbody>${tableRows(items)}</tbody>
+        </table>
+      </div>`).join("");
+
+    const adv = rows.filter((r) => deriveLevel(r) === "Advanced").length;
+    const int = rows.filter((r) => deriveLevel(r) === "Intermediate").length;
+    const bas = rows.filter((r) => deriveLevel(r) === "Basic").length;
+
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/>
+<title>Test Report — ${selectedCompany === "All" ? "All Companies" : selectedCompany}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;font-size:12px;color:#1a1a2e;background:#fff;padding:32px 40px}
+  .report-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #1a1a2e;padding-bottom:20px;margin-bottom:28px}
+  .report-title{font-family:'DM Serif Display',serif;font-size:28px;line-height:1.1}
+  .report-subtitle{font-size:13px;color:#555;margin-top:4px}
+  .report-meta{text-align:right;font-size:11px;color:#666;line-height:1.8}
+  .report-meta strong{color:#1a1a2e}
+  .summary-strip{display:flex;gap:16px;margin-bottom:28px}
+  .summary-card{flex:1;padding:12px 16px;border-radius:10px;background:#f4f4f8;border-left:4px solid #1a1a2e}
+  .summary-card.green{border-color:#16a34a;background:#f0fdf4}
+  .summary-card.amber{border-color:#d97706;background:#fffbeb}
+  .summary-card.red{border-color:#dc2626;background:#fef2f2}
+  .summary-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888}
+  .summary-value{font-size:22px;font-weight:700;margin-top:2px}
+  .company-section{margin-bottom:32px}
+  .company-header{display:flex;justify-content:space-between;align-items:center;background:#1a1a2e;color:#fff;padding:8px 16px;border-radius:8px 8px 0 0}
+  .company-name{font-weight:700;font-size:13px}
+  .company-count{font-size:11px;opacity:.7}
+  table{width:100%;border-collapse:collapse;border:1px solid #e2e2ec}
+  thead tr{background:#f8f8fc}
+  th{padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#666;border-bottom:2px solid #e2e2ec;white-space:nowrap}
+  td{padding:9px 10px;border-bottom:1px solid #ebebf2;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:#fafafe}
+  .report-footer{margin-top:36px;padding-top:16px;border-top:1px solid #ddd;display:flex;justify-content:space-between;font-size:10px;color:#999}
+  .confidential{font-weight:700;color:#dc2626;letter-spacing:1px;text-transform:uppercase}
+  @media print{body{padding:16px 20px}.company-section{page-break-inside:avoid}@page{margin:12mm;size:A4 landscape}}
+</style>
+</head><body>
+  <div class="report-header">
+    <div>
+      <div class="report-title">Employee Test Report</div>
+      <div class="report-subtitle">${selectedCompany === "All" ? "All Companies" : selectedCompany} &mdash; ${today}</div>
+    </div>
+    <div class="report-meta">
+      <div><strong>Generated:</strong> ${today}</div>
+      <div><strong>Total Records:</strong> ${rows.length}</div>
+      <div><strong>Companies:</strong> ${Object.keys(grouped).length}</div>
+    </div>
+  </div>
+  <div class="summary-strip">
+    <div class="summary-card"><div class="summary-label">Total Tested</div><div class="summary-value">${rows.length}</div></div>
+    <div class="summary-card green"><div class="summary-label">Advanced</div><div class="summary-value">${adv}</div></div>
+    <div class="summary-card amber"><div class="summary-label">Intermediate</div><div class="summary-value">${int}</div></div>
+    <div class="summary-card red"><div class="summary-label">Basic</div><div class="summary-value">${bas}</div></div>
+  </div>
+  ${companySections}
+  <div class="report-footer">
+    <span class="confidential">Confidential — For Manager Use Only</span>
+    <span>Printed on ${today}</span>
+  </div>
+  <script>window.onload=()=>window.print();</script>
+</body></html>`;
+
+    const win = window.open("", "_blank");
+    if (win) { win.document.write(html); win.document.close(); }
+    else toast.error("Popup blocked. Please allow popups for this site.");
+  };
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (!currentUser) {
-        setAuthChecked(true);
-        navigate("/");
-        return;
-      }
+    const unsub = onAuthStateChanged(auth, async (currentUser) => {
+      if (!currentUser) { setAuthChecked(true); navigate("/"); return; }
       try {
         const token = await currentUser.getIdTokenResult();
-        if (!token.claims.admin) {
-          toast.error("Access denied. Admin only.");
-          navigate("/");
-          return;
-        }
+        if (!token.claims.admin) { toast.error("Access denied."); navigate("/"); return; }
         setUser(currentUser);
         setAuthChecked(true);
-      } catch (err) {
-        console.error("Error checking admin claim:", err);
-        navigate("/");
-      }
+      } catch { navigate("/"); }
     });
-    return () => unsubscribe();
+    return () => unsub();
   }, [navigate]);
 
-  // Data Fetching
   useEffect(() => {
     if (!user) return;
-
-    const unsubscribers = TABS.map((tab) => {
-      return onSnapshot(
+    const unsubscribers = TABS.map((tab) =>
+      onSnapshot(
         collection(db, tab.id),
         (snapshot) => {
-          const docsData: FirestoreRecord[] = snapshot.docs.map(
-            (d: QueryDocumentSnapshot<DocumentData>) => ({
-              id: d.id,
-              ...d.data(),
-            })
+          const docs: FirestoreRecord[] = snapshot.docs.map(
+            (d: QueryDocumentSnapshot<DocumentData>) => ({ id: d.id, ...d.data() })
           );
-          docsData.sort((a, b) => extractTime(b) - extractTime(a));
-          
-          setData((prev) => ({ ...prev, [tab.id]: docsData }));
+          docs.sort((a, b) => extractTime(b) - extractTime(a));
+          setData((prev) => ({ ...prev, [tab.id]: docs }));
           setLoading(false);
         },
         (error) => {
           console.error(`Error fetching ${tab.id}:`, error);
           toast.error(`Failed to load ${tab.label}`);
         }
-      );
-    });
-
-    return () => unsubscribers.forEach((unsub) => unsub());
+      )
+    );
+    return () => unsubscribers.forEach((u) => u());
   }, [user]);
 
-  if (!authChecked) {
+  useEffect(() => { setSelectedCompany("All"); }, [activeTab]);
+
+  if (!authChecked)
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-pulse text-muted-foreground">Verifying credentials...</div>
       </div>
     );
-  }
 
   if (!user) return null;
 
-  const currentData = data[activeTab] || [];
+  const currentData = activeTab === "testResults" ? filteredTestResults : (data[activeTab] || []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20">
       <Navbar />
-
       <main className="max-w-7xl mx-auto pt-28 px-4 pb-12">
-        {/* Header Section */}
+
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
@@ -135,8 +286,7 @@ export const AdminDashboard: React.FC = () => {
               <p className="text-muted-foreground text-sm">Centralized system management</p>
             </div>
           </div>
-          
-          <button 
+          <button
             onClick={() => navigate("/admin/blogs")}
             className="group flex items-center gap-2 px-5 py-2.5 rounded-xl bg-card border border-border hover:border-primary/50 transition-all shadow-sm"
           >
@@ -146,20 +296,18 @@ export const AdminDashboard: React.FC = () => {
         </header>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* FIXED SIDEBAR TABS */}
           <aside className="w-full lg:w-72 flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-hide">
             {TABS.map((tab) => {
               const isActive = activeTab === tab.id;
               const count = data[tab.id]?.length || 0;
-              
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`
                     relative flex items-center justify-between min-w-[160px] lg:min-w-0 px-4 py-3.5 rounded-xl font-medium transition-all
-                    ${isActive 
-                      ? "bg-primary text-primary-foreground shadow-md ring-1 ring-primary" 
+                    ${isActive
+                      ? "bg-primary text-primary-foreground shadow-md ring-1 ring-primary"
                       : "bg-card text-muted-foreground hover:bg-secondary/50 border border-transparent"}
                   `}
                 >
@@ -167,24 +315,60 @@ export const AdminDashboard: React.FC = () => {
                   {count > 0 && (
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                       isActive ? "bg-white/20 text-white" : "bg-primary/10 text-primary"
-                    }`}>
-                      {count}
-                    </span>
+                    }`}>{count}</span>
                   )}
                 </button>
               );
             })}
           </aside>
 
-          {/* Main Content Area */}
           <section className="flex-1 min-h-[600px]">
             <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
-              <div className="flex justify-between items-center mb-8">
+
+              <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                 <h2 className="text-xl font-semibold capitalize">
-                  {activeTab.replace(/([A-Z])/g, ' $1')}
+                  {activeTab.replace(/([A-Z])/g, " $1")}
                 </h2>
-                <div className="text-xs text-muted-foreground flex items-center gap-2">
-                  <span>{currentData.length} records</span>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-xs text-muted-foreground">
+                    {currentData.length} records
+                  </span>
+
+                  {activeTab === "testResults" && companyList.length > 1 && (
+                    <div className="relative">
+                      <Building2 size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                      <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                      <select
+                        value={selectedCompany}
+                        onChange={(e) => setSelectedCompany(e.target.value)}
+                        className="pl-8 pr-8 py-2 rounded-xl border border-border bg-card text-sm font-medium appearance-none cursor-pointer hover:border-primary/50 focus:border-primary outline-none transition-all"
+                      >
+                        {companyList.map((co) => (
+                          <option key={co} value={co}>{co}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {activeTab === "testResults" && (
+                    <>
+                      <button
+                        onClick={printReport}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card hover:bg-secondary/50 hover:border-primary/40 transition-all text-sm font-medium"
+                      >
+                        <Printer size={14} />
+                        Print Report
+                      </button>
+                      <button
+                        onClick={exportXLSX}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition-all text-sm font-medium shadow-sm"
+                      >
+                        <Download size={14} />
+                        Export XLSX
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -219,9 +403,33 @@ export const AdminDashboard: React.FC = () => {
                             {doc.subject || doc.message || (doc.score !== undefined ? `Score: ${doc.score}` : "View entry")}
                           </p>
                         </div>
+
+                        {activeTab === "testResults" && (
+                          <div className="flex items-center gap-2 mb-3 flex-wrap">
+                            {doc.company && (
+                              <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-secondary/50 text-muted-foreground border border-border font-medium">
+                                {doc.company}
+                              </span>
+                            )}
+                            <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-bold border ${
+                              deriveLevel(doc) === "Advanced"
+                                ? "bg-green-500/10 text-green-600 border-green-500/30"
+                                : deriveLevel(doc) === "Intermediate"
+                                ? "bg-amber-500/10 text-amber-600 border-amber-500/30"
+                                : "bg-red-500/10 text-red-600 border-red-500/30"
+                            }`}>
+                              {deriveLevel(doc)}
+                            </span>
+                          </div>
+                        )}
+
                         <div className="flex justify-between items-center pt-3 border-t border-border/50">
-                          <span className="text-[10px] font-mono text-muted-foreground">ID: {doc.id.slice(0, 12)}</span>
-                          <span className="text-xs font-semibold text-primary group-hover:underline">Details →</span>
+                          <span className="text-[10px] font-mono text-muted-foreground">
+                            ID: {doc.id.slice(0, 12)}
+                          </span>
+                          <span className="text-xs font-semibold text-primary group-hover:underline">
+                            Details →
+                          </span>
                         </div>
                       </motion.div>
                     ))}
@@ -233,11 +441,10 @@ export const AdminDashboard: React.FC = () => {
         </div>
       </main>
 
-      {/* Detail Modal */}
       <AnimatePresence>
         {selectedRecord && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="absolute inset-0 bg-background/80 backdrop-blur-md"
               onClick={() => setSelectedRecord(null)}
