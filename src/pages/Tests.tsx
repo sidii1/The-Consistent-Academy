@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  addDoc,
-  collection,
-  serverTimestamp,
   doc,
   setDoc,
-  getDoc,
 } from "firebase/firestore";
 import {
   signInWithEmailAndPassword,
@@ -29,6 +25,7 @@ import {
 } from "lucide-react";
 
 import { db, auth } from "@/lib/firebase";
+import { saveTestResult } from "@/lib/saveTestResult"; // ← single source of truth
 import { kidsTestData, adultsTestData } from "@/lib/tests/testData";
 import { leadershipTestData } from "@/lib/tests/leadershipTestData";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
@@ -75,7 +72,6 @@ const Tests = () => {
     try {
       if (isRegister) {
         const cred = await createUserWithEmailAndPassword(auth, email, password);
-        // Save name + company to Firestore
         await setDoc(doc(db, "users", cred.user.uid), {
           name: name.trim(),
           company: company.trim(),
@@ -105,50 +101,6 @@ const Tests = () => {
     setCompany("");
   };
 
-  // Helper: fetch user profile then save test result with name + company attached
-  const saveResult = async (payload: Record<string, unknown>) => {
-  if (!user) return;
-  try {
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    const profile = userDoc.exists() ? userDoc.data() : {};
- 
-    await addDoc(collection(db, "testResults"), {
-      ...payload,
-      userId: user.uid,        // ← must be "userId" to match Firestore rule
-      email: user.email,
-      name: profile.name || "N/A",
-      company: profile.company || "N/A",
-      createdAt: serverTimestamp(),
-    });
- 
-    console.log("✅ Test result saved");
-  } catch (err) {
-    console.error("❌ Firestore write FAILED:", err);
-  }
-};
-// In Tests.tsx, replace your saveResult function with this:
-
-const saveResult = async (payload: Record<string, unknown>) => {
-  if (!user) return;
-  try {
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    const profile = userDoc.exists() ? userDoc.data() : {};
-
-    await addDoc(collection(db, "testResults"), {
-      ...payload,
-      userId: user.uid,        // ← must be "userId" to match Firestore rule
-      email: user.email,
-      name: profile.name || "N/A",
-      company: profile.company || "N/A",
-      createdAt: serverTimestamp(),
-    });
-
-    console.log("✅ Test result saved");
-  } catch (err) {
-    console.error("❌ Firestore write FAILED:", err);
-  }
-};
-
   /* ── Test interfaces ── */
   if (selectedTest && user) {
     if (selectedTest === "leadership") {
@@ -157,8 +109,20 @@ const saveResult = async (payload: Record<string, unknown>) => {
           <LeadershipTestInterface
             testData={leadershipTestData}
             onBackToSelection={() => setSelectedTest(null)}
-            onTestComplete={({ scores, dominantStyle, secondaryStyle }) => {
-              console.log("🔥 LEADERSHIP TEST COMPLETE", { dominantStyle, secondaryStyle, scores });
+            onTestComplete={async ({ scores, dominantStyle, secondaryStyle }) => {
+              try {
+                await saveTestResult({
+                  testType: "Leadership",
+                  dominantStyle,
+                  secondaryStyle,
+                  scores,
+                  score: 0,
+                  totalQuestions: 60,
+                  percentage: 0,
+                });
+              } catch (err) {
+                console.error("❌ Failed to save leadership result:", err);
+              }
             }}
           />
         </div>
@@ -172,14 +136,17 @@ const saveResult = async (payload: Record<string, unknown>) => {
           testData={testData}
           onBackToSelection={() => setSelectedTest(null)}
           onTestComplete={async ({ attempted, correct, wrong }) => {
-            console.log("🔥 TEST COMPLETE", { attempted, correct, wrong });
-            await saveResult({
-              testType: selectedTest,
-              score: correct,
-              total: attempted,
-              wrong,
-              percentage: Math.round((correct / attempted) * 100),
-            });
+            try {
+              await saveTestResult({
+                testType: selectedTest === "kids" ? "Kids Grammar" : "Adults Grammar",
+                score: correct,
+                totalQuestions: attempted, // ← was "total", now matches rule + admin dashboard
+                wrong,
+                percentage: attempted > 0 ? Math.round((correct / attempted) * 100) : 0,
+              });
+            } catch (err) {
+              console.error("❌ Failed to save test result:", err);
+            }
           }}
         />
       </div>
