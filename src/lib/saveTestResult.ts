@@ -22,6 +22,13 @@ export async function saveTestResult(payload: TestPayload) {
   const userData = userDoc.exists() ? userDoc.data() : {};
 
   await addDoc(collection(db, "testResults"), {
+  ...payload,
+  userId: user.uid,   // ← was "uid", now matches the Firestore rule
+  email: user.email,
+  name: userData.name || "N/A",
+  company: userData.company || "N/A",
+  createdAt: serverTimestamp(),
+});await addDoc(collection(db, "testResults"), {
     ...payload,
     uid: user.uid,
     email: user.email,
