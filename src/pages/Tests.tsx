@@ -107,6 +107,26 @@ const Tests = () => {
 
   // Helper: fetch user profile then save test result with name + company attached
   const saveResult = async (payload: Record<string, unknown>) => {
+  if (!user) return;
+  try {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    const profile = userDoc.exists() ? userDoc.data() : {};
+ 
+    await addDoc(collection(db, "testResults"), {
+      ...payload,
+      userId: user.uid,        // ← must be "userId" to match Firestore rule
+      email: user.email,
+      name: profile.name || "N/A",
+      company: profile.company || "N/A",
+      createdAt: serverTimestamp(),
+    });
+ 
+    console.log("✅ Test result saved");
+  } catch (err) {
+    console.error("❌ Firestore write FAILED:", err);
+  }
+};
+ const saveResult = async (payload: Record<string, unknown>) => {
     if (!user) return;
     try {
       const userDoc = await getDoc(doc(db, "users", user.uid));
