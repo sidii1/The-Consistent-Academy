@@ -4,7 +4,7 @@ import { collection, onSnapshot, QueryDocumentSnapshot, DocumentData } from "fir
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
 import { db, auth } from "@/lib/firebase";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, FileSearch, ArrowRight, X, RefreshCw, Download, Printer, Building2, ChevronDown } from "lucide-react";
+import { Shield, FileSearch, ArrowRight, X, RefreshCw, Download, Printer, Building2, ChevronDown, LayoutList } from "lucide-react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
@@ -118,14 +118,12 @@ export const AdminDashboard: React.FC = () => {
 
     const today = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
 
-    const grouped: Record<string, FirestoreRecord[]> = {};
-    rows.forEach((item) => {
-      const co = item.company || "Unknown";
-      if (!grouped[co]) grouped[co] = [];
-      grouped[co].push(item);
-    });
+    const adv = rows.filter((r) => deriveLevel(r) === "Advanced");
+    const int = rows.filter((r) => deriveLevel(r) === "Intermediate");
+    const bas = rows.filter((r) => deriveLevel(r) === "Basic");
 
-    const tableRows = (items: FirestoreRecord[]) =>
+    // Shared table row builder
+    const tableRows = (items: FirestoreRecord[], showLevel = false) =>
       items.map((item, i) => {
         const level = deriveLevel(item);
         const color = levelColor(level);
@@ -136,14 +134,46 @@ export const AdminDashboard: React.FC = () => {
           <td>${i + 1}</td>
           <td><strong>${item.name || "—"}</strong></td>
           <td>${item.email || "—"}</td>
-          <td>${item.testType || "Grammar"}</td>
+          <td>${item.company || "—"}</td>
           <td style="text-align:center">${score}/${total}</td>
           <td style="text-align:center">${pct}%</td>
-          <td style="text-align:center"><span style="background:${color}22;color:${color};border:1px solid ${color}66;padding:2px 10px;border-radius:20px;font-weight:700;font-size:11px;">${level}</span></td>
+          ${showLevel ? `<td style="text-align:center"><span style="background:${color}22;color:${color};border:1px solid ${color}66;padding:2px 10px;border-radius:20px;font-weight:700;font-size:11px;">${level}</span></td>` : ""}
           <td>${item.createdAt?.seconds ? new Date(item.createdAt.seconds * 1000).toLocaleDateString("en-IN") : "—"}</td>
         </tr>`;
       }).join("");
 
+    // Adults test: segregate by level
+    const adultsRows = rows.filter((r) => r.testType === "adults");
+    const isAdultsOnly = adultsRows.length > 0 && rows.every((r) => r.testType === "adults");
+
+    // Level section builder (for adults segregation)
+    const levelSection = (
+      label: string,
+      emoji: string,
+      headerBg: string,
+      items: FirestoreRecord[]
+    ) => {
+      if (items.length === 0) return "";
+      return `
+      <div class="company-section">
+        <div class="company-header" style="background:${headerBg}">
+          <span class="company-name">${emoji} ${label}</span>
+          <span class="company-count">${items.length} employee${items.length !== 1 ? "s" : ""}</span>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Company</th><th>Score</th><th>%</th><th>Date</th></tr></thead>
+          <tbody>${tableRows(items, false)}</tbody>
+        </table>
+      </div>`;
+    };
+
+    // Company section builder (for mixed / non-adults)
+    const grouped: Record<string, FirestoreRecord[]> = {};
+    rows.forEach((item) => {
+      const co = item.company || "Unknown";
+      if (!grouped[co]) grouped[co] = [];
+      grouped[co].push(item);
+    });
     const companySections = Object.entries(grouped).map(([co, items]) => `
       <div class="company-section">
         <div class="company-header">
@@ -151,17 +181,27 @@ export const AdminDashboard: React.FC = () => {
           <span class="company-count">${items.length} employee${items.length !== 1 ? "s" : ""}</span>
         </div>
         <table>
-          <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Test</th><th>Score</th><th>%</th><th>Level</th><th>Date</th></tr></thead>
-          <tbody>${tableRows(items)}</tbody>
+          <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Company</th><th>Score</th><th>%</th><th>Level</th><th>Date</th></tr></thead>
+          <tbody>${tableRows(items, true)}</tbody>
         </table>
       </div>`).join("");
 
-    const adv = rows.filter((r) => deriveLevel(r) === "Advanced").length;
-    const int = rows.filter((r) => deriveLevel(r) === "Intermediate").length;
-    const bas = rows.filter((r) => deriveLevel(r) === "Basic").length;
+    // Decide layout: level-segregated for adults, company-grouped otherwise
+    const bodySections = isAdultsOnly
+      ? `
+        <div class="section-intro">Results are grouped by proficiency level.</div>
+        ${levelSection("Advanced", "🏆", "#15803d", adv)}
+        ${levelSection("Intermediate", "📈", "#b45309", int)}
+        ${levelSection("Basic", "📘", "#b91c1c", bas)}
+      `
+      : companySections;
+
+    const subtitleLabel = isAdultsOnly
+      ? `Adults Test — Level Report`
+      : `${selectedCompany === "All" ? "All Companies" : selectedCompany}`;
 
     const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/>
-<title>Test Report — ${selectedCompany === "All" ? "All Companies" : selectedCompany}</title>
+<title>Test Report — ${subtitleLabel}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
@@ -178,6 +218,7 @@ export const AdminDashboard: React.FC = () => {
   .summary-card.red{border-color:#dc2626;background:#fef2f2}
   .summary-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888}
   .summary-value{font-size:22px;font-weight:700;margin-top:2px}
+  .section-intro{font-size:11px;color:#888;margin-bottom:16px;font-style:italic}
   .company-section{margin-bottom:32px}
   .company-header{display:flex;justify-content:space-between;align-items:center;background:#1a1a2e;color:#fff;padding:8px 16px;border-radius:8px 8px 0 0}
   .company-name{font-weight:700;font-size:13px}
@@ -196,12 +237,127 @@ export const AdminDashboard: React.FC = () => {
   <div class="report-header">
     <div>
       <div class="report-title">Employee Test Report</div>
-      <div class="report-subtitle">${selectedCompany === "All" ? "All Companies" : selectedCompany} &mdash; ${today}</div>
+      <div class="report-subtitle">${subtitleLabel} &mdash; ${today}</div>
     </div>
     <div class="report-meta">
       <div><strong>Generated:</strong> ${today}</div>
       <div><strong>Total Records:</strong> ${rows.length}</div>
-      <div><strong>Companies:</strong> ${Object.keys(grouped).length}</div>
+      <div><strong>${isAdultsOnly ? "Test" : "Companies"}:</strong> ${isAdultsOnly ? "Adults (Grammar)" : Object.keys(grouped).length}</div>
+    </div>
+  </div>
+  <div class="summary-strip">
+    <div class="summary-card"><div class="summary-label">Total Tested</div><div class="summary-value">${rows.length}</div></div>
+    <div class="summary-card green"><div class="summary-label">Advanced</div><div class="summary-value">${adv.length}</div></div>
+    <div class="summary-card amber"><div class="summary-label">Intermediate</div><div class="summary-value">${int.length}</div></div>
+    <div class="summary-card red"><div class="summary-label">Basic</div><div class="summary-value">${bas.length}</div></div>
+  </div>
+  ${bodySections}
+  <div class="report-footer">
+    <span class="confidential">Confidential — For Manager Use Only</span>
+    <span>Printed on ${today}</span>
+  </div>
+  <script>window.onload=()=>window.print();</script>
+</body></html>`;
+
+    const win = window.open("", "_blank");
+    if (win) { win.document.write(html); win.document.close(); }
+    else toast.error("Popup blocked. Please allow popups for this site.");
+  };
+
+  // ── Print By Level (all companies, segregated purely by level) ──
+  const printByLevel = () => {
+    const rows = filteredTestResults;
+    if (rows.length === 0) { toast.error("No results to print."); return; }
+
+    const today = new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
+
+    const levels = [
+      { label: "Advanced",     emoji: "🏆", bg: "#15803d", filter: "Advanced" },
+      { label: "Intermediate", emoji: "📈", bg: "#b45309", filter: "Intermediate" },
+      { label: "Basic",        emoji: "📘", bg: "#b91c1c", filter: "Basic" },
+    ];
+
+    const tableRows = (items: FirestoreRecord[]) =>
+      items.map((item, i) => {
+        const score = item.score ?? 0;
+        const total = item.totalQuestions || item.total || 0;
+        const pct = item.percentage ?? (total ? Math.round((score / total) * 100) : 0);
+        return `<tr>
+          <td>${i + 1}</td>
+          <td><strong>${item.name || "—"}</strong></td>
+          <td>${item.email || "—"}</td>
+          <td>${item.company || "—"}</td>
+          <td>${item.testType || "—"}</td>
+          <td style="text-align:center">${score}/${total}</td>
+          <td style="text-align:center">${pct}%</td>
+          <td>${item.createdAt?.seconds ? new Date(item.createdAt.seconds * 1000).toLocaleDateString("en-IN") : "—"}</td>
+        </tr>`;
+      }).join("");
+
+    const levelSections = levels.map(({ label, emoji, bg, filter }) => {
+      const items = rows.filter((r) => deriveLevel(r) === filter);
+      if (items.length === 0) return "";
+      return `
+        <div class="level-section">
+          <div class="level-header" style="background:${bg}">
+            <span class="level-name">${emoji} ${label}</span>
+            <span class="level-count">${items.length} employee${items.length !== 1 ? "s" : ""}</span>
+          </div>
+          <table>
+            <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Company</th><th>Test</th><th>Score</th><th>%</th><th>Date</th></tr></thead>
+            <tbody>${tableRows(items)}</tbody>
+          </table>
+        </div>`;
+    }).join("");
+
+    const adv = rows.filter((r) => deriveLevel(r) === "Advanced").length;
+    const int = rows.filter((r) => deriveLevel(r) === "Intermediate").length;
+    const bas = rows.filter((r) => deriveLevel(r) === "Basic").length;
+
+    const companyLabel = selectedCompany === "All" ? "All Companies" : selectedCompany;
+
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/>
+<title>Level Report — ${companyLabel}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'DM Sans',sans-serif;font-size:12px;color:#1a1a2e;background:#fff;padding:32px 40px}
+  .report-header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #1a1a2e;padding-bottom:20px;margin-bottom:28px}
+  .report-title{font-family:'DM Serif Display',serif;font-size:28px;line-height:1.1}
+  .report-subtitle{font-size:13px;color:#555;margin-top:4px}
+  .report-meta{text-align:right;font-size:11px;color:#666;line-height:1.8}
+  .report-meta strong{color:#1a1a2e}
+  .summary-strip{display:flex;gap:16px;margin-bottom:28px}
+  .summary-card{flex:1;padding:12px 16px;border-radius:10px;background:#f4f4f8;border-left:4px solid #1a1a2e}
+  .summary-card.green{border-color:#16a34a;background:#f0fdf4}
+  .summary-card.amber{border-color:#d97706;background:#fffbeb}
+  .summary-card.red{border-color:#dc2626;background:#fef2f2}
+  .summary-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888}
+  .summary-value{font-size:22px;font-weight:700;margin-top:2px}
+  .level-section{margin-bottom:32px}
+  .level-header{display:flex;justify-content:space-between;align-items:center;color:#fff;padding:10px 16px;border-radius:8px 8px 0 0}
+  .level-name{font-weight:700;font-size:14px;letter-spacing:0.3px}
+  .level-count{font-size:11px;opacity:.75}
+  table{width:100%;border-collapse:collapse;border:1px solid #e2e2ec}
+  thead tr{background:#f8f8fc}
+  th{padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:#666;border-bottom:2px solid #e2e2ec;white-space:nowrap}
+  td{padding:9px 10px;border-bottom:1px solid #ebebf2;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:nth-child(even) td{background:#fafafe}
+  .report-footer{margin-top:36px;padding-top:16px;border-top:1px solid #ddd;display:flex;justify-content:space-between;font-size:10px;color:#999}
+  .confidential{font-weight:700;color:#dc2626;letter-spacing:1px;text-transform:uppercase}
+  @media print{body{padding:16px 20px}.level-section{page-break-inside:avoid}@page{margin:12mm;size:A4 landscape}}
+</style>
+</head><body>
+  <div class="report-header">
+    <div>
+      <div class="report-title">Level-wise Test Report</div>
+      <div class="report-subtitle">${companyLabel} &mdash; ${today}</div>
+    </div>
+    <div class="report-meta">
+      <div><strong>Generated:</strong> ${today}</div>
+      <div><strong>Total Records:</strong> ${rows.length}</div>
+      <div><strong>Scope:</strong> ${companyLabel}</div>
     </div>
   </div>
   <div class="summary-strip">
@@ -210,7 +366,7 @@ export const AdminDashboard: React.FC = () => {
     <div class="summary-card amber"><div class="summary-label">Intermediate</div><div class="summary-value">${int}</div></div>
     <div class="summary-card red"><div class="summary-label">Basic</div><div class="summary-value">${bas}</div></div>
   </div>
-  ${companySections}
+  ${levelSections}
   <div class="report-footer">
     <span class="confidential">Confidential — For Manager Use Only</span>
     <span>Printed on ${today}</span>
@@ -353,6 +509,13 @@ export const AdminDashboard: React.FC = () => {
 
                   {activeTab === "testResults" && (
                     <>
+                      <button
+                        onClick={printByLevel}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card hover:bg-secondary/50 hover:border-primary/40 transition-all text-sm font-medium"
+                      >
+                        <LayoutList size={14} />
+                        By Level
+                      </button>
                       <button
                         onClick={printReport}
                         className="flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-card hover:bg-secondary/50 hover:border-primary/40 transition-all text-sm font-medium"
