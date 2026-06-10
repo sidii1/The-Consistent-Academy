@@ -58,9 +58,10 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
-    "dompurify": "^3.3.3",
+    "dompurify": "^3.4.5",
     "dotenv": "^17.3.1",
     "embla-carousel-react": "^8.6.0",
+    "file-saver": "^2.0.5",
     "firebase": "^12.10.0",
     "firebase-admin": "^13.7.0",
     "firebase-functions": "^7.0.6",
@@ -84,6 +85,7 @@
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.9",
+    "xlsx": "^0.18.5",
     "zod": "^3.25.76"
   },
   "devDependencies": {
