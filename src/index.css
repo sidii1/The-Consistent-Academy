@@ -683,9 +683,237 @@
     background: hsl(var(--primary) / 0.5);
   }
 
+
   /* Firefox scrollbar */
   .custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--primary) / 0.3) hsl(var(--secondary));
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   🌿 CC CLUB — DARK CYBER-EMERALD NEUMORPHIC DESIGN SYSTEM
+   Scoped to .cc-club-scope — never pollutes the main site.
+   Dark neumorphism: NO white shadows. Ever.
+   ═══════════════════════════════════════════════════════════ */
+
+.cc-club-scope {
+  --cc-bg:              hsl(210 18% 9%);
+  --cc-surface:         hsl(210 15% 13%);
+  --cc-surface-raised:  hsl(210 15% 17%);
+  --cc-surface-high:    hsl(210 14% 21%);
+  --cc-border:          hsl(210 15% 22%);
+
+  --cc-text:            hsl(210 20% 88%);
+  --cc-text-muted:      hsl(210 12% 52%);
+  --cc-text-faint:      hsl(210 10% 38%);
+
+  --cc-accent:          hsl(165 60% 42%);
+  --cc-accent-bright:   hsl(165 70% 52%);
+  --cc-accent-soft:     hsl(165 40% 22%);
+  --cc-accent-glow:     hsl(165 70% 52% / 0.25);
+
+  --cc-amber:           hsl(38 88% 55%);
+  --cc-amber-soft:      hsl(38 60% 22%);
+
+  --cc-success:         hsl(145 60% 42%);
+  --cc-success-soft:    hsl(145 45% 18%);
+  --cc-warning:         hsl(38 88% 55%);
+  --cc-warning-soft:    hsl(38 60% 18%);
+  --cc-danger:          hsl(0 65% 52%);
+  --cc-danger-soft:     hsl(0 50% 18%);
+  --cc-pending:         hsl(200 70% 50%);
+  --cc-pending-soft:    hsl(200 50% 18%);
+
+  --cc-shadow-dark:     hsl(210 22% 5%);
+  --cc-shadow-light:    hsl(210 13% 20%);
+
+  --cc-neu-sm:
+    4px 4px 8px var(--cc-shadow-dark),
+    -4px -4px 8px var(--cc-shadow-light);
+
+  --cc-neu-md:
+    6px 6px 14px var(--cc-shadow-dark),
+    -6px -6px 14px var(--cc-shadow-light);
+
+  --cc-neu-lg:
+    10px 10px 24px var(--cc-shadow-dark),
+    -10px -10px 24px var(--cc-shadow-light);
+
+  --cc-neu-xl:
+    14px 14px 36px var(--cc-shadow-dark),
+    -14px -14px 36px var(--cc-shadow-light);
+
+  --cc-neu-inset-sm:
+    inset 3px 3px 7px var(--cc-shadow-dark),
+    inset -3px -3px 7px var(--cc-shadow-light);
+
+  --cc-neu-inset-md:
+    inset 5px 5px 12px var(--cc-shadow-dark),
+    inset -5px -5px 12px var(--cc-shadow-light);
+
+  --cc-glow-teal:       0 0 20px hsl(165 70% 52% / 0.35);
+  --cc-glow-teal-lg:    0 0 40px hsl(165 70% 52% / 0.4);
+  --cc-glow-amber:      0 0 20px hsl(38 88% 55% / 0.35);
+
+  --cc-grad-hero:
+    radial-gradient(ellipse 80% 60% at 50% 0%, hsl(165 50% 18% / 0.5), transparent 70%),
+    linear-gradient(180deg, hsl(210 18% 9%), hsl(210 18% 7%));
+
+  --cc-grad-accent:     linear-gradient(135deg, hsl(165 60% 42%), hsl(165 70% 52%));
+  --cc-grad-amber:      linear-gradient(135deg, hsl(38 80% 48%), hsl(38 92% 60%));
+  --cc-grad-card:       linear-gradient(145deg, hsl(210 15% 15%), hsl(210 15% 12%));
+  --cc-grad-surface:    linear-gradient(145deg, hsl(210 15% 17%), hsl(210 15% 13%));
+
+  font-family: 'Inter', sans-serif;
+  color: var(--cc-text);
+  background: var(--cc-bg);
+  min-height: 100vh;
+}
+
+.cc-club-scope .cc-surface {
+  background: var(--cc-grad-card);
+  box-shadow: var(--cc-neu-md);
+}
+
+.cc-club-scope .cc-surface-raised {
+  background: var(--cc-grad-surface);
+  box-shadow: var(--cc-neu-lg);
+}
+
+.cc-club-scope .cc-inset {
+  background: hsl(210 18% 10%);
+  box-shadow: var(--cc-neu-inset-md);
+}
+
+.cc-club-scope .cc-inset-sm {
+  background: hsl(210 18% 10%);
+  box-shadow: var(--cc-neu-inset-sm);
+}
+
+.cc-club-scope .cc-btn-primary {
+  background: var(--cc-grad-accent);
+  color: hsl(210 18% 8%);
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition:
+    box-shadow 350ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform   350ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--cc-neu-md), var(--cc-glow-teal);
+}
+
+.cc-club-scope .cc-btn-primary:hover {
+  box-shadow: var(--cc-neu-lg), var(--cc-glow-teal-lg);
+  transform: translateY(-2px);
+}
+
+.cc-club-scope .cc-btn-primary:active {
+  box-shadow: var(--cc-neu-inset-sm);
+  transform: translateY(0);
+}
+
+.cc-club-scope .cc-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.cc-club-scope .cc-btn-ghost {
+  background: transparent;
+  color: var(--cc-accent-bright);
+  border: 1.5px solid var(--cc-accent-soft);
+  cursor: pointer;
+  transition: background 250ms ease, border-color 250ms ease;
+}
+
+.cc-club-scope .cc-btn-ghost:hover {
+  background: var(--cc-accent-soft);
+  border-color: var(--cc-accent);
+}
+
+.cc-club-scope .cc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.cc-club-scope .cc-chip-pending  { background: var(--cc-pending-soft);  color: var(--cc-pending); }
+.cc-club-scope .cc-chip-done     { background: var(--cc-success-soft);  color: var(--cc-success); }
+.cc-club-scope .cc-chip-redo     { background: var(--cc-danger-soft);   color: var(--cc-danger); }
+.cc-club-scope .cc-chip-idle     { background: hsl(210 15% 18%);        color: var(--cc-text-faint); }
+.cc-club-scope .cc-chip-amber    { background: var(--cc-amber-soft);    color: var(--cc-amber); }
+
+.cc-club-scope .cc-text-gradient {
+  background: var(--cc-grad-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cc-club-scope .cc-text-amber-gradient {
+  background: var(--cc-grad-amber);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cc-club-scope .cc-divider {
+  border: none;
+  border-top: 1px solid var(--cc-border);
+  margin: 1.5rem 0;
+}
+
+.cc-club-scope::-webkit-scrollbar,
+.cc-club-scope *::-webkit-scrollbar { width: 6px; }
+
+.cc-club-scope::-webkit-scrollbar-track,
+.cc-club-scope *::-webkit-scrollbar-track { background: hsl(210 18% 8%); }
+
+.cc-club-scope::-webkit-scrollbar-thumb,
+.cc-club-scope *::-webkit-scrollbar-thumb {
+  background: var(--cc-border);
+  border-radius: 100px;
+}
+
+.cc-club-scope::-webkit-scrollbar-thumb:hover,
+.cc-club-scope *::-webkit-scrollbar-thumb:hover { background: var(--cc-accent-soft); }
+
+@keyframes cc-shimmer-bg {
+  0%, 100% { opacity: 0.6; transform: scale(1) translateY(0); }
+  50%       { opacity: 1;   transform: scale(1.06) translateY(-12px); }
+}
+
+@keyframes cc-pulse-ring {
+  0%   { transform: scale(0.92); opacity: 0.6; }
+  70%  { transform: scale(1.08); opacity: 0; }
+  100% { transform: scale(0.92); opacity: 0; }
+}
+
+@keyframes cc-score-count {
+  from { transform: translateY(6px); opacity: 0; }
+  to   { transform: translateY(0);   opacity: 1; }
+}
+
+@keyframes cc-node-pop {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes cc-fade-in-up {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.cc-animate-shimmer     { animation: cc-shimmer-bg 8s ease-in-out infinite; }
+.cc-animate-pulse-ring  { animation: cc-pulse-ring 2.4s ease-out infinite; }
+.cc-animate-score       { animation: cc-score-count 0.4s ease-out forwards; }
+.cc-animate-node        { animation: cc-node-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.cc-animate-fade-up     { animation: cc-fade-in-up 0.6s ease-out forwards; }
+

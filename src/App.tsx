@@ -20,6 +20,7 @@ import BlogPost from "./pages/BlogPost";
 import AdminBlogs from "./pages/AdminBlogs";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "@/components/AdminRoute";
+import ClubPage from "./pages/club/ClubPage";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,8 @@ const AnimatedRoutes = () => {
             </AdminRoute>
           }
         />
+        {/* CC Club — standalone, no navbar, self-managed auth gate */}
+        <Route path="/club" element={<ClubPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
