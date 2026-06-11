@@ -325,3 +325,33 @@ export async function getMeetingReports(college: string): Promise<CCMeetingRepor
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() } as CCMeetingReport));
 }
+export async function getCCAttendanceStats(
+  college: string
+): Promise<Record<string, { present: number; total: number; percentage: number }>> {
+  const q = query(
+    collection(db, "cc_meeting_reports"),
+    where("college", "==", college)
+  );
+  const snap = await getDocs(q);
+  const reports = snap.docs.map((d) => d.data() as CCMeetingReport);
+ 
+  const stats: Record<string, { present: number; total: number; percentage: number }> = {};
+ 
+  reports.forEach((report) => {
+    report.attendance.forEach((entry) => {
+      if (!stats[entry.uid]) {
+        stats[entry.uid] = { present: 0, total: 0, percentage: 0 };
+      }
+      stats[entry.uid].total += 1;
+      if (entry.present) stats[entry.uid].present += 1;
+    });
+  });
+ 
+  // Calculate percentages
+  Object.keys(stats).forEach((uid) => {
+    const s = stats[uid];
+    s.percentage = s.total > 0 ? Math.round((s.present / s.total) * 100) : 0;
+  });
+ 
+  return stats;
+}
