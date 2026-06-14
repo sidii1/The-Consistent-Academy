@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -139,7 +139,7 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Fredoka', sans-serif;
     /* Subtle purple-tinted background for entire page */
     background: linear-gradient(180deg, hsl(250 30% 96%), hsl(260 25% 97%));
   }
@@ -149,6 +149,33 @@
   /* ═══════════════════════════════════════════════════════════
      🔷 NEUMORPHIC UTILITY CLASSES - Core Depth System
      ═══════════════════════════════════════════════════════════ */
+
+  /* Base Surface Colors */
+  .bg-neo-base { background: #E0E5EC; }
+  .text-neo-fg { color: #3D4852; }
+  
+  /* Neumorphic surfaces */
+  .neo-surface {
+    background: #E0E5EC;
+    box-shadow: 9px 9px 16px rgb(163 177 198 / 0.6), -9px -9px 16px rgba(255,255,255,0.5);
+  }
+  .neo-surface-sm {
+    background: #E0E5EC;
+    box-shadow: 5px 5px 10px rgb(163 177 198 / 0.6), -5px -5px 10px rgba(255,255,255,0.5);
+  }
+  .neo-inset {
+    background: #E0E5EC;
+    box-shadow: inset 6px 6px 10px rgb(163 177 198 / 0.6), inset -6px -6px 10px rgba(255,255,255,0.5);
+  }
+  .neo-inset-sm {
+    background: #E0E5EC;
+    box-shadow: inset 3px 3px 6px rgb(163 177 198 / 0.6), inset -3px -3px 6px rgba(255,255,255,0.5);
+  }
+  .neo-accent-surface {
+    background: linear-gradient(135deg, #795690, #9570C6);
+    box-shadow: 9px 9px 16px rgb(163 177 198 / 0.6), -9px -9px 16px rgba(255,255,255,0.5);
+  }
+
 
   /* ─────────────────────────────────────────────────────
      RAISED SURFACES - Default elevated state
@@ -792,7 +819,7 @@
   --cc-grad-amber:
     linear-gradient(135deg, hsl(38 80% 55%), hsl(38 92% 68%));
 
-  font-family: 'Inter', sans-serif;
+  font-family: 'Fredoka', sans-serif;
   color: var(--cc-text);
   background: var(--cc-bg);
   min-height: 100vh;

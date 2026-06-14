@@ -20,6 +20,7 @@ import { SectionWrapper } from "@/components/ui/section-wrapper";
 import { AnimatedHeading, AnimatedText } from "@/components/ui/animated-text";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import SplitText from "@/components/ui/SplitText";
 
 import Founder from "../components/Founder";
 import Testimonials from "../components/Testimonials";
@@ -133,46 +134,62 @@ const HeroSection = ({ startAnim }: { startAnim: boolean }) => {
       <div className="relative z-10 container mx-auto px-8 lg:px-16 flex flex-col items-start justify-center min-h-[90vh] pt-24">
 
         {/* Main heading — left aligned, massive, Erica One */}
-        <div style={{ fontFamily: '"Erica One", cursive' }} className="mb-10 leading-[1.0] tracking-tight">
+        <div style={{ fontFamily: '"Erica One", cursive' }} className="mb-10 flex flex-col leading-[1.0] tracking-tight">
 
-          {/* "The" */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={startAnim ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-            transition={{ delay: 0.1, duration: 0.7, ease: "easeOut" }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-neo-fg mb-1"
-          >
-            The
-          </motion.div>
+          {/* "The" — animated as a single word */}
+          {startAnim && (
+            <SplitText
+              text="The"
+              tag="div"
+              splitType="words"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-neo-fg mb-1"
+              textAlign="left"
+              delay={80}
+              duration={0.7}
+              ease="power3.out"
+              from={{ opacity: 0, y: 40 }}
+              to={{ opacity: 1, y: 0 }}
+              threshold={0}
+              rootMargin="0px"
+            />
+          )}
 
-          {/* "Consistent" — brand purple, massive, with bouncing dot over "i" */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={startAnim ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-            transition={{ delay: 0.25, duration: 0.7, ease: "easeOut" }}
-            className="text-[4rem] sm:text-[5.5rem] md:text-[7.5rem] lg:text-[10rem] leading-none py-2"
-            style={{ color: "#9738F9" }}
-          >
-            {/* "Cons" */}
-            Cons
-            {/* "i" wrapped so we can put the bouncing dot above it */}
-            <span className="relative inline-block">
-              {/* The actual letter i — rendered normally */}
-              <span className="inline-block" style={{ position: "relative" }}>i</span>
-            </span>
-            {/* "stent" */}
-            stent
-          </motion.div>
+          {/* "Consistent" — brand purple, per-character */}
+          {startAnim && (
+            <SplitText
+              text="Consistent"
+              tag="div"
+              splitType="chars"
+              className="text-[4rem] sm:text-[5.5rem] md:text-[7.5rem] lg:text-[10rem] leading-none py-2"
+              style={{ color: "#9738F9" }}
+              textAlign="left"
+              delay={120}
+              duration={1.2}
+              ease="power3.out"
+              from={{ opacity: 0, y: 60 }}
+              to={{ opacity: 1, y: 0 }}
+              threshold={0}
+              rootMargin="0px"
+            />
+          )}
 
-          {/* "Academy" */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={startAnim ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-            transition={{ delay: 0.4, duration: 0.7, ease: "easeOut" }}
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-neo-fg mt-2"
-          >
-            Academy
-          </motion.div>
+          {/* "Academy" — per-character */}
+          {startAnim && (
+            <SplitText
+              text="Academy"
+              tag="div"
+              splitType="chars"
+              className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-neo-fg mt-2"
+              textAlign="left"
+              delay={55}
+              duration={0.65}
+              ease="power3.out"
+              from={{ opacity: 0, y: 50 }}
+              to={{ opacity: 1, y: 0 }}
+              threshold={0}
+              rootMargin="0px"
+            />
+          )}
         </div>
 
         {/* CTA */}
