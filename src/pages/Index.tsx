@@ -21,6 +21,7 @@ import { AnimatedHeading, AnimatedText } from "@/components/ui/animated-text";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import SplitText from "@/components/ui/SplitText";
+import EnrollNowButton from "@/components/ui/EnrollNowButton";
 
 import Founder from "../components/Founder";
 import Testimonials from "../components/Testimonials";
@@ -108,15 +109,7 @@ const EnrollButton = ({ delay, startAnim }: { delay: number; startAnim: boolean 
     transition={{ delay, duration: 0.8, ease: "easeOut" }}
   >
     <Link to="/contact">
-      <NeumorphicButton variant="primary" size="lg" className="gap-3 px-10">
-        Enroll Now
-        <motion.span
-          animate={{ x: [0, 4, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <ArrowRight className="w-5 h-5" />
-        </motion.span>
-      </NeumorphicButton>
+      <EnrollNowButton />
     </Link>
   </motion.div>
 );
@@ -140,7 +133,7 @@ const HeroSection = ({ startAnim }: { startAnim: boolean }) => {
           {startAnim && (
             <SplitText
               text="The"
-              tag="div"
+              tag="span"
               splitType="words"
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-neo-fg mb-1"
               textAlign="left"
@@ -158,7 +151,7 @@ const HeroSection = ({ startAnim }: { startAnim: boolean }) => {
           {startAnim && (
             <SplitText
               text="Consistent"
-              tag="div"
+              tag="span"
               splitType="chars"
               className="text-[4rem] sm:text-[5.5rem] md:text-[7.5rem] lg:text-[10rem] leading-none py-2"
               style={{ color: "#9738F9" }}
@@ -177,7 +170,7 @@ const HeroSection = ({ startAnim }: { startAnim: boolean }) => {
           {startAnim && (
             <SplitText
               text="Academy"
-              tag="div"
+              tag="span"
               splitType="chars"
               className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-neo-fg mt-2"
               textAlign="left"
