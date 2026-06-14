@@ -7,6 +7,7 @@ import { AnimatePresence } from "framer-motion";
 
 
 import ScrollToTop from "@/components/ScrollToTop";
+import { SmoothScrolling } from "@/components/SmoothScrolling";
 
 import Index from "./pages/Index";
 import Courses from "./pages/Courses";
@@ -68,10 +69,12 @@ const App = () => (
       <Toaster />
       <Sonner position="top-right" />
       <BrowserRouter>
-        {/* 🔥 This fixes the scroll bug */}
-        <ScrollToTop />
+        <SmoothScrolling>
+          {/* 🔥 This fixes the scroll bug */}
+          <ScrollToTop />
 
-        <AnimatedRoutes />
+          <AnimatedRoutes />
+        </SmoothScrolling>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

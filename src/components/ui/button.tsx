@@ -4,29 +4,96 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Neumorphic Button — Phase 2
+ *
+ * Design Rules:
+ *  - No borders. No bg-white. No flat designs.
+ *  - Default (primary): accent violet gradient surface, shadow-neo-flat
+ *  - Secondary: bg-neo-base surface, shadow-neo-flat
+ *  - Ghost: transparent, only subtle shadow on hover
+ *  - Hover: translateY(-1px) + shadow-neo-lifted
+ *  - Active: translateY(0.5px) + shadow-neo-inset-sm (physical press-down)
+ *  - Focus: 2px accent ring via shadow-neo-focus (box-shadow approach, no outline)
+ *  - Min touch target: 44px height (h-11 = 44px)
+ */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all duration-300 ease-out focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  // ── Base: shared across all variants ──
+  [
+    "relative inline-flex items-center justify-center gap-2",
+    "whitespace-nowrap font-semibold",
+    "transition-all duration-300 ease-out",
+    "disabled:pointer-events-none disabled:opacity-50",
+    "focus-visible:outline-none",
+    "[&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  ].join(" "),
   {
     variants: {
       variant: {
-        default: 
-          "bg-gradient-to-br from-primary to-accent text-primary-foreground rounded-2xl shadow-neu hover:shadow-neu-lg hover:-translate-y-0.5 active:shadow-neu-inset active:translate-y-0 focus-visible:shadow-glow-purple-lg",
-        destructive: 
-          "bg-gradient-to-br from-destructive to-red-500 text-destructive-foreground rounded-2xl shadow-neu hover:shadow-neu-lg hover:-translate-y-0.5 active:shadow-neu-inset active:translate-y-0",
-        outline: 
-          "border-2 border-border rounded-2xl shadow-neu bg-gradient-to-br from-card to-secondary/30 hover:shadow-neu-lg hover:-translate-y-0.5 active:shadow-neu-inset active:translate-y-0 text-foreground",
-        secondary: 
-          "rounded-2xl shadow-neu bg-gradient-to-br from-card to-secondary/50 text-secondary-foreground hover:shadow-neu-lg hover:-translate-y-0.5 active:shadow-neu-inset active:translate-y-0",
-        ghost: 
-          "rounded-2xl hover:bg-accent/20 hover:text-accent-foreground active:bg-accent/30",
-        link: 
-          "text-primary underline-offset-4 hover:underline",
+        // ── PRIMARY: Accent violet, extruded from surface ──
+        default: [
+          "neo-accent-surface",           // gradient bg + neo-flat shadow + hover/active built-in
+          "text-white",
+          "rounded-neo-btn",
+          "focus-visible:shadow-neo-focus",
+        ].join(" "),
+
+        // ── SECONDARY: Same surface color, extruded ──
+        secondary: [
+          "neo-surface",
+          "text-neo-fg",
+          "rounded-neo-btn",
+          "hover:shadow-neo-lifted hover:-translate-y-px",
+          "active:neo-inset-sm active:translate-y-0.5",
+          "focus-visible:shadow-neo-focus",
+        ].join(" "),
+
+        // ── DESTRUCTIVE: Keeps semantic red, neumorphic depth ──
+        destructive: [
+          "bg-gradient-to-br from-red-500 to-red-600",
+          "text-white",
+          "rounded-neo-btn",
+          "shadow-neo-flat",
+          "hover:shadow-neo-lifted hover:-translate-y-px",
+          "active:shadow-neo-inset-sm active:translate-y-0.5",
+          "focus-visible:shadow-neo-focus",
+        ].join(" "),
+
+        // ── OUTLINE: No border — uses shallow neo-flat-sm depth ──
+        outline: [
+          "bg-neo-base",
+          "text-neo-fg",
+          "rounded-neo-btn",
+          "shadow-neo-flat-sm",
+          "hover:shadow-neo-flat hover:-translate-y-px",
+          "active:shadow-neo-inset-sm active:translate-y-0.5",
+          "focus-visible:shadow-neo-focus",
+        ].join(" "),
+
+        // ── GHOST: Minimal, gains depth only on hover ──
+        ghost: [
+          "bg-transparent text-neo-muted",
+          "rounded-neo-btn",
+          "hover:bg-neo-base hover:shadow-neo-flat-sm hover:text-neo-fg",
+          "active:shadow-neo-inset-sm",
+          "focus-visible:shadow-neo-focus",
+        ].join(" "),
+
+        // ── LINK: Purely typographic, no depth ──
+        link: [
+          "text-neo-accent underline-offset-4",
+          "hover:underline hover:text-neo-accent-light",
+          "focus-visible:shadow-neo-focus rounded-neo-inner",
+        ].join(" "),
       },
+
       size: {
-        default: "h-10 px-5 py-2.5 rounded-2xl",
-        sm: "h-9 rounded-xl px-4 text-xs",
-        lg: "h-12 rounded-2xl px-8 text-base",
-        icon: "h-10 w-10 rounded-xl",
+        // Min 44px height for WCAG touch targets
+        default: "h-11 px-6 py-2.5 text-sm",
+        sm:      "h-9  px-4 py-2   text-xs  rounded-neo-inner",
+        lg:      "h-12 px-8 py-3   text-base",
+        xl:      "h-14 px-10 py-3.5 text-lg",
+        icon:    "h-11 w-11",
       },
     },
     defaultVariants: {
@@ -45,7 +112,13 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
-    return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    );
   },
 );
 Button.displayName = "Button";

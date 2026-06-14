@@ -121,38 +121,38 @@ export const Navbar = () => {
         <div className="container mx-auto px-4 pl-[15px] md:pl-[15px] lg:pl-4 lg:max-w-6xl">
           <motion.nav
             className={cn(
-              "rounded-3xl px-6 py-4 transition-all duration-500",
+              "rounded-neo-card px-6 py-4 transition-all duration-500",
               isScrolled
-                ? "glass-strong shadow-neu-lg"
+                ? "neo-surface"
                 : "bg-transparent"
             )}
           >
             <div className="flex items-center justify-between">
               <Link to="/" className="flex items-center gap-3">
                 <motion.div
-                  className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-accent shadow-neu-lg flex items-center justify-center overflow-hidden"
+                  className="w-10 h-10 rounded-neo-btn neo-surface flex items-center justify-center overflow-hidden"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <img src="/logo.png" alt="The Consistent Academy" className="w-full h-full object-cover" />
                 </motion.div>
-                <span className="font-bold text-xl text-foreground hidden sm:block">
+                <span className="font-display font-bold text-xl text-neo-fg hidden sm:block">
                   The Consistent Academy
                 </span>
               </Link>
 
               {/* Desktop Navigation */}
-              <div className="hidden lg:flex items-center gap-2">
+              <div className="hidden lg:flex items-center gap-1">
                 {navLinks.map((item) => (
                   <motion.button
                     key={item.name}
                     onClick={() => handleNavClick(item)}
                     className={cn(
-                      "px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-400 ease-out",
+                      "px-4 py-2.5 rounded-neo-btn text-sm font-medium transition-all duration-300 ease-out",
                       isActive(item)
-                        ? "text-primary shadow-neu-inset bg-gradient-to-br from-primary/10 to-accent/5"
-                        : "text-muted-foreground hover:text-foreground hover:shadow-neu-sm hover:bg-gradient-to-br hover:from-card hover:to-secondary/20 active:shadow-neu-inset-sm"
+                        ? "neo-inset text-neo-accent"
+                        : "text-neo-muted hover:text-neo-fg hover:neo-surface-sm active:neo-inset-sm"
                     )}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -172,7 +172,7 @@ export const Navbar = () => {
 
               {/* Mobile Menu Button */}
               <motion.button
-                className="lg:hidden p-2.5 rounded-2xl shadow-neu bg-gradient-to-br from-card to-secondary/20 active:shadow-neu-inset"
+                className="lg:hidden p-2.5 rounded-neo-btn neo-surface-sm text-neo-fg active:neo-inset-sm"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 whileTap={{ scale: 0.95 }}
               >
@@ -192,12 +192,14 @@ export const Navbar = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div 
-              className="absolute inset-0 bg-background/80 backdrop-blur-md" 
-              onClick={() => setIsMobileMenuOpen(false)} 
+            {/* Backdrop */}
+            <div
+              className="absolute inset-0 bg-neo-base/80 backdrop-blur-md"
+              onClick={() => setIsMobileMenuOpen(false)}
             />
+            {/* Panel — extruded surface */}
             <motion.div
-              className="absolute top-24 left-4 right-4 rounded-3xl shadow-neu-2xl p-6 bg-gradient-to-br from-card to-secondary/20"
+              className="absolute top-24 left-4 right-4 rounded-neo-card neo-surface p-6"
               initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
@@ -214,10 +216,10 @@ export const Navbar = () => {
                     <button
                       onClick={() => handleNavClick(item)}
                       className={cn(
-                        "block w-full text-left px-5 py-3.5 rounded-2xl text-base font-medium transition-all duration-300",
+                        "block w-full text-left px-5 py-3.5 rounded-neo-btn text-base font-medium transition-all duration-300",
                         isActive(item)
-                          ? "text-primary shadow-neu-inset bg-gradient-to-br from-primary/10 to-accent/5"
-                          : "text-foreground hover:shadow-neu-sm hover:bg-gradient-to-br hover:from-card hover:to-secondary/30 active:shadow-neu-inset-sm"
+                          ? "neo-inset text-neo-accent"
+                          : "text-neo-fg hover:neo-surface-sm active:neo-inset-sm"
                       )}
                     >
                       {item.name}

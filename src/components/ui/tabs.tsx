@@ -3,6 +3,15 @@ import * as TabsPrimitive from "@radix-ui/react-tabs";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Neumorphic Tabs — Phase 2
+ *
+ * Design Rules:
+ *  - TabsList: deep inset track (neo-inset-deep) — acts as a carved rail
+ *  - TabsTrigger: resting = flat/transparent inside the track
+ *               active = extruded (neo-surface-sm) — pops out of the track
+ *  - No borders. No ring-offset. Accent ring via box-shadow on focus.
+ */
 const Tabs = TabsPrimitive.Root;
 
 const TabsList = React.forwardRef<
@@ -12,7 +21,11 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
+      // Inset track — carved into the page
+      "inline-flex items-center justify-center gap-1",
+      "bg-neo-base shadow-neo-inset-deep",
+      "rounded-neo-btn p-1.5",
+      "text-neo-muted",
       className,
     )}
     {...props}
@@ -27,7 +40,22 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+      // Base
+      "inline-flex items-center justify-center whitespace-nowrap",
+      "px-4 py-2 text-sm font-medium",
+      "rounded-xl",
+      "transition-all duration-300 ease-out",
+      "disabled:pointer-events-none disabled:opacity-50",
+      // Resting: transparent, recessed in track
+      "text-neo-muted",
+      // Active: pops out as extruded surface
+      "data-[state=active]:bg-neo-base",
+      "data-[state=active]:shadow-neo-flat-sm",
+      "data-[state=active]:text-neo-fg",
+      "data-[state=active]:font-semibold",
+      // Focus
+      "focus-visible:outline-none",
+      "focus-visible:shadow-neo-focus",
       className,
     )}
     {...props}
@@ -42,7 +70,8 @@ const TabsContent = React.forwardRef<
   <TabsPrimitive.Content
     ref={ref}
     className={cn(
-      "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+      "mt-4",
+      "focus-visible:outline-none focus-visible:shadow-neo-focus rounded-neo-btn",
       className,
     )}
     {...props}

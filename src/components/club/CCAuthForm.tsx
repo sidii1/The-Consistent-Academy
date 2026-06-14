@@ -50,14 +50,13 @@ const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "12px 14px",
   borderRadius: "12px",
-  background: "hsl(210 18% 10%)",
-  boxShadow:
-    "inset 4px 4px 8px var(--cc-shadow-dark), inset -4px -4px 8px var(--cc-shadow-light)",
-  border: "1px solid var(--cc-border)",
+  background: "var(--cc-bg)",
+  boxShadow: "var(--cc-neu-inset-md)",
+  border: "none",
   color: "var(--cc-text)",
   fontSize: "0.92rem",
   outline: "none",
-  transition: "border-color 200ms",
+  transition: "box-shadow 200ms",
   boxSizing: "border-box",
 };
 
@@ -164,7 +163,7 @@ const CCAuthForm: React.FC = () => {
                 boxShadow: "var(--cc-glow-teal)",
               }}
             >
-              <Mic2 size={26} color="hsl(210 18% 8%)" strokeWidth={2.5} />
+              <Mic2 size={26} color="#f0ecf8" strokeWidth={2.5} />
             </div>
             <h2
               style={{
@@ -211,7 +210,7 @@ const CCAuthForm: React.FC = () => {
                     fontWeight: 600,
                     transition: "all 250ms",
                     background: active ? "var(--cc-grad-accent)" : "transparent",
-                    color: active ? "hsl(210 18% 8%)" : "var(--cc-text-muted)",
+                    color: active ? "#FFFFFF" : "var(--cc-text-muted)",
                     boxShadow: active ? "var(--cc-neu-sm)" : "none",
                   }}
                 >
@@ -241,8 +240,8 @@ const CCAuthForm: React.FC = () => {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       style={inputStyle}
-                      onFocus={(e) => (e.target.style.borderColor = "var(--cc-accent)")}
-                      onBlur={(e) => (e.target.style.borderColor = "var(--cc-border)")}
+                      onFocus={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-deep), var(--cc-glow-purple)")}
+                      onBlur={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-md)")}
                     />
                   </Field>
 
@@ -252,11 +251,11 @@ const CCAuthForm: React.FC = () => {
                       value={college}
                       onChange={(e) => setCollege(e.target.value)}
                       style={{ ...inputStyle, cursor: "pointer" }}
-                      onFocus={(e) => (e.target.style.borderColor = "var(--cc-accent)")}
-                      onBlur={(e) => (e.target.style.borderColor = "var(--cc-border)")}
+                      onFocus={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-deep), var(--cc-glow-purple)")}
+                      onBlur={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-md)")}
                     >
                       {COLLEGES.map((c) => (
-                        <option key={c} value={c} style={{ background: "hsl(210 15% 13%)" }}>
+                        <option key={c} value={c} style={{ background: "var(--cc-bg)" }}>
                           {c}
                         </option>
                       ))}
@@ -269,11 +268,11 @@ const CCAuthForm: React.FC = () => {
                       value={role}
                       onChange={(e) => setRole(e.target.value as CCRole)}
                       style={{ ...inputStyle, cursor: "pointer" }}
-                      onFocus={(e) => (e.target.style.borderColor = "var(--cc-accent)")}
-                      onBlur={(e) => (e.target.style.borderColor = "var(--cc-border)")}
+                      onFocus={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-deep), var(--cc-glow-purple)")}
+                      onBlur={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-md)")}
                     >
                       {ROLES.map((r) => (
-                        <option key={r} value={r} style={{ background: "hsl(210 15% 13%)" }}>
+                        <option key={r} value={r} style={{ background: "var(--cc-bg)" }}>
                           {r} {r === "Student" ? "(Default)" : ""}
                         </option>
                       ))}
@@ -291,8 +290,8 @@ const CCAuthForm: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={inputStyle}
-                onFocus={(e) => (e.target.style.borderColor = "var(--cc-accent)")}
-                onBlur={(e) => (e.target.style.borderColor = "var(--cc-border)")}
+                onFocus={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-deep), var(--cc-glow-purple)")}
+                onBlur={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-md)")}
               />
             </Field>
 
@@ -305,8 +304,8 @@ const CCAuthForm: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   style={{ ...inputStyle, paddingRight: "44px" }}
-                  onFocus={(e) => (e.target.style.borderColor = "var(--cc-accent)")}
-                  onBlur={(e) => (e.target.style.borderColor = "var(--cc-border)")}
+                  onFocus={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-deep), var(--cc-glow-purple)")}
+                  onBlur={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-md)")}
                 />
                 <button
                   type="button"

@@ -692,41 +692,50 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
-   🌿 CC CLUB — DARK CYBER-EMERALD NEUMORPHIC DESIGN SYSTEM
+   🌙 CC CLUB — SOFT NOIR DARK NEUMORPHIC DESIGN SYSTEM
    Scoped to .cc-club-scope — never pollutes the main site.
-   Dark neumorphism: NO white shadows. Ever.
    ═══════════════════════════════════════════════════════════ */
 
 .cc-club-scope {
-  --cc-bg:              hsl(210 18% 9%);
-  --cc-surface:         hsl(210 15% 13%);
-  --cc-surface-raised:  hsl(210 15% 17%);
-  --cc-surface-high:    hsl(210 14% 21%);
-  --cc-border:          hsl(210 15% 22%);
+  /* ── Background layers ── */
+  --cc-bg:              #1E222B;          /* premium deep slate-charcoal clay base */
+  --cc-surface:         #1E222B;          /* elements molded from the background */
+  --cc-surface-raised:  #1E222B;          /* raised elements are also molded */
+  --cc-border:          transparent;      /* Neumorphic physics forbid standard borders */
 
-  --cc-text:            hsl(210 20% 88%);
-  --cc-text-muted:      hsl(210 12% 52%);
-  --cc-text-faint:      hsl(210 10% 38%);
+  /* ── Typography ── */
+  --cc-text:            #E2E8F0;          /* High legibility off-white/slate text (WCAG AAA) */
+  --cc-text-muted:      #94A3B8;          /* Soft grey for secondary text (WCAG AA) */
+  --cc-text-faint:      #64748B;          /* Even softer grey */
 
-  --cc-accent:          hsl(165 60% 42%);
-  --cc-accent-bright:   hsl(165 70% 52%);
-  --cc-accent-soft:     hsl(165 40% 22%);
-  --cc-accent-glow:     hsl(165 70% 52% / 0.25);
+  /* ── Accent palette (Vibrant violet) ── */
+  --cc-accent:          #6C63FF;          /* Vibrant violet core state */
+  --cc-accent-bright:   #8B84FF;          /* Upper gradient step / hover */
+  --cc-accent-vivid:    #A39EFF;          /* Vivid highlight */
+  --cc-accent-soft:     rgba(108, 99, 255, 0.15); 
+  --cc-accent-glow:     rgba(108, 99, 255, 0.28);
 
-  --cc-amber:           hsl(38 88% 55%);
-  --cc-amber-soft:      hsl(38 60% 22%);
+  /* ── Semantic colors ── */
+  --cc-amber:           hsl(38 88% 65%);
+  --cc-amber-soft:      rgba(255,185,85,0.15);
 
-  --cc-success:         hsl(145 60% 42%);
-  --cc-success-soft:    hsl(145 45% 18%);
-  --cc-warning:         hsl(38 88% 55%);
-  --cc-warning-soft:    hsl(38 60% 18%);
-  --cc-danger:          hsl(0 65% 52%);
-  --cc-danger-soft:     hsl(0 50% 18%);
-  --cc-pending:         hsl(200 70% 50%);
-  --cc-pending-soft:    hsl(200 50% 18%);
+  --cc-success:         #38B2AC;          /* Matte teal for verification */
+  --cc-success-soft:    rgba(56, 178, 172, 0.15);
+  --cc-warning:         hsl(38 88% 65%);
+  --cc-warning-soft:    rgba(255,185,85,0.15);
+  --cc-danger:          hsl(0 72% 62%);
+  --cc-danger-soft:     rgba(248,113,113,0.15);
+  --cc-pending:         hsl(200 70% 60%);
+  --cc-pending-soft:    rgba(96,165,250,0.15);
 
-  --cc-shadow-dark:     hsl(210 22% 5%);
-  --cc-shadow-light:    hsl(210 13% 20%);
+  /* ── Soft Noir Neumorphic shadow system ──
+     Extracted to Tailwind config as well, but mapping to CSS vars for custom classes
+  ── */
+  --cc-shadow-dark:     rgba(0, 0, 0, 0.5);
+  --cc-shadow-light:    rgba(255, 255, 255, 0.04);
+  
+  --cc-shadow-dark-hover:  rgba(0, 0, 0, 0.6);
+  --cc-shadow-light-hover: rgba(255, 255, 255, 0.05);
 
   --cc-neu-sm:
     4px 4px 8px var(--cc-shadow-dark),
@@ -740,10 +749,6 @@
     10px 10px 24px var(--cc-shadow-dark),
     -10px -10px 24px var(--cc-shadow-light);
 
-  --cc-neu-xl:
-    14px 14px 36px var(--cc-shadow-dark),
-    -14px -14px 36px var(--cc-shadow-light);
-
   --cc-neu-inset-sm:
     inset 3px 3px 7px var(--cc-shadow-dark),
     inset -3px -3px 7px var(--cc-shadow-light);
@@ -752,24 +757,50 @@
     inset 5px 5px 12px var(--cc-shadow-dark),
     inset -5px -5px 12px var(--cc-shadow-light);
 
-  --cc-glow-teal:       0 0 20px hsl(165 70% 52% / 0.35);
-  --cc-glow-teal-lg:    0 0 40px hsl(165 70% 52% / 0.4);
-  --cc-glow-amber:      0 0 20px hsl(38 88% 55% / 0.35);
+  --cc-neu-inset-deep:
+    inset 8px 8px 20px var(--cc-shadow-dark),
+    inset -8px -8px 20px var(--cc-shadow-light);
 
+  /* ── Glow tokens ── */
+  --cc-glow-purple:     0 0 0 2px #0f0818, 0 0 0 4px #9570C6;
+  --cc-glow-purple-md:  0 0 20px rgba(149,112,198,0.4);
+  --cc-glow-purple-lg:  0 0 40px rgba(149,112,198,0.5);
+  --cc-glow-amber:      0 0 20px rgba(255,185,85,0.35);
+
+  /* ── Keep legacy aliases so existing components don't break ── */
+  --cc-glow-teal:       var(--cc-glow-purple-md);
+  --cc-glow-teal-lg:    var(--cc-glow-purple-lg);
+
+  /* ── Gradients ── */
+  /* Hero: deep purple atmospheric radial */
   --cc-grad-hero:
-    radial-gradient(ellipse 80% 60% at 50% 0%, hsl(165 50% 18% / 0.5), transparent 70%),
-    linear-gradient(180deg, hsl(210 18% 9%), hsl(210 18% 7%));
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(149,112,198,0.20), transparent 70%),
+    linear-gradient(180deg, #0f0818, #120a1e);
 
-  --cc-grad-accent:     linear-gradient(135deg, hsl(165 60% 42%), hsl(165 70% 52%));
-  --cc-grad-amber:      linear-gradient(135deg, hsl(38 80% 48%), hsl(38 92% 60%));
-  --cc-grad-card:       linear-gradient(145deg, hsl(210 15% 15%), hsl(210 15% 12%));
-  --cc-grad-surface:    linear-gradient(145deg, hsl(210 15% 17%), hsl(210 15% 13%));
+  /* Accent CTA: Russian Violet → Amethyst → Bright Lavender */
+  --cc-grad-accent:
+    linear-gradient(135deg, #391B49 0%, #795690 45%, #9570C6 80%, #C29CE4 100%);
+
+  /* Card backgrounds (raised from surface) */
+  --cc-grad-card:
+    linear-gradient(145deg, #2a1240, #1e0d2e);
+
+  --cc-grad-surface:
+    linear-gradient(145deg, #391B49, #2a1240);
+
+  /* Amber (unchanged) */
+  --cc-grad-amber:
+    linear-gradient(135deg, hsl(38 80% 55%), hsl(38 92% 68%));
 
   font-family: 'Inter', sans-serif;
   color: var(--cc-text);
   background: var(--cc-bg);
   min-height: 100vh;
 }
+
+/* ─────────────────────────────────────
+   DARK PURPLE NEU SURFACE CLASSES
+───────────────────────────────────── */
 
 .cc-club-scope .cc-surface {
   background: var(--cc-grad-card);
@@ -782,35 +813,44 @@
 }
 
 .cc-club-scope .cc-inset {
-  background: hsl(210 18% 10%);
+  background: #1e0d2e;
   box-shadow: var(--cc-neu-inset-md);
 }
 
 .cc-club-scope .cc-inset-sm {
-  background: hsl(210 18% 10%);
+  background: #1e0d2e;
   box-shadow: var(--cc-neu-inset-sm);
 }
 
+.cc-club-scope .cc-inset-deep {
+  background: #0f0818;
+  box-shadow: var(--cc-neu-inset-deep);
+}
+
+/* ─────────────────────────────────────
+   BUTTONS
+───────────────────────────────────── */
+
 .cc-club-scope .cc-btn-primary {
   background: var(--cc-grad-accent);
-  color: hsl(210 18% 8%);
+  color: #f0ecf8;
   font-weight: 700;
   border: none;
   cursor: pointer;
   transition:
-    box-shadow 350ms cubic-bezier(0.4, 0, 0.2, 1),
-    transform   350ms cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--cc-neu-md), var(--cc-glow-teal);
+    box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform   300ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--cc-neu-md), var(--cc-glow-purple-md);
 }
 
 .cc-club-scope .cc-btn-primary:hover {
-  box-shadow: var(--cc-neu-lg), var(--cc-glow-teal-lg);
+  box-shadow: var(--cc-neu-lg), var(--cc-glow-purple-lg);
   transform: translateY(-2px);
 }
 
 .cc-club-scope .cc-btn-primary:active {
   box-shadow: var(--cc-neu-inset-sm);
-  transform: translateY(0);
+  transform: translateY(0.5px);
 }
 
 .cc-club-scope .cc-btn-primary:disabled {
@@ -821,16 +861,22 @@
 
 .cc-club-scope .cc-btn-ghost {
   background: transparent;
-  color: var(--cc-accent-bright);
-  border: 1.5px solid var(--cc-accent-soft);
+  color: var(--cc-accent-vivid);
+  border: 1.5px solid rgba(121,86,144,0.4);
   cursor: pointer;
-  transition: background 250ms ease, border-color 250ms ease;
+  font-weight: 600;
+  transition: background 250ms ease, border-color 250ms ease, color 250ms ease;
 }
 
 .cc-club-scope .cc-btn-ghost:hover {
   background: var(--cc-accent-soft);
-  border-color: var(--cc-accent);
+  border-color: var(--cc-accent-bright);
+  color: #f0ecf8;
 }
+
+/* ─────────────────────────────────────
+   CHIPS / BADGES
+───────────────────────────────────── */
 
 .cc-club-scope .cc-chip {
   display: inline-flex;
@@ -847,11 +893,15 @@
 .cc-club-scope .cc-chip-pending  { background: var(--cc-pending-soft);  color: var(--cc-pending); }
 .cc-club-scope .cc-chip-done     { background: var(--cc-success-soft);  color: var(--cc-success); }
 .cc-club-scope .cc-chip-redo     { background: var(--cc-danger-soft);   color: var(--cc-danger); }
-.cc-club-scope .cc-chip-idle     { background: hsl(210 15% 18%);        color: var(--cc-text-faint); }
+.cc-club-scope .cc-chip-idle     { background: rgba(121,86,144,0.15);   color: var(--cc-text-faint); }
 .cc-club-scope .cc-chip-amber    { background: var(--cc-amber-soft);    color: var(--cc-amber); }
 
+/* ─────────────────────────────────────
+   GRADIENT TEXT
+───────────────────────────────────── */
+
 .cc-club-scope .cc-text-gradient {
-  background: var(--cc-grad-accent);
+  background: linear-gradient(135deg, #9570C6, #C29CE4, #999ECF);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -864,26 +914,34 @@
   background-clip: text;
 }
 
+/* ─────────────────────────────────────
+   DIVIDER
+───────────────────────────────────── */
+
 .cc-club-scope .cc-divider {
   border: none;
   border-top: 1px solid var(--cc-border);
   margin: 1.5rem 0;
 }
 
+/* ─────────────────────────────────────
+   SCROLLBAR
+───────────────────────────────────── */
+
 .cc-club-scope::-webkit-scrollbar,
 .cc-club-scope *::-webkit-scrollbar { width: 6px; }
 
 .cc-club-scope::-webkit-scrollbar-track,
-.cc-club-scope *::-webkit-scrollbar-track { background: hsl(210 18% 8%); }
+.cc-club-scope *::-webkit-scrollbar-track { background: #0f0818; }
 
 .cc-club-scope::-webkit-scrollbar-thumb,
 .cc-club-scope *::-webkit-scrollbar-thumb {
-  background: var(--cc-border);
+  background: rgba(108,99,255,0.2);
   border-radius: 100px;
 }
 
 .cc-club-scope::-webkit-scrollbar-thumb:hover,
-.cc-club-scope *::-webkit-scrollbar-thumb:hover { background: var(--cc-accent-soft); }
+.cc-club-scope *::-webkit-scrollbar-thumb:hover { background: #6C63FF; }
 
 @keyframes cc-shimmer-bg {
   0%, 100% { opacity: 0.6; transform: scale(1) translateY(0); }

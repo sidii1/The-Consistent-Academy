@@ -31,9 +31,9 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
   return (
     <nav
       style={{
-        background: "linear-gradient(90deg, hsl(210 18% 8%), hsl(210 15% 11%))",
-        borderBottom: "1px solid var(--cc-border)",
-        boxShadow: "0 2px 12px hsl(210 22% 4%)",
+        background: "var(--cc-bg)",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.03)",
+        boxShadow: "var(--cc-neu-sm)",
         position: "sticky",
         top: 0,
         zIndex: 50,
@@ -61,10 +61,10 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "var(--cc-glow-teal)",
+              boxShadow: "var(--cc-neu-sm), var(--cc-glow-purple-md)",
             }}
           >
-            <Mic2 size={18} color="hsl(210 18% 8%)" strokeWidth={2.5} />
+            <Mic2 size={18} color="#f0ecf8" strokeWidth={2.5} />
           </div>
           <div>
             <span
@@ -127,8 +127,9 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
             onClick={handleLogout}
             title="Log out"
             style={{
-              background: "hsl(210 15% 18%)",
-              border: "1px solid var(--cc-border)",
+              background: "var(--cc-bg)",
+              border: "none",
+              boxShadow: "var(--cc-neu-sm)",
               borderRadius: "10px",
               padding: "8px",
               cursor: "pointer",
@@ -136,15 +137,17 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              transition: "color 200ms, background 200ms",
+              transition: "color 200ms, background 200ms, box-shadow 200ms",
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.color = "var(--cc-danger)";
               (e.currentTarget as HTMLButtonElement).style.background = "var(--cc-danger-soft)";
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "var(--cc-neu-inset-sm)";
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLButtonElement).style.color = "var(--cc-text-muted)";
-              (e.currentTarget as HTMLButtonElement).style.background = "hsl(210 15% 18%)";
+              (e.currentTarget as HTMLButtonElement).style.background = "var(--cc-bg)";
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "var(--cc-neu-sm)";
             }}
           >
             <LogOut size={16} />

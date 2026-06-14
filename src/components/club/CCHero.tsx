@@ -47,7 +47,7 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
         background: "var(--cc-bg)",
       }}
     >
-      {/* Animated background orbs */}
+        {/* Animated background orbs */}
       <div
         style={{
           position: "absolute",
@@ -56,6 +56,7 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
           pointerEvents: "none",
         }}
       >
+        {/* Amethyst orb — top left */}
         <div
           ref={orb1Ref}
           className="cc-animate-shimmer"
@@ -69,10 +70,11 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
             maxHeight: "600px",
             borderRadius: "50%",
             background:
-              "radial-gradient(circle, hsl(165 60% 35% / 0.18) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(108,99,255,0.12) 0%, transparent 70%)",
             transition: "transform 0.1s ease-out",
           }}
         />
+        {/* Bright Lavender orb — bottom right */}
         <div
           ref={orb2Ref}
           className="cc-animate-shimmer"
@@ -86,19 +88,19 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
             maxHeight: "450px",
             borderRadius: "50%",
             background:
-              "radial-gradient(circle, hsl(38 80% 50% / 0.12) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(108,99,255,0.08) 0%, transparent 70%)",
             animationDelay: "-4s",
             transition: "transform 0.1s ease-out",
           }}
         />
-        {/* Grid overlay */}
+        {/* Grid overlay — purple tint */}
         <div
           style={{
             position: "absolute",
             inset: 0,
             backgroundImage: `
-              linear-gradient(hsl(165 60% 42% / 0.03) 1px, transparent 1px),
-              linear-gradient(90deg, hsl(165 60% 42% / 0.03) 1px, transparent 1px)
+              linear-gradient(rgba(108,99,255,0.03) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(108,99,255,0.03) 1px, transparent 1px)
             `,
             backgroundSize: "60px 60px",
           }}
@@ -201,7 +203,8 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
                   width: "36px",
                   height: "36px",
                   borderRadius: "10px",
-                  background: "var(--cc-accent-soft)",
+                  background: "var(--cc-bg)",
+                  boxShadow: "var(--cc-neu-inset-deep)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -262,7 +265,6 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
               padding: "14px 32px",
               borderRadius: "14px",
               fontSize: "1rem",
-              background: "transparent",
             }}
           >
             Sign In
