@@ -355,3 +355,105 @@ export async function getCCAttendanceStats(
  
   return stats;
 }
+
+export interface CCMeetingVideoSubmission {
+  uid: string;
+  name: string;
+  report_id: string;
+  week_number: number;
+  video_url: string;
+  status: "Pending Review" | "Well Done" | "Redo";
+  evaluator_notes: string;
+  submitted_at: Timestamp | null;
+  evaluated_at: Timestamp | null;
+}
+
+// ── Meeting Video Submissions ──────────────────────────────
+
+/** Student submits a video for a specific meeting report */
+export async function submitMeetingVideo(
+  uid: string,
+  name: string,
+  reportId: string,
+  weekNumber: number,
+  videoUrl: string
+): Promise<void> {
+  await setDoc(
+    doc(db, "cc_meeting_videos", `${reportId}_${uid}`),
+    {
+      uid,
+      name,
+      report_id: reportId,
+      week_number: weekNumber,
+      video_url: videoUrl,
+      status: "Pending Review",
+      evaluator_notes: "",
+      submitted_at: serverTimestamp(),
+      evaluated_at: null,
+    }
+  );
+}
+
+/** Get all video submissions for a student */
+export async function getStudentMeetingVideos(
+  uid: string
+): Promise<CCMeetingVideoSubmission[]> {
+  const q = query(
+    collection(db, "cc_meeting_videos"),
+    where("uid", "==", uid)
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => d.data() as CCMeetingVideoSubmission);
+}
+
+/** President: get all video submissions for their college meetings */
+export async function getCollegeMeetingVideos(
+  college: string
+): Promise<CCMeetingVideoSubmission[]> {
+  // Get all report IDs for this college first
+  const reports = await getMeetingReports(college);
+  if (reports.length === 0) return [];
+
+  const reportIds = reports.map((r) => r.id!);
+  // Firestore 'in' supports max 30 items; chunk if needed
+  const chunks: string[][] = [];
+  for (let i = 0; i < reportIds.length; i += 30) {
+    chunks.push(reportIds.slice(i, i + 30));
+  }
+
+  const allVideos: CCMeetingVideoSubmission[] = [];
+  for (const chunk of chunks) {
+    const q = query(
+      collection(db, "cc_meeting_videos"),
+      where("report_id", "in", chunk)
+    );
+    const snap = await getDocs(q);
+    snap.docs.forEach((d) => allVideos.push(d.data() as CCMeetingVideoSubmission));
+  }
+  return allVideos;
+}
+
+/** President: evaluate a student's meeting video */
+export async function evaluateMeetingVideo(
+  reportId: string,
+  uid: string,
+  status: "Well Done" | "Redo",
+  notes: string
+): Promise<void> {
+  await updateDoc(doc(db, "cc_meeting_videos", `${reportId}_${uid}`), {
+    status,
+    evaluator_notes: notes,
+    evaluated_at: serverTimestamp(),
+  });
+}
+
+// ── Attendance Stats (already added — keep existing getCCAttendanceStats) ──
+
+/** Get a single student's attendance stats */
+export async function getStudentAttendanceStats(
+  uid: string,
+  college: string
+): Promise<{ present: number; total: number; percentage: number }> {
+  const stats = await getCCAttendanceStats(college);
+  return stats[uid] ?? { present: 0, total: 0, percentage: 0 };
+}
