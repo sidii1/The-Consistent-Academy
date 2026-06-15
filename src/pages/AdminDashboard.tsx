@@ -38,8 +38,11 @@ import {
   getAllCCUsers,
   getCCSpeeches,
   evaluateCCSpeech,
+  updateCCUser,
+  deleteCCUser,
   type CCUser,
   type CCSpeech,
+  type CCRole,
 } from "@/lib/ccClub";
 
 // ─────────────────────────────────────────────────────────────
@@ -133,6 +136,53 @@ const CCClubAdminPanel: React.FC = () => {
   const [savingEval, setSavingEval] = useState<string | null>(null);
   const [editingPoints, setEditingPoints] = useState<Record<string, number>>({});
   const [savingPoints, setSavingPoints] = useState<string | null>(null);
+  const [updatingRole, setUpdatingRole] = useState<string | null>(null);
+  const [deletingProfile, setDeletingProfile] = useState<string | null>(null);
+
+  const handleRoleChange = async (u: CCUser, newRole: CCRole) => {
+    setUpdatingRole(u.uid);
+    try {
+      let updatedBadges = [...(u.badges || [])];
+      if (newRole !== "Student") {
+        const badgeName = `${newRole} Badge`;
+        if (!updatedBadges.includes(badgeName)) {
+          updatedBadges.push(badgeName);
+        }
+      }
+      await updateCCUser(u.uid, {
+        club_role: newRole,
+        badges: updatedBadges,
+      });
+      setUsers((prev) =>
+        prev.map((m) => (m.uid === u.uid ? { ...m, club_role: newRole, badges: updatedBadges } : m))
+      );
+      if (selectedUser?.uid === u.uid) {
+        setSelectedUser((s) => (s ? { ...s, club_role: newRole, badges: updatedBadges } : s));
+      }
+      toast.success(`Role updated to ${newRole}.`);
+    } catch {
+      toast.error("Failed to update role.");
+    } finally {
+      setUpdatingRole(null);
+    }
+  };
+
+  const handleDeleteProfile = async (u: CCUser) => {
+    if (!window.confirm(`Are you absolutely sure you want to delete the profile of ${u.name}? This action cannot be undone.`)) {
+      return;
+    }
+    setDeletingProfile(u.uid);
+    try {
+      await deleteCCUser(u.uid);
+      setUsers((prev) => prev.filter((m) => m.uid !== u.uid));
+      setSelectedUser(null);
+      toast.success(`Profile of ${u.name} deleted successfully.`);
+    } catch {
+      toast.error("Failed to delete profile.");
+    } finally {
+      setDeletingProfile(null);
+    }
+  };
 
   useEffect(() => {
     getAllCCUsers()
@@ -290,42 +340,84 @@ const CCClubAdminPanel: React.FC = () => {
                 <h3 style={{ fontSize: "1rem", fontWeight: 800, color: "hsl(210 20% 88%)" }}>
                   {selectedUser.name}
                 </h3>
-                <p style={{ fontSize: "0.78rem", color: "#6b7280" }}>
-                  {selectedUser.email} · {selectedUser.college} · {selectedUser.club_role}
+                <p style={{ fontSize: "0.78rem", color: "#6b7280", marginBottom: 6 }}>
+                  {selectedUser.email} · {selectedUser.college}
                 </p>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span style={{ fontSize: "0.78rem", color: "#6b7280" }}>Points:</span>
-                <input
-                  type="number"
-                  min={0}
-                  style={{ ...inputBase, width: 70 }}
-                  value={editingPoints[selectedUser.uid] ?? selectedUser.total_points}
-                  onChange={(e) =>
-                    setEditingPoints((p) => ({ ...p, [selectedUser.uid]: Number(e.target.value) }))
-                  }
-                />
-                {editingPoints[selectedUser.uid] !== undefined && (
-                  <button
-                    onClick={() => handleSavePoints(selectedUser)}
-                    disabled={savingPoints === selectedUser.uid}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 5,
-                      padding: "6px 12px",
-                      borderRadius: 8,
-                      background: "hsl(165 60% 35%)",
-                      color: "hsl(210 18% 8%)",
-                      border: "none",
-                      cursor: "pointer",
-                      fontWeight: 700,
-                      fontSize: "0.78rem",
-                    }}
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: "0.78rem", color: "#6b7280" }}>Role:</span>
+                  <select
+                    value={selectedUser.club_role}
+                    onChange={(e) => handleRoleChange(selectedUser, e.target.value as CCRole)}
+                    disabled={updatingRole === selectedUser.uid}
+                    style={{ ...inputBase, padding: "4px 8px" }}
                   >
-                    <Save size={12} /> {savingPoints === selectedUser.uid ? "..." : "Save"}
-                  </button>
-                )}
+                    {["Student", "President", "Vice President", "Team Leader", "Event Team", "Trainer Buddy"].map((r) => (
+                      <option key={r} value={r}>
+                        {r}
+                      </option>
+                    ))}
+                  </select>
+                  {updatingRole === selectedUser.uid && (
+                    <span style={{ fontSize: "0.75rem", color: "#6b7280" }}>Updating...</span>
+                  )}
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ fontSize: "0.78rem", color: "#6b7280" }}>Points:</span>
+                  <input
+                    type="number"
+                    min={0}
+                    style={{ ...inputBase, width: 70 }}
+                    value={editingPoints[selectedUser.uid] ?? selectedUser.total_points}
+                    onChange={(e) =>
+                      setEditingPoints((p) => ({ ...p, [selectedUser.uid]: Number(e.target.value) }))
+                    }
+                  />
+                  {editingPoints[selectedUser.uid] !== undefined && (
+                    <button
+                      onClick={() => handleSavePoints(selectedUser)}
+                      disabled={savingPoints === selectedUser.uid}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 5,
+                        padding: "6px 12px",
+                        borderRadius: 8,
+                        background: "hsl(165 60% 35%)",
+                        color: "hsl(210 18% 8%)",
+                        border: "none",
+                        cursor: "pointer",
+                        fontWeight: 700,
+                        fontSize: "0.78rem",
+                      }}
+                    >
+                      <Save size={12} /> {savingPoints === selectedUser.uid ? "..." : "Save"}
+                    </button>
+                  )}
+                </div>
+                <button
+                  onClick={() => handleDeleteProfile(selectedUser)}
+                  disabled={deletingProfile === selectedUser.uid}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 5,
+                    padding: "6px 12px",
+                    borderRadius: 8,
+                    background: "hsl(0 72% 35%)",
+                    color: "white",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: 700,
+                    fontSize: "0.78rem",
+                    transition: "background 200ms",
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.background = "hsl(0 72% 42%)")}
+                  onMouseOut={(e) => (e.currentTarget.style.background = "hsl(0 72% 35%)")}
+                >
+                  {deletingProfile === selectedUser.uid ? "Deleting..." : "Delete Profile"}
+                </button>
               </div>
             </div>
           </div>

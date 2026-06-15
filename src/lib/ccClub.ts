@@ -11,6 +11,7 @@ import {
   orderBy,
   serverTimestamp,
   Timestamp,
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
@@ -230,6 +231,10 @@ export async function getCCUsersByCollege(college: string): Promise<CCUser[]> {
 export async function getAllCCUsers(): Promise<CCUser[]> {
   const snap = await getDocs(collection(db, "cc_users"));
   return snap.docs.map((d) => d.data() as CCUser);
+}
+
+export async function deleteCCUser(uid: string): Promise<void> {
+  await deleteDoc(doc(db, "cc_users", uid));
 }
 
 // ─────────────────────────────────────────────────────────────

@@ -21,7 +21,7 @@ export interface Course {
   hours: string;
   price: string;
   modules: number;
-  targetAudience: string;
+  targetAudience: string | string[];
   promise?: string;
   moduleDetails: CourseModule[];
   highlights?: string[];
@@ -187,7 +187,7 @@ export default function ExpandableCourseCard({ courses }: ExpandableCourseCardPr
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl p-6"
+                    className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl px-6"
                   >
                     <p className="text-foreground leading-relaxed">{active.description}</p>
                   </motion.div>
@@ -197,17 +197,27 @@ export default function ExpandableCourseCard({ courses }: ExpandableCourseCardPr
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.15 }}
-                    className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                    className="grid grid-cols-1 md:grid-cols- gap-1"
                   >
                     {/* Target Audience */}
                     <div className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl p-5">
                       <div className="flex items-center gap-2 mb-3">
                         <Users className="w-4 h-4 text-primary" />
                         <h3 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider">
-                          Target Audience
+                          Target Audience 
                         </h3>
                       </div>
-                      <p className="text-foreground leading-relaxed">{active.targetAudience}</p>
+                      {Array.isArray(active.targetAudience) ? (
+                        <ul className="list-disc pl-5 space-y-1.5 mt-1">
+                          {active.targetAudience.map((audience, idx) => (
+                            <li key={idx} className="text-foreground leading-relaxed text-sm">
+                              {audience}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-foreground leading-relaxed">{active.targetAudience}</p>
+                      )}
                     </div>
 
                     {/* Course Promise */}
@@ -353,7 +363,7 @@ export default function ExpandableCourseCard({ courses }: ExpandableCourseCardPr
               className={cn(
                 "group cursor-pointer rounded-3xl overflow-hidden",
                 "bg-gradient-to-br from-background via-background to-secondary/10",
-                "shadow-none hover:shadow-xl", 
+                "shadow-lg hover:shadow-xl", 
                 "transition-all duration-300 ease-out",
                 "hover:-translate-y-2",
                 "active:scale-[0.98]",
