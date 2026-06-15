@@ -547,6 +547,201 @@
    ═══════════════════════════════════════════════════════════ */
 
 .blog-content h1 {
+.bg-section-purple {
+    background: var(--gradient-section-purple);
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     ✨ TEXT & SPECIAL EFFECTS
+     ═══════════════════════════════════════════════════════════ */
+  
+  /* Text gradients */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+
+  .text-gradient-soft {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary-soft);
+  }
+
+  /* ═══════════════════════════════════════════════════════════
+     🌊 ANIMATIONS & MOTION
+     ═══════════════════════════════════════════════════════════ */
+  
+  @keyframes float {
+    0%, 100% { 
+      transform: translateY(0px) rotate(0deg); 
+    }
+    50% { 
+      transform: translateY(-20px) rotate(2deg); 
+    }
+  }
+
+  @keyframes float-slow {
+    0%, 100% { 
+      transform: translateY(0px) translateX(0px); 
+    }
+    33% { 
+      transform: translateY(-15px) translateX(10px); 
+    }
+    66% { 
+      transform: translateY(-5px) translateX(-10px); 
+    }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { 
+      opacity: 0.4; 
+      transform: scale(1); 
+    }
+    50% { 
+      opacity: 0.7; 
+      transform: scale(1.05); 
+    }
+  }
+
+  @keyframes blob {
+    0%, 100% { 
+      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; 
+    }
+    50% { 
+      border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; 
+    }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+/* ═══════════════════════════════════════════════════════════
+   🖊  TIPTAP RICH TEXT EDITOR STYLES
+   ═══════════════════════════════════════════════════════════ */
+
+.tiptap-editor .ProseMirror {
+  min-height: inherit;
+  outline: none;
+  line-height: 1.75;
+  color: hsl(var(--foreground));
+}
+
+.tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: hsl(var(--muted-foreground));
+  pointer-events: none;
+  height: 0;
+}
+
+/* Headings */
+.tiptap-editor .ProseMirror h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-top: 1.25em;
+  margin-bottom: 0.5em;
+  color: hsl(var(--foreground));
+}
+.tiptap-editor .ProseMirror h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-top: 1.1em;
+  margin-bottom: 0.4em;
+  color: hsl(var(--foreground));
+}
+.tiptap-editor .ProseMirror h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-top: 1em;
+  margin-bottom: 0.35em;
+  color: hsl(var(--foreground));
+}
+
+/* Paragraph */
+.tiptap-editor .ProseMirror p {
+  margin-bottom: 0.75em;
+}
+
+/* Lists */
+.tiptap-editor .ProseMirror ul,
+.tiptap-editor .ProseMirror ol {
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+.tiptap-editor .ProseMirror ul {
+  list-style-type: disc;
+}
+.tiptap-editor .ProseMirror ol {
+  list-style-type: decimal;
+}
+.tiptap-editor .ProseMirror li {
+  margin-bottom: 0.25em;
+}
+
+/* Blockquote */
+.tiptap-editor .ProseMirror blockquote {
+  border-left: 4px solid hsl(var(--primary));
+  padding-left: 1em;
+  margin: 1em 0;
+  font-style: italic;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Code */
+.tiptap-editor .ProseMirror code {
+  background: hsl(var(--secondary));
+  border-radius: 0.3em;
+  padding: 0.15em 0.4em;
+  font-size: 0.9em;
+  font-family: 'Courier New', monospace;
+  color: hsl(var(--primary));
+}
+.tiptap-editor .ProseMirror pre {
+  background: hsl(262 30% 12%);
+  border-radius: 0.75rem;
+  padding: 1em 1.25em;
+  margin: 1em 0;
+  overflow-x: auto;
+}
+.tiptap-editor .ProseMirror pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.875em;
+  color: hsl(262 70% 85%);
+}
+
+/* Horizontal rule */
+.tiptap-editor .ProseMirror hr {
+  border: none;
+  border-top: 2px solid hsl(var(--border));
+  margin: 1.5em 0;
+}
+
+/* Links */
+.tiptap-editor .ProseMirror a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+  cursor: pointer;
+}
+.tiptap-editor .ProseMirror a:hover {
+  opacity: 0.75;
+}
+
+/* Highlight */
+.tiptap-editor .ProseMirror mark {
+  background: hsl(262 83% 75% / 0.3);
+  border-radius: 0.2em;
+  padding: 0.05em 0.2em;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   🖊  BLOG POST RENDERED HTML STYLES
+   ═══════════════════════════════════════════════════════════ */
+
+.blog-content h1 {
   font-size: 2rem;
   font-weight: 800;
   line-height: 1.2;
@@ -718,104 +913,131 @@
   }
 }
 
+
 /* ═══════════════════════════════════════════════════════════
-   🌙 CC CLUB — SOFT NOIR DARK NEUMORPHIC DESIGN SYSTEM
+   🌙 CC CLUB — DARK NEUMORPHIC DESIGN SYSTEM v2
    Scoped to .cc-club-scope — never pollutes the main site.
+
+   Design philosophy: Monochromatic warm dark clay surface.
+   ALL elements are molded from the SAME material (#2D3039).
+   Shadows create depth. Accent purple is for text/icons/glows ONLY.
+   NO borders on neumorphic elements. NO colored background fills.
    ═══════════════════════════════════════════════════════════ */
 
 .cc-club-scope {
-  /* ── Background layers ── */
-  --cc-bg:              #1E222B;          /* premium deep slate-charcoal clay base */
-  --cc-surface:         #1E222B;          /* elements molded from the background */
-  --cc-surface-raised:  #1E222B;          /* raised elements are also molded */
-  --cc-border:          transparent;      /* Neumorphic physics forbid standard borders */
+  /* ── Monochromatic clay base ──
+     Everything is molded from this single warm dark surface.
+     The faint blue-purple undertone harmonizes with lavender accents. */
+  --cc-bg:              #252436;
+  --cc-surface:         #252436;
+  --cc-surface-raised:  #2C2A40;
+  --cc-surface-inset:   #1C1A2B;
+  --cc-surface-deep:    #151322;
+  --cc-border:          rgba(255, 255, 255, 0.04);
 
-  /* ── Typography ── */
-  --cc-text:            #E2E8F0;          /* High legibility off-white/slate text (WCAG AAA) */
-  --cc-text-muted:      #94A3B8;          /* Soft grey for secondary text (WCAG AA) */
-  --cc-text-faint:      #64748B;          /* Even softer grey */
+  /* ── Typography ──
+     Lavender-tinted whites for warmth, not cold slate. */
+  --cc-text:            #E8E6F0;
+  --cc-text-muted:      #9B97AD;
+  --cc-text-faint:      #6E6A7C;
 
-  /* ── Accent palette (Vibrant violet) ── */
-  --cc-accent:          #6C63FF;          /* Vibrant violet core state */
-  --cc-accent-bright:   #8B84FF;          /* Upper gradient step / hover */
-  --cc-accent-vivid:    #A39EFF;          /* Vivid highlight */
-  --cc-accent-soft:     rgba(108, 99, 255, 0.15); 
-  --cc-accent-glow:     rgba(108, 99, 255, 0.28);
+  /* ── Accent palette (Purple / Lavender — secondary, NOT primary surface) ──
+     Used for: text highlights, icon colors, button glows, focus rings.
+     NOT used for: card backgrounds, surface fills, large areas. */
+  --cc-accent:          #8B7FFF;
+  --cc-accent-bright:   #A89CFF;
+  --cc-accent-vivid:    #C4BCFF;
+  --cc-accent-soft:     rgba(139, 127, 255, 0.10);
+  --cc-accent-glow:     rgba(139, 127, 255, 0.20);
 
-  /* ── Semantic colors ── */
+  /* ── Semantic status colors ──
+     Used as TEXT and ICON colors only, never as background fills. */
   --cc-amber:           hsl(38 88% 65%);
-  --cc-amber-soft:      rgba(255,185,85,0.15);
+  --cc-amber-soft:      rgba(255, 185, 85, 0.10);
 
-  --cc-success:         #38B2AC;          /* Matte teal for verification */
-  --cc-success-soft:    rgba(56, 178, 172, 0.15);
+  --cc-success:         #4ADE80;
+  --cc-success-soft:    rgba(74, 222, 128, 0.08);
   --cc-warning:         hsl(38 88% 65%);
-  --cc-warning-soft:    rgba(255,185,85,0.15);
-  --cc-danger:          hsl(0 72% 62%);
-  --cc-danger-soft:     rgba(248,113,113,0.15);
-  --cc-pending:         hsl(200 70% 60%);
-  --cc-pending-soft:    rgba(96,165,250,0.15);
+  --cc-warning-soft:    rgba(255, 185, 85, 0.08);
+  --cc-danger:          #F87171;
+  --cc-danger-soft:     rgba(248, 113, 113, 0.08);
+  --cc-pending:         #60A5FA;
+  --cc-pending-soft:    rgba(96, 165, 250, 0.08);
 
-  /* ── Soft Noir Neumorphic shadow system ──
-     Extracted to Tailwind config as well, but mapping to CSS vars for custom classes
-  ── */
-  --cc-shadow-dark:     rgba(0, 0, 0, 0.5);
-  --cc-shadow-light:    rgba(255, 255, 255, 0.04);
-  
-  --cc-shadow-dark-hover:  rgba(0, 0, 0, 0.6);
-  --cc-shadow-light-hover: rgba(255, 255, 255, 0.05);
+  /* ═══════════════════════════════════════════════════════════
+     SHADOW PHYSICS — The core of dark neumorphism.
+     
+     Key ratio: dark ~30% opacity, light ~7% opacity.
+     This creates the illusion of a single directional light
+     source hitting a monochromatic clay surface.
+     
+     Light source: top-left (↖)
+     Dark shadow: bottom-right (↘) — recedes from light
+     Light highlight: top-left (↖) — catches the light
+     ═══════════════════════════════════════════════════════════ */
+  --cc-shadow-dark:     rgba(0, 0, 0, 0.35);
+  --cc-shadow-light:    rgba(255, 255, 255, 0.06);
+
+  --cc-shadow-dark-strong:  rgba(0, 0, 0, 0.45);
+  --cc-shadow-light-strong: rgba(255, 255, 255, 0.08);
+
+  /* ── Extruded (raised from surface) ── */
+  --cc-neu-xs:
+    2px 2px 5px var(--cc-shadow-dark),
+    -2px -2px 5px var(--cc-shadow-light);
 
   --cc-neu-sm:
-    4px 4px 8px var(--cc-shadow-dark),
-    -4px -4px 8px var(--cc-shadow-light);
+    4px 4px 10px var(--cc-shadow-dark),
+    -4px -4px 10px var(--cc-shadow-light);
 
   --cc-neu-md:
-    6px 6px 14px var(--cc-shadow-dark),
-    -6px -6px 14px var(--cc-shadow-light);
+    6px 6px 16px var(--cc-shadow-dark),
+    -6px -6px 16px var(--cc-shadow-light);
 
   --cc-neu-lg:
-    10px 10px 24px var(--cc-shadow-dark),
-    -10px -10px 24px var(--cc-shadow-light);
+    8px 8px 22px var(--cc-shadow-dark-strong),
+    -8px -8px 22px var(--cc-shadow-light-strong);
+
+  --cc-neu-xl:
+    12px 12px 30px var(--cc-shadow-dark-strong),
+    -12px -12px 30px var(--cc-shadow-light-strong);
+
+  /* ── Inset (pressed into surface) ── */
+  --cc-neu-inset-xs:
+    inset 2px 2px 4px var(--cc-shadow-dark),
+    inset -2px -2px 4px var(--cc-shadow-light);
 
   --cc-neu-inset-sm:
-    inset 3px 3px 7px var(--cc-shadow-dark),
-    inset -3px -3px 7px var(--cc-shadow-light);
+    inset 3px 3px 8px var(--cc-shadow-dark),
+    inset -3px -3px 8px var(--cc-shadow-light);
 
   --cc-neu-inset-md:
-    inset 5px 5px 12px var(--cc-shadow-dark),
-    inset -5px -5px 12px var(--cc-shadow-light);
+    inset 5px 5px 14px var(--cc-shadow-dark),
+    inset -5px -5px 14px var(--cc-shadow-light);
 
   --cc-neu-inset-deep:
-    inset 8px 8px 20px var(--cc-shadow-dark),
-    inset -8px -8px 20px var(--cc-shadow-light);
+    inset 8px 8px 20px var(--cc-shadow-dark-strong),
+    inset -8px -8px 20px var(--cc-shadow-light-strong);
 
-  /* ── Glow tokens ── */
-  --cc-glow-purple:     0 0 0 2px #0f0818, 0 0 0 4px #9570C6;
-  --cc-glow-purple-md:  0 0 20px rgba(149,112,198,0.4);
-  --cc-glow-purple-lg:  0 0 40px rgba(149,112,198,0.5);
-  --cc-glow-amber:      0 0 20px rgba(255,185,85,0.35);
+  /* ── Glow tokens (accent color light emission) ── */
+  --cc-glow-purple:     0 0 0 2px var(--cc-surface-deep), 0 0 0 4px var(--cc-accent);
+  --cc-glow-purple-sm:  0 0 16px rgba(139, 127, 255, 0.35);
+  --cc-glow-purple-md:  0 0 24px rgba(139, 127, 255, 0.40);
+  --cc-glow-purple-lg:  0 0 40px rgba(139, 127, 255, 0.45);
+  --cc-glow-amber:      0 0 24px rgba(255, 185, 85, 0.35);
 
-  /* ── Keep legacy aliases so existing components don't break ── */
+  /* ── Legacy aliases ── */
   --cc-glow-teal:       var(--cc-glow-purple-md);
   --cc-glow-teal-lg:    var(--cc-glow-purple-lg);
 
-  /* ── Gradients ── */
-  /* Hero: deep purple atmospheric radial */
-  --cc-grad-hero:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(149,112,198,0.20), transparent 70%),
-    linear-gradient(180deg, #0f0818, #120a1e);
-
-  /* Accent CTA: Russian Violet → Amethyst → Bright Lavender */
+  /* ── Gradients ──
+     Accent gradients for buttons and hero elements only. */
   --cc-grad-accent:
-    linear-gradient(135deg, #391B49 0%, #795690 45%, #9570C6 80%, #C29CE4 100%);
+    linear-gradient(135deg, #8B7FFF 0%, #A89CFF 100%);
 
-  /* Card backgrounds (raised from surface) */
-  --cc-grad-card:
-    linear-gradient(145deg, #2a1240, #1e0d2e);
+  --cc-grad-accent-subtle:
+    linear-gradient(135deg, rgba(139, 127, 255, 0.15), rgba(139, 127, 255, 0.05));
 
-  --cc-grad-surface:
-    linear-gradient(145deg, #391B49, #2a1240);
-
-  /* Amber (unchanged) */
   --cc-grad-amber:
     linear-gradient(135deg, hsl(38 80% 55%), hsl(38 92% 68%));
 
@@ -825,32 +1047,35 @@
   min-height: 100vh;
 }
 
-/* ─────────────────────────────────────
-   DARK PURPLE NEU SURFACE CLASSES
-───────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════
+   SURFACE CLASSES — Elements molded from the clay
+   
+   Key rule: surfaces share the SAME background as --cc-bg.
+   Depth is communicated ENTIRELY through shadows, not color.
+   ═══════════════════════════════════════════════════════════ */
 
 .cc-club-scope .cc-surface {
-  background: var(--cc-grad-card);
+  background: var(--cc-bg);
   box-shadow: var(--cc-neu-md);
 }
 
 .cc-club-scope .cc-surface-raised {
-  background: var(--cc-grad-surface);
+  background: var(--cc-surface-raised);
   box-shadow: var(--cc-neu-lg);
 }
 
 .cc-club-scope .cc-inset {
-  background: #1e0d2e;
+  background: var(--cc-surface-inset);
   box-shadow: var(--cc-neu-inset-md);
 }
 
 .cc-club-scope .cc-inset-sm {
-  background: #1e0d2e;
+  background: var(--cc-surface-inset);
   box-shadow: var(--cc-neu-inset-sm);
 }
 
 .cc-club-scope .cc-inset-deep {
-  background: #0f0818;
+  background: var(--cc-surface-deep);
   box-shadow: var(--cc-neu-inset-deep);
 }
 
@@ -860,14 +1085,14 @@
 
 .cc-club-scope .cc-btn-primary {
   background: var(--cc-grad-accent);
-  color: #f0ecf8;
+  color: #F0EDFF;
   font-weight: 700;
   border: none;
   cursor: pointer;
   transition:
-    box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
-    transform   300ms cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: var(--cc-neu-md), var(--cc-glow-purple-md);
+    box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform  300ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--cc-neu-sm), var(--cc-glow-purple-sm);
 }
 
 .cc-club-scope .cc-btn-primary:hover {
@@ -881,24 +1106,34 @@
 }
 
 .cc-club-scope .cc-btn-primary:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
   transform: none;
+  box-shadow: var(--cc-neu-xs);
 }
 
 .cc-club-scope .cc-btn-ghost {
-  background: transparent;
-  color: var(--cc-accent-vivid);
-  border: 1.5px solid rgba(121,86,144,0.4);
+  background: var(--cc-bg);
+  color: var(--cc-accent-bright);
+  border: none;
   cursor: pointer;
   font-weight: 600;
-  transition: background 250ms ease, border-color 250ms ease, color 250ms ease;
+  box-shadow: var(--cc-neu-sm);
+  transition:
+    box-shadow 300ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform  300ms cubic-bezier(0.16, 1, 0.3, 1),
+    color      200ms ease;
 }
 
 .cc-club-scope .cc-btn-ghost:hover {
-  background: var(--cc-accent-soft);
-  border-color: var(--cc-accent-bright);
-  color: #f0ecf8;
+  box-shadow: var(--cc-neu-md), var(--cc-glow-purple-sm);
+  transform: translateY(-1px);
+  color: var(--cc-accent-vivid);
+}
+
+.cc-club-scope .cc-btn-ghost:active {
+  box-shadow: var(--cc-neu-inset-sm);
+  transform: translateY(0.5px);
 }
 
 /* ─────────────────────────────────────
@@ -911,24 +1146,25 @@
   gap: 5px;
   font-size: 0.7rem;
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 3px 10px;
   border-radius: 999px;
+  box-shadow: var(--cc-neu-inset-xs);
 }
 
-.cc-club-scope .cc-chip-pending  { background: var(--cc-pending-soft);  color: var(--cc-pending); }
-.cc-club-scope .cc-chip-done     { background: var(--cc-success-soft);  color: var(--cc-success); }
-.cc-club-scope .cc-chip-redo     { background: var(--cc-danger-soft);   color: var(--cc-danger); }
-.cc-club-scope .cc-chip-idle     { background: rgba(121,86,144,0.15);   color: var(--cc-text-faint); }
-.cc-club-scope .cc-chip-amber    { background: var(--cc-amber-soft);    color: var(--cc-amber); }
+.cc-club-scope .cc-chip-pending  { background: var(--cc-surface-inset); color: var(--cc-pending); }
+.cc-club-scope .cc-chip-done     { background: var(--cc-surface-inset); color: var(--cc-success); }
+.cc-club-scope .cc-chip-redo     { background: var(--cc-surface-inset); color: var(--cc-danger); }
+.cc-club-scope .cc-chip-idle     { background: var(--cc-surface-inset); color: var(--cc-text-faint); }
+.cc-club-scope .cc-chip-amber    { background: var(--cc-surface-inset); color: var(--cc-amber); }
 
 /* ─────────────────────────────────────
    GRADIENT TEXT
 ───────────────────────────────────── */
 
 .cc-club-scope .cc-text-gradient {
-  background: linear-gradient(135deg, #9570C6, #C29CE4, #999ECF);
+  background: linear-gradient(135deg, var(--cc-accent), var(--cc-accent-bright), var(--cc-accent-vivid));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -947,7 +1183,9 @@
 
 .cc-club-scope .cc-divider {
   border: none;
-  border-top: 1px solid var(--cc-border);
+  height: 1px;
+  background: var(--cc-surface-deep);
+  box-shadow: 0 1px 0 var(--cc-shadow-light);
   margin: 1.5rem 0;
 }
 
@@ -956,19 +1194,19 @@
 ───────────────────────────────────── */
 
 .cc-club-scope::-webkit-scrollbar,
-.cc-club-scope *::-webkit-scrollbar { width: 6px; }
+.cc-club-scope *::-webkit-scrollbar { width: 5px; }
 
 .cc-club-scope::-webkit-scrollbar-track,
-.cc-club-scope *::-webkit-scrollbar-track { background: #0f0818; }
+.cc-club-scope *::-webkit-scrollbar-track { background: var(--cc-surface-deep); }
 
 .cc-club-scope::-webkit-scrollbar-thumb,
 .cc-club-scope *::-webkit-scrollbar-thumb {
-  background: rgba(108,99,255,0.2);
+  background: rgba(139, 127, 255, 0.15);
   border-radius: 100px;
 }
 
 .cc-club-scope::-webkit-scrollbar-thumb:hover,
-.cc-club-scope *::-webkit-scrollbar-thumb:hover { background: #6C63FF; }
+.cc-club-scope *::-webkit-scrollbar-thumb:hover { background: rgba(139, 127, 255, 0.35); }
 
 @keyframes cc-shimmer-bg {
   0%, 100% { opacity: 0.6; transform: scale(1) translateY(0); }
@@ -1002,3 +1240,4 @@
 .cc-animate-node        { animation: cc-node-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
 .cc-animate-fade-up     { animation: cc-fade-in-up 0.6s ease-out forwards; }
 
+}

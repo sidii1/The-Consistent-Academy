@@ -11,7 +11,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
-import { submitCCSpeech, SPEECH_FRAMEWORK, LEVEL_NAMES, type CCSpeech } from "@/lib/ccClub";
+import { submitCCSpeech, SPEECH_FRAMEWORK, type CCSpeech } from "@/lib/ccClub";
 import { toast } from "sonner";
 
 interface CCSpeechTrackerProps {
@@ -94,21 +94,8 @@ const SpeechCard: React.FC<SpeechCardProps> = ({ speech, uid, isActive, onSubmit
       layout
       style={{
         borderRadius: "16px",
-        border: `1px solid ${
-          speech.status === "Well Done"
-            ? "hsl(145 40% 25%)"
-            : speech.status === "Redo"
-            ? "var(--cc-danger-soft)"
-            : speech.status === "Pending Review"
-            ? "var(--cc-pending-soft)"
-            : "var(--cc-border)"
-        }`,
-        background:
-          speech.status === "Well Done"
-            ? "hsl(145 20% 12%)"
-            : speech.status === "Redo"
-            ? "hsl(0 30% 12%)"
-            : "linear-gradient(145deg, hsl(210 15% 15%), hsl(210 15% 12%))",
+        background: "var(--cc-surface-inset)",
+        boxShadow: "var(--cc-neu-inset-xs)",
         overflow: "hidden",
       }}
     >
@@ -134,14 +121,8 @@ const SpeechCard: React.FC<SpeechCardProps> = ({ speech, uid, isActive, onSubmit
             width: "36px",
             height: "36px",
             borderRadius: "10px",
-            background:
-              speech.status === "Well Done"
-                ? "var(--cc-success-soft)"
-                : speech.status === "Redo"
-                ? "var(--cc-danger-soft)"
-                : speech.status === "Pending Review"
-                ? "var(--cc-pending-soft)"
-                : "hsl(210 15% 20%)",
+            background: "var(--cc-surface-deep)",
+            boxShadow: "var(--cc-neu-inset-sm)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -225,9 +206,9 @@ const SpeechCard: React.FC<SpeechCardProps> = ({ speech, uid, isActive, onSubmit
                     fontSize: "0.72rem",
                     padding: "4px 10px",
                     borderRadius: "999px",
-                    background: "var(--cc-accent-soft)",
+                    background: "var(--cc-surface-deep)",
+                    boxShadow: "var(--cc-neu-inset-xs)",
                     color: "var(--cc-accent-bright)",
-                    border: "1px solid hsl(165 40% 28%)",
                   }}
                 >
                   "{ex}"
@@ -242,14 +223,14 @@ const SpeechCard: React.FC<SpeechCardProps> = ({ speech, uid, isActive, onSubmit
               style={{
                 padding: "10px 14px",
                 borderRadius: "10px",
-                background: "var(--cc-danger-soft)",
-                border: "1px solid hsl(0 50% 28%)",
+                background: "var(--cc-surface-deep)",
+                boxShadow: "var(--cc-neu-inset-xs)",
               }}
             >
               <p style={{ fontSize: "0.72rem", color: "var(--cc-danger)", fontWeight: 600, marginBottom: "4px" }}>
                 Evaluator Feedback:
               </p>
-              <p style={{ fontSize: "0.78rem", color: "hsl(0 40% 70%)" }}>{speech.evaluator_notes}</p>
+              <p style={{ fontSize: "0.78rem", color: "var(--cc-text-muted)" }}>{speech.evaluator_notes}</p>
             </div>
           )}
 
@@ -271,9 +252,8 @@ const SpeechCard: React.FC<SpeechCardProps> = ({ speech, uid, isActive, onSubmit
                   gap: "8px",
                   padding: "10px 12px",
                   borderRadius: "10px",
-                  background: "hsl(210 18% 10%)",
-                  boxShadow: "inset 3px 3px 7px var(--cc-shadow-dark), inset -3px -3px 7px var(--cc-shadow-light)",
-                  border: "1px solid var(--cc-border)",
+                  background: "var(--cc-surface-deep)",
+                  boxShadow: "var(--cc-neu-inset-sm)",
                 }}
               >
                 <Link2 size={14} color="var(--cc-text-faint)" />
@@ -289,6 +269,7 @@ const SpeechCard: React.FC<SpeechCardProps> = ({ speech, uid, isActive, onSubmit
                     outline: "none",
                     color: "var(--cc-text)",
                     fontSize: "0.82rem",
+                    fontFamily: "inherit",
                   }}
                 />
               </div>
@@ -329,8 +310,12 @@ const CCSpeechTracker: React.FC<CCSpeechTrackerProps> = ({
 
   return (
     <div
-      className="cc-surface"
-      style={{ borderRadius: "20px", padding: "1.75rem", border: "1px solid var(--cc-border)" }}
+      style={{
+        borderRadius: "20px",
+        padding: "1.75rem",
+        background: "var(--cc-bg)",
+        boxShadow: "var(--cc-neu-md)",
+      }}
     >
       {/* Header */}
       <div style={{ marginBottom: "1.25rem" }}>
@@ -349,13 +334,10 @@ const CCSpeechTracker: React.FC<CCSpeechTrackerProps> = ({
             Level {currentLevel} Speeches
           </h3>
           <span
+            className="cc-chip"
             style={{
-              fontSize: "0.78rem",
-              padding: "4px 12px",
-              borderRadius: "999px",
-              background: doneCount === 4 ? "var(--cc-success-soft)" : "var(--cc-accent-soft)",
+              background: "var(--cc-surface-inset)",
               color: doneCount === 4 ? "var(--cc-success)" : "var(--cc-accent-bright)",
-              fontWeight: 600,
             }}
           >
             {doneCount} / 4 Completed
@@ -378,7 +360,7 @@ const CCSpeechTracker: React.FC<CCSpeechTrackerProps> = ({
             width: `${(doneCount / 4) * 100}%`,
             background: "var(--cc-grad-accent)",
             transition: "width 600ms cubic-bezier(0.4,0,0.2,1)",
-            boxShadow: "var(--cc-glow-teal)",
+            boxShadow: "var(--cc-glow-purple-sm)",
           }}
         />
       </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Trophy, Star, Zap, Shield, Award } from "lucide-react";
+import { Trophy, Star, Zap, Shield } from "lucide-react";
 import type { CCUser } from "@/lib/ccClub";
 import { LEVEL_NAMES, ROLE_POINTS } from "@/lib/ccClub";
 
@@ -8,19 +8,19 @@ interface CCGamificationPanelProps {
 }
 
 const LEVEL_BADGES = [
-  { level: 1, label: "Foundation", color: "var(--cc-accent)", bg: "var(--cc-accent-soft)", icon: "🌱" },
-  { level: 2, label: "Developer",  color: "hsl(165 55% 48%)", bg: "hsl(165 30% 16%)", icon: "🌿" },
-  { level: 3, label: "Advanced",   color: "var(--cc-amber)", bg: "var(--cc-amber-soft)", icon: "🔥" },
-  { level: 4, label: "Master",     color: "hsl(38 88% 65%)", bg: "hsl(38 50% 16%)", icon: "⭐" },
+  { level: 1, label: "Foundation", color: "var(--cc-accent)", bg: "var(--cc-surface-deep)", icon: "🌱" },
+  { level: 2, label: "Developer",  color: "hsl(165 55% 48%)", bg: "var(--cc-surface-deep)", icon: "🌿" },
+  { level: 3, label: "Advanced",   color: "var(--cc-amber)", bg: "var(--cc-surface-deep)", icon: "🔥" },
+  { level: 4, label: "Master",     color: "hsl(38 88% 65%)", bg: "var(--cc-surface-deep)", icon: "⭐" },
 ];
 
 const ROLE_BADGE_META: Record<string, { icon: string; color: string; bg: string }> = {
-  President:       { icon: "👑", color: "var(--cc-amber)", bg: "var(--cc-amber-soft)" },
-  "Vice President":{ icon: "🥈", color: "hsl(200 70% 55%)", bg: "hsl(200 50% 18%)" },
-  "Team Leader":   { icon: "⚡", color: "var(--cc-accent-bright)", bg: "var(--cc-accent-soft)" },
-  "Event Team":    { icon: "🎉", color: "hsl(280 60% 65%)", bg: "hsl(280 40% 18%)" },
-  "Trainer Buddy": { icon: "🧑‍🏫", color: "var(--cc-accent)", bg: "var(--cc-accent-soft)" },
-  Student:         { icon: "📚", color: "var(--cc-text-muted)", bg: "hsl(210 15% 20%)" },
+  President:       { icon: "👑", color: "var(--cc-amber)", bg: "var(--cc-surface-deep)" },
+  "Vice President":{ icon: "🥈", color: "hsl(200 70% 55%)", bg: "var(--cc-surface-deep)" },
+  "Team Leader":   { icon: "⚡", color: "var(--cc-accent-bright)", bg: "var(--cc-surface-deep)" },
+  "Event Team":    { icon: "🎉", color: "hsl(280 60% 65%)", bg: "var(--cc-surface-deep)" },
+  "Trainer Buddy": { icon: "🧑‍🏫", color: "var(--cc-accent)", bg: "var(--cc-surface-deep)" },
+  Student:         { icon: "📚", color: "var(--cc-text-muted)", bg: "var(--cc-surface-deep)" },
 };
 
 // Animated counter hook
@@ -54,8 +54,12 @@ const CCGamificationPanel: React.FC<CCGamificationPanelProps> = ({ user }) => {
 
   return (
     <div
-      className="cc-surface"
-      style={{ borderRadius: "20px", padding: "1.75rem", border: "1px solid var(--cc-border)" }}
+      style={{
+        borderRadius: "20px",
+        padding: "1.75rem",
+        background: "var(--cc-bg)",
+        boxShadow: "var(--cc-neu-md)",
+      }}
     >
       <h3
         style={{
@@ -74,12 +78,13 @@ const CCGamificationPanel: React.FC<CCGamificationPanelProps> = ({ user }) => {
 
       {/* Score counter */}
       <div
-        className="cc-inset"
         style={{
           borderRadius: "16px",
           padding: "1.5rem",
           textAlign: "center",
           marginBottom: "1.5rem",
+          background: "var(--cc-surface-inset)",
+          boxShadow: "var(--cc-neu-inset-md)",
         }}
       >
         <div
@@ -128,7 +133,8 @@ const CCGamificationPanel: React.FC<CCGamificationPanelProps> = ({ user }) => {
                 fontSize: "0.7rem",
                 padding: "4px 10px",
                 borderRadius: "999px",
-                background: "hsl(210 15% 18%)",
+                background: "var(--cc-surface-deep)",
+                boxShadow: "var(--cc-neu-inset-xs)",
                 color,
                 fontWeight: 600,
               }}
@@ -163,7 +169,7 @@ const CCGamificationPanel: React.FC<CCGamificationPanelProps> = ({ user }) => {
               padding: "8px 14px",
               borderRadius: "12px",
               background: roleBadge.bg,
-              border: `1px solid ${roleBadge.color}40`,
+              boxShadow: "var(--cc-neu-inset-sm)",
             }}
           >
             <span style={{ fontSize: "1rem" }}>{roleBadge.icon}</span>
@@ -183,8 +189,8 @@ const CCGamificationPanel: React.FC<CCGamificationPanelProps> = ({ user }) => {
               gap: "8px",
               padding: "8px 14px",
               borderRadius: "12px",
-              background: "var(--cc-accent-soft)",
-              border: "1px solid var(--cc-accent)",
+              background: "var(--cc-surface-deep)",
+              boxShadow: "var(--cc-neu-inset-sm)",
             }}
           >
             <Zap size={16} color="var(--cc-accent-bright)" fill="var(--cc-accent-bright)" />
@@ -207,7 +213,7 @@ const CCGamificationPanel: React.FC<CCGamificationPanelProps> = ({ user }) => {
                 padding: "8px 14px",
                 borderRadius: "12px",
                 background: b.bg,
-                border: `1px solid ${b.color}50`,
+                boxShadow: "var(--cc-neu-inset-sm)",
               }}
             >
               <span style={{ fontSize: "1rem" }}>{b.icon}</span>
@@ -225,7 +231,8 @@ const CCGamificationPanel: React.FC<CCGamificationPanelProps> = ({ user }) => {
               style={{
                 padding: "8px 14px",
                 borderRadius: "12px",
-                background: "hsl(210 15% 18%)",
+                background: "var(--cc-surface-deep)",
+                boxShadow: "var(--cc-neu-inset-sm)",
                 color: "var(--cc-text-faint)",
                 fontSize: "0.78rem",
                 display: "flex",
@@ -247,8 +254,8 @@ const CCGamificationPanel: React.FC<CCGamificationPanelProps> = ({ user }) => {
             marginTop: "1rem",
             padding: "10px 14px",
             borderRadius: "10px",
-            background: "var(--cc-amber-soft)",
-            border: "1px solid hsl(38 60% 28%)",
+            background: "var(--cc-surface-deep)",
+            boxShadow: "var(--cc-neu-inset-sm)",
             display: "flex",
             alignItems: "center",
             gap: "8px",
@@ -257,7 +264,7 @@ const CCGamificationPanel: React.FC<CCGamificationPanelProps> = ({ user }) => {
           <Shield size={14} color="var(--cc-amber)" />
           <p style={{ fontSize: "0.75rem", color: "var(--cc-amber)" }}>
             As <strong>{user.club_role}</strong>, you earn{" "}
-            <strong>{rolePts} leadership points/week</strong> for smooth club execution.
+            <strong>{rolePts} leadership points/week</strong>.
           </p>
         </div>
       )}

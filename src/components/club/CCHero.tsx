@@ -1,17 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Mic2, Award, Users, TrendingUp, ChevronDown, Star } from "lucide-react";
+import { Mic2, Award, Users, TrendingUp, ChevronDown } from "lucide-react";
 
 interface CCHeroProps {
   onScrollToAuth: () => void;
 }
 
-const stats = [
-  { icon: Mic2, value: "16", label: "Speeches" },
-  { icon: Award, value: "4", label: "Certifications" },
-  { icon: Users, value: "4", label: "Levels" },
-  { icon: TrendingUp, value: "100%", label: "Placement Ready" },
-];
 
 const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
   const orb1Ref = useRef<HTMLDivElement>(null);
@@ -47,7 +41,7 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
         background: "var(--cc-bg)",
       }}
     >
-        {/* Animated background orbs */}
+      {/* Animated background orbs */}
       <div
         style={{
           position: "absolute",
@@ -56,7 +50,7 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
           pointerEvents: "none",
         }}
       >
-        {/* Amethyst orb — top left */}
+        {/* Accent orb — top left */}
         <div
           ref={orb1Ref}
           className="cc-animate-shimmer"
@@ -70,11 +64,11 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
             maxHeight: "600px",
             borderRadius: "50%",
             background:
-              "radial-gradient(circle, rgba(108,99,255,0.12) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(139,127,255,0.08) 0%, transparent 70%)",
             transition: "transform 0.1s ease-out",
           }}
         />
-        {/* Bright Lavender orb — bottom right */}
+        {/* Secondary orb — bottom right */}
         <div
           ref={orb2Ref}
           className="cc-animate-shimmer"
@@ -88,19 +82,19 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
             maxHeight: "450px",
             borderRadius: "50%",
             background:
-              "radial-gradient(circle, rgba(108,99,255,0.08) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(139,127,255,0.05) 0%, transparent 70%)",
             animationDelay: "-4s",
             transition: "transform 0.1s ease-out",
           }}
         />
-        {/* Grid overlay — purple tint */}
+        {/* Grid overlay */}
         <div
           style={{
             position: "absolute",
             inset: 0,
             backgroundImage: `
-              linear-gradient(rgba(108,99,255,0.03) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(108,99,255,0.03) 1px, transparent 1px)
+              linear-gradient(rgba(139,127,255,0.02) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(139,127,255,0.02) 1px, transparent 1px)
             `,
             backgroundSize: "60px 60px",
           }}
@@ -117,8 +111,6 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
           textAlign: "center",
         }}
       >
-
-
         {/* Main title */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -145,8 +137,8 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
               >
                 <span className="cc-text-gradient">Consistent</span>
                 <br />
-                <span style={{ color: "var(--cc-text)" }}>Communicators </ span>
-                <span style={{ color: "var(--cc-text)" }}>Club</ span>
+                <span style={{ color: "var(--cc-text)" }}>Communicators </span>
+                <span style={{ color: "var(--cc-text)" }}>Club</span>
               </div>
             </div>
           </div>
@@ -172,79 +164,13 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
           — from foundational fluency to placement-ready mastery.
         </motion.p>
 
-        {/* Stats row */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            flexWrap: "wrap",
-            gap: "1rem",
-            marginBottom: "2.5rem",
-          }}
-        >
-          {stats.map(({ icon: Icon, value, label }) => (
-            <div
-              key={label}
-              className="cc-surface"
-              style={{
-                borderRadius: "16px",
-                padding: "16px 22px",
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                minWidth: "130px",
-              }}
-            >
-              <div
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "10px",
-                  background: "var(--cc-bg)",
-                  boxShadow: "var(--cc-neu-inset-deep)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                }}
-              >
-                <Icon size={18} color="var(--cc-accent-bright)" />
-              </div>
-              <div>
-                <div
-                  style={{
-                    fontSize: "1.35rem",
-                    fontWeight: 800,
-                    color: "var(--cc-text)",
-                    lineHeight: 1,
-                  }}
-                >
-                  {value}
-                </div>
-                <div
-                  style={{
-                    fontSize: "0.72rem",
-                    color: "var(--cc-text-muted)",
-                    fontWeight: 500,
-                    marginTop: "2px",
-                  }}
-                >
-                  {label}
-                </div>
-              </div>
-            </div>
-          ))}
-        </motion.div>
 
         {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.4 }}
-          style={{ display: "flex", justifyContent: "center", gap: "14px", flexWrap: "wrap" }}
+          style={{ display: "flex", justifyContent: "center", gap: "40px", flexWrap: "wrap" }}
         >
           <button
             onClick={onScrollToAuth}
@@ -271,33 +197,6 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
           </button>
         </motion.div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.button
-        onClick={onScrollToAuth}
-        animate={{ y: [0, 8, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        style={{
-          position: "absolute",
-          bottom: "2rem",
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          color: "var(--cc-text-faint)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "4px",
-          zIndex: 1,
-        }}
-      >
-        <span style={{ fontSize: "0.7rem", letterSpacing: "0.1em", textTransform: "uppercase" }}>
-          Sign in / Join
-        </span>
-        <ChevronDown size={20} />
-      </motion.button>
     </section>
   );
 };

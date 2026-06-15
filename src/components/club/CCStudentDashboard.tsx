@@ -40,28 +40,10 @@ const AttendanceCard: React.FC<{
     total === 0
       ? "var(--cc-text-faint)"
       : percentage >= 75
-      ? "hsl(145 55% 45%)"
+      ? "var(--cc-success)"
       : percentage >= 50
-      ? "hsl(38 80% 55%)"
-      : "hsl(0 65% 55%)";
-
-  const bg =
-    total === 0
-      ? "hsl(210 15% 13%)"
-      : percentage >= 75
-      ? "linear-gradient(135deg, hsl(145 30% 13%), hsl(210 15% 13%))"
-      : percentage >= 50
-      ? "linear-gradient(135deg, hsl(38 30% 13%), hsl(210 15% 13%))"
-      : "linear-gradient(135deg, hsl(0 30% 13%), hsl(210 15% 13%))";
-
-  const borderColor =
-    total === 0
-      ? "var(--cc-border)"
-      : percentage >= 75
-      ? "hsl(145 40% 25%)"
-      : percentage >= 50
-      ? "hsl(38 40% 25%)"
-      : "hsl(0 40% 25%)";
+      ? "var(--cc-amber)"
+      : "var(--cc-danger)";
 
   const label =
     total === 0
@@ -77,8 +59,8 @@ const AttendanceCard: React.FC<{
       style={{
         borderRadius: "20px",
         padding: "1.5rem 1.75rem",
-        background: bg,
-        border: `1px solid ${borderColor}`,
+        background: "var(--cc-bg)",
+        boxShadow: "var(--cc-neu-md)",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -92,8 +74,8 @@ const AttendanceCard: React.FC<{
             width: "48px",
             height: "48px",
             borderRadius: "14px",
-            background: `${color}22`,
-            border: `1px solid ${color}44`,
+            background: "var(--cc-surface-inset)",
+            boxShadow: "var(--cc-neu-inset-sm)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -142,10 +124,10 @@ const AttendanceCard: React.FC<{
       {/* Mini progress bar */}
       <div style={{ minWidth: "120px", flex: "0 0 120px" }}>
         <div
+          className="cc-inset-sm"
           style={{
             height: "8px",
             borderRadius: "999px",
-            background: "hsl(210 15% 20%)",
             overflow: "hidden",
           }}
         >
@@ -156,7 +138,6 @@ const AttendanceCard: React.FC<{
               background: color,
               borderRadius: "999px",
               transition: "width 800ms cubic-bezier(0.4,0,0.2,1)",
-              boxShadow: `0 0 8px ${color}66`,
             }}
           />
         </div>
@@ -170,8 +151,8 @@ const AttendanceCard: React.FC<{
           }}
         >
           <span>0%</span>
-          <span style={{ color: "hsl(38 80% 55%)" }}>50%</span>
-          <span style={{ color: "hsl(145 55% 45%)" }}>75%</span>
+          <span style={{ color: "var(--cc-amber)" }}>50%</span>
+          <span style={{ color: "var(--cc-success)" }}>75%</span>
         </div>
       </div>
     </div>
@@ -187,27 +168,19 @@ const NotificationBanner: React.FC<{
   const config = {
     absent: {
       icon: <AlertTriangle size={16} />,
-      color: "hsl(0 65% 55%)",
-      bg: "hsl(0 30% 12%)",
-      border: "hsl(0 40% 25%)",
+      color: "var(--cc-danger)",
     },
     redo: {
       icon: <XCircle size={16} />,
-      color: "hsl(0 65% 55%)",
-      bg: "hsl(0 30% 12%)",
-      border: "hsl(0 40% 25%)",
+      color: "var(--cc-danger)",
     },
     welldone: {
       icon: <CheckCircle2 size={16} />,
-      color: "hsl(145 55% 45%)",
-      bg: "hsl(145 20% 12%)",
-      border: "hsl(145 40% 25%)",
+      color: "var(--cc-success)",
     },
     pending: {
       icon: <Clock size={16} />,
-      color: "hsl(38 80% 55%)",
-      bg: "hsl(38 20% 12%)",
-      border: "hsl(38 40% 25%)",
+      color: "var(--cc-amber)",
     },
   }[type];
 
@@ -219,8 +192,8 @@ const NotificationBanner: React.FC<{
         gap: "10px",
         padding: "12px 14px",
         borderRadius: "12px",
-        background: config.bg,
-        border: `1px solid ${config.border}`,
+        background: "var(--cc-surface-inset)",
+        boxShadow: "var(--cc-neu-inset-xs)",
       }}
     >
       <span style={{ color: config.color, marginTop: "1px", flexShrink: 0 }}>
@@ -279,11 +252,11 @@ const MeetingVideoPanel: React.FC<{
   if (reports.length === 0) {
     return (
       <div
-        className="cc-surface"
         style={{
           borderRadius: "20px",
           padding: "1.75rem",
-          border: "1px solid var(--cc-border)",
+          background: "var(--cc-bg)",
+          boxShadow: "var(--cc-neu-md)",
           textAlign: "center",
           color: "var(--cc-text-faint)",
           fontSize: "0.82rem",
@@ -297,11 +270,11 @@ const MeetingVideoPanel: React.FC<{
 
   return (
     <div
-      className="cc-surface"
       style={{
         borderRadius: "20px",
         padding: "1.75rem",
-        border: "1px solid var(--cc-border)",
+        background: "var(--cc-bg)",
+        boxShadow: "var(--cc-neu-md)",
       }}
     >
       <h3
@@ -330,13 +303,13 @@ const MeetingVideoPanel: React.FC<{
           const statusColor =
             !submission
               ? wasPresent
-                ? "hsl(38 80% 55%)"
-                : "hsl(0 65% 55%)"
+                ? "var(--cc-amber)"
+                : "var(--cc-danger)"
               : submission.status === "Well Done"
-              ? "hsl(145 55% 45%)"
+              ? "var(--cc-success)"
               : submission.status === "Redo"
-              ? "hsl(0 65% 55%)"
-              : "hsl(38 80% 55%)";
+              ? "var(--cc-danger)"
+              : "var(--cc-amber)";
 
           const statusLabel =
             !submission
@@ -360,19 +333,8 @@ const MeetingVideoPanel: React.FC<{
               style={{
                 borderRadius: "14px",
                 padding: "14px 16px",
-                background:
-                  submission?.status === "Well Done"
-                    ? "hsl(145 20% 12%)"
-                    : !wasPresent && !submission
-                    ? "hsl(0 20% 12%)"
-                    : "hsl(210 15% 15%)",
-                border: `1px solid ${
-                  submission?.status === "Well Done"
-                    ? "hsl(145 40% 22%)"
-                    : !wasPresent && !submission
-                    ? "hsl(0 40% 22%)"
-                    : "var(--cc-border)"
-                }`,
+                background: "var(--cc-surface-inset)",
+                boxShadow: "var(--cc-neu-inset-xs)",
               }}
             >
               {/* Row header */}
@@ -412,17 +374,12 @@ const MeetingVideoPanel: React.FC<{
                   </span>
                 </div>
                 <span
+                  className="cc-chip"
                   style={{
+                    color: statusColor,
                     display: "flex",
                     alignItems: "center",
                     gap: "4px",
-                    fontSize: "0.7rem",
-                    fontWeight: 700,
-                    color: statusColor,
-                    background: `${statusColor}18`,
-                    border: `1px solid ${statusColor}40`,
-                    borderRadius: "20px",
-                    padding: "3px 10px",
                   }}
                 >
                   {statusIcon} {statusLabel}
@@ -435,12 +392,12 @@ const MeetingVideoPanel: React.FC<{
                   style={{
                     padding: "8px 12px",
                     borderRadius: "10px",
-                    background: "var(--cc-danger-soft)",
-                    border: "1px solid hsl(0 50% 28%)",
+                    background: "var(--cc-surface-deep)",
+                    boxShadow: "var(--cc-neu-inset-xs)",
                     marginBottom: "10px",
                   }}
                 >
-                  <p style={{ fontSize: "0.72rem", color: "hsl(0 65% 70%)" }}>
+                  <p style={{ fontSize: "0.72rem", color: "var(--cc-danger)" }}>
                     <strong>Feedback:</strong> {submission.evaluator_notes}
                   </p>
                 </div>
@@ -452,7 +409,7 @@ const MeetingVideoPanel: React.FC<{
                   style={{
                     marginTop: "8px",
                     fontSize: "0.75rem",
-                    color: "hsl(145 55% 55%)",
+                    color: "var(--cc-success)",
                     display: "flex",
                     alignItems: "center",
                     gap: "6px",
@@ -476,10 +433,8 @@ const MeetingVideoPanel: React.FC<{
                       gap: "8px",
                       padding: "9px 12px",
                       borderRadius: "10px",
-                      background: "hsl(210 18% 10%)",
-                      boxShadow:
-                        "inset 3px 3px 7px var(--cc-shadow-dark), inset -3px -3px 7px var(--cc-shadow-light)",
-                      border: "1px solid var(--cc-border)",
+                      background: "var(--cc-surface-deep)",
+                      boxShadow: "var(--cc-neu-inset-sm)",
                     }}
                   >
                     <Link2 size={13} color="var(--cc-text-faint)" />
@@ -501,6 +456,7 @@ const MeetingVideoPanel: React.FC<{
                         outline: "none",
                         color: "var(--cc-text)",
                         fontSize: "0.8rem",
+                        fontFamily: "inherit",
                       }}
                     />
                   </div>
@@ -647,15 +603,22 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
         display: "grid",
         gridTemplateColumns: "1fr",
         gap: "1.5rem",
+        position: "relative",
       }}
     >
+      {/* Colorful Ambient Orbs behind content */}
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: -1, borderRadius: "30px" }}>
+        <div className="cc-animate-shimmer" style={{ position: "absolute", top: "5%", left: "0%", width: "45vw", height: "45vw", background: "radial-gradient(circle, rgba(139,127,255,0.08) 0%, transparent 65%)", filter: "blur(60px)" }} />
+        <div className="cc-animate-shimmer" style={{ position: "absolute", top: "35%", right: "0%", width: "40vw", height: "40vw", background: "radial-gradient(circle, rgba(255,185,85,0.06) 0%, transparent 65%)", filter: "blur(60px)", animationDelay: "2s" }} />
+        <div className="cc-animate-shimmer" style={{ position: "absolute", bottom: "10%", left: "15%", width: "50vw", height: "50vw", background: "radial-gradient(circle, rgba(74,222,128,0.05) 0%, transparent 65%)", filter: "blur(60px)", animationDelay: "4s" }} />
+      </div>
       {/* Welcome banner */}
       <div
         style={{
           borderRadius: "20px",
           padding: "1.5rem 1.75rem",
-          background: "linear-gradient(135deg, hsl(165 40% 14%), hsl(210 15% 13%))",
-          border: "1px solid var(--cc-accent-soft)",
+          background: "var(--cc-bg)",
+          boxShadow: "var(--cc-neu-lg)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
@@ -682,8 +645,8 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
           style={{
             padding: "12px 20px",
             borderRadius: "14px",
-            background: "var(--cc-accent-soft)",
-            border: "1px solid var(--cc-accent)",
+            background: "var(--cc-surface-inset)",
+            boxShadow: "var(--cc-neu-inset-sm), var(--cc-glow-purple-sm)",
             textAlign: "center",
           }}
         >
@@ -702,11 +665,11 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
       {/* Notifications */}
       {notifications.length > 0 && (
         <div
-          className="cc-surface"
           style={{
             borderRadius: "20px",
             padding: "1.5rem",
-            border: "1px solid var(--cc-border)",
+            background: "var(--cc-bg)",
+            boxShadow: "var(--cc-neu-md)",
           }}
         >
           <h3

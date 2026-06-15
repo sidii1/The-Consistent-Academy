@@ -11,7 +11,7 @@ const LEVEL_META = [
   {
     goal: "Remove fear, build basic speaking habit",
     color: "var(--cc-accent)",
-    glow: "var(--cc-glow-teal)",
+    glow: "var(--cc-glow-purple-sm)",
     icon: "🌱",
   },
   {
@@ -23,7 +23,7 @@ const LEVEL_META = [
   {
     goal: "Develop influence and professional speaking",
     color: "var(--cc-amber)",
-    glow: "var(--cc-glow-amber)",
+    glow: "0 0 20px hsl(38 88% 65% / 0.4)",
     icon: "🔥",
   },
   {
@@ -37,8 +37,12 @@ const LEVEL_META = [
 const CCProgressTimeline: React.FC<CCProgressTimelineProps> = ({ currentLevel }) => {
   return (
     <div
-      className="cc-surface"
-      style={{ borderRadius: "20px", padding: "1.75rem", border: "1px solid var(--cc-border)" }}
+      style={{
+        borderRadius: "20px",
+        padding: "1.75rem",
+        background: "var(--cc-bg)",
+        boxShadow: "var(--cc-neu-md)",
+      }}
     >
       <div style={{ marginBottom: "1.5rem" }}>
         <h3
@@ -87,21 +91,10 @@ const CCProgressTimeline: React.FC<CCProgressTimelineProps> = ({ currentLevel })
                   padding: "14px 16px",
                   borderRadius: "14px",
                   background: isCurrent
-                    ? `linear-gradient(135deg, ${
-                        lvl <= 2 ? "hsl(165 40% 15%)" : "hsl(38 40% 15%)"
-                      }, hsl(210 15% 13%))`
-                    : isCompleted
-                    ? "hsl(145 20% 14%)"
-                    : "hsl(210 15% 12%)",
-                  border: `1px solid ${
-                    isCurrent
-                      ? meta.color
-                      : isCompleted
-                      ? "hsl(145 40% 25%)"
-                      : "var(--cc-border)"
-                  }`,
-                  boxShadow: isCurrent ? meta.glow : "none",
-                  opacity: isLocked ? 0.45 : 1,
+                    ? "var(--cc-bg)"
+                    : "var(--cc-surface-inset)",
+                  boxShadow: isCurrent ? "var(--cc-neu-sm)" : "var(--cc-neu-inset-xs)",
+                  opacity: isLocked ? 0.6 : 1,
                   transition: "opacity 200ms",
                 }}
               >
@@ -111,11 +104,8 @@ const CCProgressTimeline: React.FC<CCProgressTimelineProps> = ({ currentLevel })
                     width: "42px",
                     height: "42px",
                     borderRadius: "12px",
-                    background: isCompleted
-                      ? "var(--cc-success-soft)"
-                      : isCurrent
-                      ? (lvl <= 2 ? "var(--cc-accent-soft)" : "var(--cc-amber-soft)")
-                      : "hsl(210 15% 20%)",
+                    background: isCurrent ? "var(--cc-surface-inset)" : "var(--cc-surface-deep)",
+                    boxShadow: isCurrent ? "var(--cc-neu-inset-sm)" : "var(--cc-neu-inset-xs)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -161,7 +151,7 @@ const CCProgressTimeline: React.FC<CCProgressTimelineProps> = ({ currentLevel })
                       — {LEVEL_NAMES[lvl]}
                     </span>
                     {isCurrent && (
-                      <span className="cc-chip cc-chip-amber" style={{ fontSize: "0.62rem" }}>
+                      <span className="cc-chip" style={{ fontSize: "0.62rem", color: "var(--cc-amber)" }}>
                         <Zap size={9} fill="currentColor" /> Current
                       </span>
                     )}
@@ -189,7 +179,8 @@ const CCProgressTimeline: React.FC<CCProgressTimelineProps> = ({ currentLevel })
                     textAlign: "center",
                     padding: "6px 12px",
                     borderRadius: "10px",
-                    background: "hsl(210 15% 18%)",
+                    background: "var(--cc-surface-deep)",
+                    boxShadow: "var(--cc-neu-inset-xs)",
                   }}
                 >
                   <div

@@ -162,19 +162,8 @@ const VideoReviewPanel: React.FC<{
                         style={{
                           borderRadius: "12px",
                           padding: "12px 14px",
-                          background:
-                            video.status === "Well Done"
-                              ? "hsl(145 20% 12%)"
-                              : video.status === "Redo"
-                              ? "hsl(0 20% 12%)"
-                              : "hsl(210 15% 16%)",
-                          border: `1px solid ${
-                            video.status === "Well Done"
-                              ? "hsl(145 40% 22%)"
-                              : video.status === "Redo"
-                              ? "hsl(0 40% 22%)"
-                              : "var(--cc-border)"
-                          }`,
+                          background: "var(--cc-surface-inset)",
+                          boxShadow: "var(--cc-neu-inset-sm)",
                         }}
                       >
                         <div
@@ -252,9 +241,9 @@ const VideoReviewPanel: React.FC<{
                                   flex: 1,
                                   padding: "8px",
                                   borderRadius: "8px",
-                                  background: "hsl(145 40% 14%)",
-                                  border: "1px solid hsl(145 40% 25%)",
-                                  color: "hsl(145 55% 55%)",
+                                  background: "var(--cc-surface-deep)",
+                                  boxShadow: "var(--cc-neu-sm)",
+                                  color: "var(--cc-success)",
                                   fontWeight: 700,
                                   fontSize: "0.78rem",
                                   cursor: "pointer",
@@ -262,6 +251,7 @@ const VideoReviewPanel: React.FC<{
                                   alignItems: "center",
                                   justifyContent: "center",
                                   gap: "5px",
+                                  border: "none",
                                 }}
                               >
                                 <CheckCircle2 size={13} /> Well Done
@@ -274,9 +264,9 @@ const VideoReviewPanel: React.FC<{
                                   flex: 1,
                                   padding: "8px",
                                   borderRadius: "8px",
-                                  background: "hsl(0 30% 14%)",
-                                  border: "1px solid hsl(0 40% 25%)",
-                                  color: "hsl(0 65% 60%)",
+                                  background: "var(--cc-surface-deep)",
+                                  boxShadow: "var(--cc-neu-sm)",
+                                  color: "var(--cc-danger)",
                                   fontWeight: 700,
                                   fontSize: "0.78rem",
                                   cursor: "pointer",
@@ -284,6 +274,7 @@ const VideoReviewPanel: React.FC<{
                                   alignItems: "center",
                                   justifyContent: "center",
                                   gap: "5px",
+                                  border: "none",
                                 }}
                               >
                                 <XCircle size={13} /> Redo
@@ -549,15 +540,22 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
         display: "grid",
         gridTemplateColumns: "1fr",
         gap: "1.5rem",
+        position: "relative",
       }}
     >
+      {/* Colorful Ambient Orbs behind content */}
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: -1, borderRadius: "30px" }}>
+        <div className="cc-animate-shimmer" style={{ position: "absolute", top: "5%", left: "0%", width: "45vw", height: "45vw", background: "radial-gradient(circle, rgba(139,127,255,0.08) 0%, transparent 65%)", filter: "blur(60px)" }} />
+        <div className="cc-animate-shimmer" style={{ position: "absolute", top: "35%", right: "0%", width: "40vw", height: "40vw", background: "radial-gradient(circle, rgba(255,185,85,0.06) 0%, transparent 65%)", filter: "blur(60px)", animationDelay: "2s" }} />
+        <div className="cc-animate-shimmer" style={{ position: "absolute", bottom: "10%", left: "15%", width: "50vw", height: "50vw", background: "radial-gradient(circle, rgba(74,222,128,0.05) 0%, transparent 65%)", filter: "blur(60px)", animationDelay: "4s" }} />
+      </div>
       {/* President Welcome Banner */}
       <div
         style={{
           borderRadius: "20px",
           padding: "1.5rem 1.75rem",
-          background: "linear-gradient(135deg, hsl(38 40% 14%), hsl(210 15% 13%))",
-          border: "1px solid var(--cc-amber-soft)",
+          background: "var(--cc-bg)",
+          boxShadow: "var(--cc-neu-lg)",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",

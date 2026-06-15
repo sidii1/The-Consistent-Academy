@@ -27,15 +27,15 @@ const inputStyle: React.CSSProperties = {
   width: "100%",
   padding: "10px 14px",
   borderRadius: "10px",
-  background: "hsl(210 18% 10%)",
-  boxShadow:
-    "inset 4px 4px 8px var(--cc-shadow-dark), inset -4px -4px 8px var(--cc-shadow-light)",
-  border: "1px solid var(--cc-border)",
+  background: "var(--cc-surface-deep)",
+  boxShadow: "var(--cc-neu-inset-sm)",
+  border: "none",
   color: "var(--cc-text)",
   fontSize: "0.88rem",
   outline: "none",
-  transition: "border-color 200ms",
+  transition: "box-shadow 200ms",
   boxSizing: "border-box" as const,
+  fontFamily: "inherit",
 };
 
 const SectionTitle: React.FC<{
@@ -62,32 +62,19 @@ const PctBadge: React.FC<{ pct: number; total: number }> = ({ pct, total }) => {
     total === 0
       ? "var(--cc-text-faint)"
       : pct >= 75
-      ? "hsl(145 55% 45%)"
+      ? "var(--cc-success)"
       : pct >= 50
-      ? "hsl(38 80% 55%)"
-      : "hsl(0 65% 55%)";
-  const bg =
-    total === 0
-      ? "hsl(210 15% 18%)"
-      : pct >= 75
-      ? "hsl(145 40% 12%)"
-      : pct >= 50
-      ? "hsl(38 40% 12%)"
-      : "hsl(0 40% 12%)";
+      ? "var(--cc-amber)"
+      : "var(--cc-danger)";
 
   return (
     <span
+      className="cc-chip"
       style={{
         marginLeft: "auto",
-        fontSize: "0.68rem",
-        fontWeight: 700,
         color,
-        background: bg,
-        border: `1px solid ${color}44`,
-        borderRadius: "20px",
-        padding: "2px 8px",
-        whiteSpace: "nowrap",
-        letterSpacing: "0.03em",
+        background: "var(--cc-surface-deep)",
+        boxShadow: "var(--cc-neu-inset-xs)",
       }}
     >
       {total === 0 ? "New" : `${pct}% (${total} mtg)`}
@@ -128,13 +115,6 @@ const CCMeetingPanel: React.FC<CCMeetingPanelProps> = ({ president }) => {
       } finally {
         setLoadingMembers(false);
       }
-    
-    console.log("Querying college:", president.college);
-    const list = await getCCUsersByCollege(president.college);
-    console.log("Members found:", list.length, list);
-    // ... rest of your code
-  
-
     };
     load();
   }, [president.college]);
@@ -194,11 +174,11 @@ const CCMeetingPanel: React.FC<CCMeetingPanelProps> = ({ president }) => {
 
   return (
     <div
-      className="cc-surface"
       style={{
         borderRadius: "20px",
         padding: "1.75rem",
-        border: "1px solid var(--cc-amber-soft)",
+        background: "var(--cc-bg)",
+        boxShadow: "var(--cc-neu-md)",
       }}
     >
       {/* Header */}
@@ -235,8 +215,8 @@ const CCMeetingPanel: React.FC<CCMeetingPanelProps> = ({ president }) => {
             value={weekNumber}
             onChange={(e) => setWeekNumber(e.target.value)}
             style={{ ...inputStyle, maxWidth: "160px" }}
-            onFocus={(e) => (e.target.style.borderColor = "var(--cc-amber)")}
-            onBlur={(e) => (e.target.style.borderColor = "var(--cc-border)")}
+            onFocus={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-sm), var(--cc-glow-amber)")}
+            onBlur={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-sm)")}
           />
         </div>
 
@@ -252,9 +232,9 @@ const CCMeetingPanel: React.FC<CCMeetingPanelProps> = ({ president }) => {
             value={mom}
             onChange={(e) => setMom(e.target.value)}
             rows={6}
-            style={{ ...inputStyle, resize: "vertical", lineHeight: 1.7, fontFamily: "inherit" }}
-            onFocus={(e) => (e.target.style.borderColor = "var(--cc-accent)")}
-            onBlur={(e) => (e.target.style.borderColor = "var(--cc-border)")}
+            style={{ ...inputStyle, resize: "vertical", lineHeight: 1.7 }}
+            onFocus={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-sm), var(--cc-glow-amber)")}
+            onBlur={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-sm)")}
           />
           <p style={{ fontSize: "0.7rem", color: "var(--cc-text-faint)", marginTop: "4px" }}>
             {mom.length} characters
@@ -298,9 +278,9 @@ const CCMeetingPanel: React.FC<CCMeetingPanelProps> = ({ president }) => {
                 }}
               >
                 {[
-                  { color: "hsl(145 55% 45%)", label: "≥75% attendance" },
-                  { color: "hsl(38 80% 55%)", label: "50–74%" },
-                  { color: "hsl(0 65% 55%)", label: "<50%" },
+                  { color: "var(--cc-success)", label: "≥75% attendance" },
+                  { color: "var(--cc-amber)", label: "50–74%" },
+                  { color: "var(--cc-danger)", label: "<50%" },
                   { color: "var(--cc-text-faint)", label: "New member" },
                 ].map(({ color, label }) => (
                   <span
@@ -356,12 +336,9 @@ const CCMeetingPanel: React.FC<CCMeetingPanelProps> = ({ president }) => {
                         gap: "10px",
                         padding: "9px 12px",
                         borderRadius: "8px",
-                        background: entry.present
-                          ? "var(--cc-success-soft)"
-                          : "hsl(210 15% 18%)",
-                        border: `1px solid ${
-                          entry.present ? "hsl(145 40% 25%)" : "var(--cc-border)"
-                        }`,
+                        background: entry.present ? "var(--cc-surface-inset)" : "var(--cc-bg)",
+                        boxShadow: entry.present ? "var(--cc-neu-inset-xs)" : "var(--cc-neu-sm)",
+                        border: "none",
                         cursor: "pointer",
                         transition: "all 200ms",
                         textAlign: "left",
@@ -453,8 +430,8 @@ const CCMeetingPanel: React.FC<CCMeetingPanelProps> = ({ president }) => {
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
             style={inputStyle}
-            onFocus={(e) => (e.target.style.borderColor = "var(--cc-accent)")}
-            onBlur={(e) => (e.target.style.borderColor = "var(--cc-border)")}
+            onFocus={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-sm), var(--cc-glow-amber)")}
+            onBlur={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-sm)")}
           />
         </div>
 
@@ -478,8 +455,8 @@ const CCMeetingPanel: React.FC<CCMeetingPanelProps> = ({ president }) => {
                 value={val}
                 onChange={(e) => set(e.target.value)}
                 style={inputStyle}
-                onFocus={(e) => (e.target.style.borderColor = "var(--cc-accent)")}
-                onBlur={(e) => (e.target.style.borderColor = "var(--cc-border)")}
+                onFocus={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-sm), var(--cc-glow-amber)")}
+                onBlur={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-sm)")}
               />
             ))}
           </div>

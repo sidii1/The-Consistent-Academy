@@ -140,13 +140,13 @@ export default {
         'neo-focus':
           '0 0 0 2px #E0E5EC, 0 0 0 4px #9570C6',
 
-        // ── CC Club Dark Neumorphism (Soft Noir) ──
-        'cc-neo-extruded':       '7px 7px 14px rgba(0, 0, 0, 0.5), -7px -7px 14px rgba(255, 255, 255, 0.04)',
-        'cc-neo-extruded-hover': '10px 10px 20px rgba(0, 0, 0, 0.6), -10px -10px 20px rgba(255, 255, 255, 0.05)',
-        'cc-neo-extruded-sm':    '4px 4px 8px rgba(0, 0, 0, 0.5), -4px -4px 8px rgba(255, 255, 255, 0.04)',
-        'cc-neo-inset':          'inset 4px 4px 8px rgba(0, 0, 0, 0.5), inset -4px -4px 8px rgba(255, 255, 255, 0.04)',
-        'cc-neo-inset-deep':     'inset 8px 8px 16px rgba(0, 0, 0, 0.6), inset -8px -8px 16px rgba(255, 255, 255, 0.05)',
-        'cc-neo-inset-sm':       'inset 2px 2px 4px rgba(0, 0, 0, 0.5), inset -2px -2px 4px rgba(255, 255, 255, 0.04)',
+        // ── CC Club Dark Neumorphism (v2 — Soft Monochromatic) ──
+        'cc-neo-extruded':       '6px 6px 16px rgba(0, 0, 0, 0.35), -6px -6px 16px rgba(255, 255, 255, 0.06)',
+        'cc-neo-extruded-hover': '8px 8px 22px rgba(0, 0, 0, 0.45), -8px -8px 22px rgba(255, 255, 255, 0.08)',
+        'cc-neo-extruded-sm':    '4px 4px 10px rgba(0, 0, 0, 0.35), -4px -4px 10px rgba(255, 255, 255, 0.06)',
+        'cc-neo-inset':          'inset 5px 5px 14px rgba(0, 0, 0, 0.35), inset -5px -5px 14px rgba(255, 255, 255, 0.06)',
+        'cc-neo-inset-deep':     'inset 8px 8px 20px rgba(0, 0, 0, 0.45), inset -8px -8px 20px rgba(255, 255, 255, 0.08)',
+        'cc-neo-inset-sm':       'inset 3px 3px 8px rgba(0, 0, 0, 0.35), inset -3px -3px 8px rgba(255, 255, 255, 0.06)',
 
         // ── Legacy neu-* tokens (keep for backward compat — existing components) ──
         'neu':           'var(--neu-shadow)',

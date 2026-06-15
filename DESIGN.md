@@ -223,3 +223,20 @@
   - **Standard Generic Fonts**: Do not swap out the premium typographic pairing for generic system fonts like Arial, Inter, or Roboto. The visual identity relies heavily on the editorial feel of Clash Display and Cabinet Grotesk.
   - **Opaque Hex Shadows**: Avoid hard, opaque black hex codes for drop shadows (e.g., `#000000`). Shadows must always use transparent alpha channels (`rgba`) to blend natively into the underlying lavender and porcelain pigments.
   - **Unchecked Thin Weights**: Avoid utilizing font weights under `400` on colored background structures to protect visual clarity and readability.
+
+  ---
+
+  ## CC Club Section — Dark Neumorphic System v2
+
+  The **CC Club** section uses a specialized scoped theme (`.cc-club-scope`) that implements a monochromatic, warm dark clay surface (`#2D3039`). Unlike the main site's high-contrast porcelain approach, this section relies purely on physical depth to define boundaries, without utilizing borders or flat color blocks for UI elements.
+
+  ### Principles
+  - **Monochromatic Canvas**: Every structural element shares the exact same base color (`--cc-bg`: `#2D3039`).
+  - **Shadow Physics**: Depth is the only differentiator. Dark shadows (`rgba(0,0,0,0.35)`) drop bottom-right, while thin highlights (`rgba(255,255,255,0.06)`) define the top-left edge.
+  - **No Borders**: Neumorphic components use light and shadow, not lines, to create shape boundaries.
+
+  ### Component Rules
+  - **Surfaces (`.cc-surface`)**: Standard raised UI containers, utilizing a medium drop-shadow (`var(--cc-neu-md)`).
+  - **Inset Wells (`.cc-inset`)**: Concave sections designed for inputs, image holders, or active depressed states.
+  - **Buttons (`.cc-btn-primary`)**: Utilizes a simpler 2-stop lavender-to-violet gradient (`--cc-grad-accent`) combined with an extruded physical base that compresses into an inset state upon clicking.
+  - **Accent Colors**: Used strictly for text highlights, iconography, progress bars, and glowing halos. Background fills are never used for functional surfaces.

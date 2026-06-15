@@ -9,15 +9,6 @@ interface CCNavbarProps {
   user: CCUser;
 }
 
-const ROLE_CHIP_COLORS: Record<string, string> = {
-  President:       "background: var(--cc-amber-soft); color: var(--cc-amber);",
-  "Vice President":"background: var(--cc-amber-soft); color: var(--cc-amber);",
-  "Team Leader":   "background: var(--cc-accent-soft); color: var(--cc-accent-bright);",
-  "Event Team":    "background: var(--cc-accent-soft); color: var(--cc-accent-bright);",
-  "Trainer Buddy": "background: var(--cc-accent-soft); color: var(--cc-accent-bright);",
-  Student:         "background: hsl(210 15% 20%); color: var(--cc-text-muted);",
-};
-
 const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
   const handleLogout = async () => {
     try {
@@ -32,7 +23,6 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
     <nav
       style={{
         background: "var(--cc-bg)",
-        borderBottom: "1px solid rgba(255, 255, 255, 0.03)",
         boxShadow: "var(--cc-neu-sm)",
         position: "sticky",
         top: 0,
@@ -57,14 +47,14 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
               width: "34px",
               height: "34px",
               borderRadius: "10px",
-              background: "var(--cc-grad-accent)",
+              background: "var(--cc-bg)",
+              boxShadow: "var(--cc-neu-sm)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "var(--cc-neu-sm), var(--cc-glow-purple-md)",
             }}
           >
-            <Mic2 size={18} color="#f0ecf8" strokeWidth={2.5} />
+            <Mic2 size={18} color="var(--cc-accent)" strokeWidth={2.5} />
           </div>
           <div>
             <span
@@ -107,16 +97,13 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
             <span
               className="cc-chip"
               style={{
-                ...(ROLE_CHIP_COLORS[user.club_role]
-                  ? Object.fromEntries(
-                      ROLE_CHIP_COLORS[user.club_role]
-                        .split(";")
-                        .filter(Boolean)
-                        .map((s) => s.split(":").map((x) => x.trim()) as [string, string])
-                    )
-                  : {}),
                 fontSize: "0.62rem",
                 padding: "2px 8px",
+                background: "var(--cc-surface-inset)",
+                color:
+                  user.club_role === "President" || user.club_role === "Vice President"
+                    ? "var(--cc-amber)"
+                    : "var(--cc-accent-bright)",
               }}
             >
               {user.club_role}
@@ -137,16 +124,14 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              transition: "color 200ms, background 200ms, box-shadow 200ms",
+              transition: "color 200ms, box-shadow 200ms",
             }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.color = "var(--cc-danger)";
-              (e.currentTarget as HTMLButtonElement).style.background = "var(--cc-danger-soft)";
               (e.currentTarget as HTMLButtonElement).style.boxShadow = "var(--cc-neu-inset-sm)";
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLButtonElement).style.color = "var(--cc-text-muted)";
-              (e.currentTarget as HTMLButtonElement).style.background = "var(--cc-bg)";
               (e.currentTarget as HTMLButtonElement).style.boxShadow = "var(--cc-neu-sm)";
             }}
           >
