@@ -240,13 +240,13 @@ export default function ExpandableCourseCard({ courses }: ExpandableCourseCardPr
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 }}
-                      className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl p-6"
+                      className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl px-6"
                     >
                       <div className="flex items-center gap-2 mb-4">
                         <Star className="w-5 h-5 text-accent" />
                         <h3 className="text-xl font-semibold text-foreground">What's Included</h3>
                       </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                         {active.highlights.map((highlight, i) => (
                           <motion.div
                             key={i}

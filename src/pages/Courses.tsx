@@ -561,11 +561,7 @@ const courses: Course[] = [
     title:"EELTA - Experiential English Language Teaching Approach",
   description: "India’s First Experiential English Teaching Certification for Global Classrooms",
     targetAudience: [
-    "Pre-Primary Teachers",
-    "Primary School Educators",
-    "Secondary School Teachers",
-    "Senior Secondary Faculty",
-    "Academic Coordinators & School Leaders"
+    "Pre-Primary Teachers, School Educators, Secondary School Teachers, Senior Secondary Faculty, Academic Coordinators & School Leaders"
   ],
   image: "/courses/img14.png",
   hours: "15 Hours",
