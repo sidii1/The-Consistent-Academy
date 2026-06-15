@@ -251,7 +251,7 @@ const TestInterface = ({
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.3 }}
             >
-              <NeumorphicCard className="mb-4 hover:shadow-neu">
+              <NeumorphicCard className="mb-4 ">
                 <div className="p-5">
                   {currentQuestion.section && (
                     <div className="mb-4">

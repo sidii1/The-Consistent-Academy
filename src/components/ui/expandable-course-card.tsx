@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { Clock, BookOpen, X, ArrowRight, Users, Target, Star, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { NeumorphicButton } from "./neumorphic-button";
 import { Link } from "react-router-dom";
 
 interface CourseModule {
@@ -105,21 +104,24 @@ export default function ExpandableCourseCard({ courses }: ExpandableCourseCardPr
 
       <AnimatePresence mode="wait">
         {active && (
-          <div className="fixed inset-0 z-[70] overflow-y-auto p-4 md:p-6">
+          <div
+            className="fixed inset-0 z-[70] flex items-start justify-center p-4 md:p-6 overflow-y-auto custom-scrollbar"
+            onWheel={(e) => e.stopPropagation()}
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-              className="min-h-full flex items-center justify-center"
+              className="w-full max-w-5xl my-auto py-6"
             >
               <motion.div
                 ref={ref}
                 layoutId={`card-${active.title}-${id}`}
-                className="w-full max-w-5xl bg-gradient-to-br from-background via-background to-secondary/5 rounded-3xl overflow-hidden shadow-2xl"
+                className="w-full bg-gradient-to-br from-background via-background to-secondary/5 rounded-3xl overflow-hidden shadow-2xl"
               >
                 {/* Modal Header */}
-                <div className="relative h-72 md:h-80 w-full overflow-hidden">
+                <div className="relative h-64 md:h-72 w-full overflow-hidden flex-shrink-0">
                   <motion.div
                     layoutId={`image-${active.title}-${id}`}
                     className="absolute inset-0"
@@ -138,7 +140,7 @@ export default function ExpandableCourseCard({ courses }: ExpandableCourseCardPr
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     onClick={handleClose}
-                    className="absolute top-4 right-4 z-10 p-3 rounded-2xl bg-background/90 backdrop-blur-sm shadow-neu-sm hover:shadow-neu-md transition-all hover:scale-105 active:scale-95"
+                    className="absolute top-4 right-4 z-10 p-3 rounded-2xl bg-background/90 backdrop-blur-sm transition-all hover:scale-105 active:scale-95"
                     aria-label="Close"
                   >
                     <X className="w-5 h-5" />
@@ -179,149 +181,151 @@ export default function ExpandableCourseCard({ courses }: ExpandableCourseCardPr
                 </div>
 
                 {/* Modal Content */}
-                <div className="max-h-[60vh] md:max-h-[70vh] overflow-y-auto custom-scrollbar">
-                  <div className="p-6 md:p-8 space-y-8">
-                    {/* Description */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 }}
-                      className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl p-6"
-                    >
-                      <p className="text-foreground leading-relaxed">{active.description}</p>
-                    </motion.div>
+                <div className="p-6 md:p-8 space-y-8">
+                  {/* Description */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl p-6"
+                  >
+                    <p className="text-foreground leading-relaxed">{active.description}</p>
+                  </motion.div>
 
-                    {/* Key Information Grid */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.15 }}
-                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                    >
-                      {/* Target Audience */}
-                      <div className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl p-5">
+                  {/* Key Information Grid */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.15 }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                  >
+                    {/* Target Audience */}
+                    <div className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl p-5">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Users className="w-4 h-4 text-primary" />
+                        <h3 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider">
+                          Target Audience
+                        </h3>
+                      </div>
+                      <p className="text-foreground leading-relaxed">{active.targetAudience}</p>
+                    </div>
+
+                    {/* Course Promise */}
+                    {active.promise && (
+                      <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-5">
                         <div className="flex items-center gap-2 mb-3">
-                          <Users className="w-4 h-4 text-primary" />
-                          <h3 className="text-sm font-semibold text-foreground/70 uppercase tracking-wider">
-                            Target Audience
+                          <Target className="w-4 h-4 text-primary" />
+                          <h3 className="text-sm font-semibold text-primary uppercase tracking-wider">
+                            Course Promise
                           </h3>
                         </div>
-                        <p className="text-foreground leading-relaxed">{active.targetAudience}</p>
+                        <p className="text-foreground leading-relaxed">{active.promise}</p>
                       </div>
-
-                      {/* Course Promise */}
-                      {active.promise && (
-                        <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-5">
-                          <div className="flex items-center gap-2 mb-3">
-                            <Target className="w-4 h-4 text-primary" />
-                            <h3 className="text-sm font-semibold text-primary uppercase tracking-wider">
-                              Course Promise
-                            </h3>
-                          </div>
-                          <p className="text-foreground leading-relaxed">{active.promise}</p>
-                        </div>
-                      )}
-                    </motion.div>
-
-                    {/* Highlights */}
-                    {active.highlights && active.highlights.length > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl p-6"
-                      >
-                        <div className="flex items-center gap-2 mb-4">
-                          <Star className="w-5 h-5 text-accent" />
-                          <h3 className="text-xl font-semibold text-foreground">What's Included</h3>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          {active.highlights.map((highlight, i) => (
-                            <motion.div
-                              key={i}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.1 * i }}
-                              className="flex items-center gap-3 p-3 rounded-xl bg-background/50 hover:bg-background/70 transition-colors"
-                            >
-                              <div className="w-2 h-2 rounded-full bg-primary" />
-                              <span className="text-sm text-foreground">{highlight}</span>
-                            </motion.div>
-                          ))}
-                        </div>
-                      </motion.div>
                     )}
+                  </motion.div>
 
-                    {/* Module Details */}
+                  {/* Highlights */}
+                  {active.highlights && active.highlights.length > 0 && (
                     <motion.div
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.25 }}
+                      transition={{ delay: 0.2 }}
                       className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl p-6"
                     >
-                      <h3 className="text-xl font-semibold text-foreground mb-6">Course Modules</h3>
-                      <motion.div
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="show"
-                        className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                      >
-                        {active.moduleDetails.map((module, i) => (
+                      <div className="flex items-center gap-2 mb-4">
+                        <Star className="w-5 h-5 text-accent" />
+                        <h3 className="text-xl font-semibold text-foreground">What's Included</h3>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {active.highlights.map((highlight, i) => (
                           <motion.div
                             key={i}
-                            variants={itemVariants}
-                            className="group bg-background rounded-xl p-5 hover:shadow-neu-md transition-all hover:-translate-y-1"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 * i }}
+                            className="flex items-center gap-3 p-3 rounded-xl bg-background/50 hover:bg-background/70 transition-colors"
                           >
-                            <div className="flex items-start justify-between gap-3 mb-4">
-                              <div className="flex items-start gap-3">
-                                <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/20 text-primary font-semibold text-sm">
-                                  {i + 1}
-                                </div>
-                                <div>
-                                  <h4 className="font-semibold text-foreground">
-                                    {module.title}
-                                  </h4>
-                                  {module.duration && (
-                                    <div className="mt-1">
-                                      <span className="text-xs text-foreground/70 bg-primary/10 px-2 py-1 rounded-md">
-                                        {module.duration}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                            <ul className="space-y-2">
-                              {module.topics.map((topic, j) => (
-                                <li
-                                  key={j}
-                                  className="flex items-start gap-2 text-sm text-foreground/80 group-hover:text-foreground transition-colors"
-                                >
-                                  <ChevronRight className="w-3 h-3 text-primary mt-0.5 flex-shrink-0" />
-                                  <span className="leading-relaxed">{topic}</span>
-                                </li>
-                              ))}
-                            </ul>
+                            <div className="w-2 h-2 rounded-full bg-primary" />
+                            <span className="text-sm text-foreground">{highlight}</span>
                           </motion.div>
                         ))}
-                      </motion.div>
+                      </div>
                     </motion.div>
+                  )}
 
-                    {/* CTA Button */}
+                  {/* Module Details */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25 }}
+                    className="bg-gradient-to-br from-secondary/10 to-secondary/5 rounded-2xl p-6"
+                  >
+                    <h3 className="text-xl font-semibold text-foreground mb-6">Course Modules</h3>
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.3 }}
-                      className="pt-4"
+                      variants={containerVariants}
+                      initial="hidden"
+                      animate="show"
+                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
                     >
-                      <Link to="/contact" onClick={handleClose}>
-                        <NeumorphicButton variant="primary" className="w-full py-6 text-lg font-semibold">
-                          Enroll Now
-                          <ArrowRight className="ml-2" size={20} />
-                        </NeumorphicButton>
-                      </Link>
+                      {active.moduleDetails.map((module, i) => (
+                        <motion.div
+                          key={i}
+                          variants={itemVariants}
+                          className="group bg-background rounded-xl p-5 hover:shadow-neu-md transition-all hover:-translate-y-1"
+                        >
+                          <div className="flex items-start justify-between gap-3 mb-4">
+                            <div className="flex items-start gap-3">
+                              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/20 text-primary font-semibold text-sm">
+                                {i + 1}
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-foreground">
+                                  {module.title}
+                                </h4>
+                                {module.duration && (
+                                  <div className="mt-1">
+                                    <span className="text-xs text-foreground/70 bg-primary/10 px-2 py-1 rounded-md">
+                                      {module.duration}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <ul className="space-y-2">
+                            {module.topics.map((topic, j) => (
+                              <li
+                                key={j}
+                                className="flex items-start gap-2 text-sm text-foreground/80 group-hover:text-foreground transition-colors"
+                              >
+                                <ChevronRight className="w-3 h-3 text-primary mt-0.5 flex-shrink-0" />
+                                <span className="leading-relaxed">{topic}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </motion.div>
+                      ))}
                     </motion.div>
-                  </div>
+                  </motion.div>
+
+                  {/* CTA Button */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="pt-2 pb-2"
+                  >
+                    <Link to="/contact" onClick={handleClose}>
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full py-4 rounded-2xl bg-primary text-white text-lg font-semibold flex items-center justify-center gap-2 transition-opacity hover:opacity-90"
+                      >
+                        Enroll Now
+                        <ArrowRight size={20} />
+                      </motion.button>
+                    </Link>
+                  </motion.div>
                 </div>
               </motion.div>
             </motion.div>

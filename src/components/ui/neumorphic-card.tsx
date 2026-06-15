@@ -28,7 +28,7 @@ interface NeumorphicCardProps {
 export const NeumorphicCard = ({
   children,
   className,
-  hover = true,
+  hover = false,
   pressed = false,
   delay = 0,
   onClick,
