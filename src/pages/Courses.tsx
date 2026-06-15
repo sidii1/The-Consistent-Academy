@@ -157,7 +157,7 @@ const courses: Course[] = [
     ]
   },
   {
-    title: "Crack Your Interview – First Attempt",
+    title: "Crack Your Interview",
     subtitle: "Fresher-Focused",
     description: "Transform from nervous fresher to confident, clear, and convincing interviewee.",
     image: "/courses/img3.png",

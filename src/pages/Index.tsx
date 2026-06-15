@@ -55,11 +55,9 @@ const courseImages = [
 
 const courses = [
   { title: "IELTS | TOEFL | PTE | CELPIP" },
-  { title: "Corporate Survival & Success" },
+  { title: "Corporate Communication" },
   { title: "Crack Your Interview" },
-  { title: "Dining & Social Etiquette" },
   { title: "Communication Skill Training" },
-  { title: "Personality Development Training" },
   { title: "Courses for Kids" },
 ];
 
@@ -243,13 +241,13 @@ const Index = () => {
           </AnimatedHeading>
         </div>
 
-        <div className="relative h-[60vh] sm:h-[70vh] w-full overflow-hidden rounded-neo-card shadow-neo-flat">
+        <div className="relative h-[60vh] sm:h-[60vh] w-full overflow-hidden rounded-neo-card shadow-neo-flat">
           <FlowingMenu
             items={courseMenuItems}
             speed={18}
             textColor="#250060e7"
             bgColor="#E0E5EC"
-            marqueeBgColor="#6C63FF"
+            marqueeBgColor="#5c25b3"
             marqueeTextColor="#ffffff"
             borderColor="rgba(0,0,0,0.05)"
           />

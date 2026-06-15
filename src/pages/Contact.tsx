@@ -213,8 +213,8 @@ const Contact = () => {
     <option value="Corporate Survival & Success Program">
       Corporate Survival & Success Program
     </option>
-    <option value="Crack Your Interview – First Attempt">
-      Crack Your Interview – First Attempt
+    <option value="Crack Your Interview">
+      Crack Your Interview
     </option>
     <option value="Corporate Dining & Social Etiquette Masterclass">
       Corporate Dining & Social Etiquette Masterclass
