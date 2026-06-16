@@ -22,6 +22,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import SplitText from "@/components/ui/SplitText";
 import EnrollNowButton from "@/components/ui/EnrollNowButton";
+import ClubButton from "@/components/ui/ClubButton";
 
 import Founder from "../components/Founder";
 import Testimonials from "../components/Testimonials";
@@ -200,6 +201,18 @@ const HeroSection = ({ startAnim }: { startAnim: boolean }) => {
           </div>
         </motion.div>
       </div>
+      
+      {/* C.C. Club Button in Hero Section — bottom right */}
+      {startAnim && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1.0, duration: 0.6 }}
+          className="absolute bottom-8 right-8 lg:right-16 z-20"
+        >
+          <ClubButton />
+        </motion.div>
+      )}
     </section>
   );
 };

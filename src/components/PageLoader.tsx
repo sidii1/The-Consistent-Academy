@@ -207,7 +207,7 @@ export const PageLoader = ({ onComplete }: PageLoaderProps) => {
         >
           <img
             ref={logoRef}
-            src="/logo.png"
+            src="/logo2.png"
             alt="The Consistent Academy Logo"
             className="w-36 h-36 object-contain"
             style={{ opacity: 0 }}
