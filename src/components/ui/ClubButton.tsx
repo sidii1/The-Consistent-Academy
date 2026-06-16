@@ -4,20 +4,35 @@ import styled from 'styled-components';
 
 const ClubButton = () => {
   const navigate = useNavigate();
+  const [isChecked, setIsChecked] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
 
-  const handleClick = () => {
-    navigate('/club');
+  const handleToggle = () => {
+    if (isChecked) return; // Prevent multiple clicks from restarting the sequence
+    
+    setIsChecked(true);
+
+    // Step 1: Wait for the text illumination animation to finish (1.6s total)
+    setTimeout(() => {
+      setShowSplash(true);
+
+      // Step 2: Wait for the splash screen animation to finish (0.6s total)
+      setTimeout(() => {
+        navigate('/club');
+      }, 600);
+    }, 1600); 
   };
 
   return (
-    <StyledWrapper onClick={handleClick} title="Go to C.C. Club">
+    <StyledWrapper title="Go to C.C. Club">
       <div className="main-background">
         <label htmlFor="cc-button" className="wrap">
           <input
             id="cc-button"
             aria-label="C.C. Club Toggle"
             type="checkbox"
-            readOnly
+            checked={isChecked}
+            onChange={handleToggle}
           />
           <button className="button" tabIndex={-1}>
             <div className="inner">
@@ -72,6 +87,9 @@ const ClubButton = () => {
           </div>
         </label>
       </div>
+
+      {/* Conditionally render the Splash Overlay */}
+      {showSplash && <SplashOverlay />}
     </StyledWrapper>
   );
 };
@@ -86,16 +104,17 @@ const SplashOverlay = styled.div`
   z-index: 9999;
   transform-origin: center;
   animation: splashScale 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+  
   @keyframes splashScale {
     0% {
-      clip-path: circle(0% at 90% 90%);
+      /* Adjusted to start emanating from the center of the screen/button */
+      clip-path: circle(0% at 50% 50%);
     }
     100% {
-      clip-path: circle(150% at 90% 90%);
+      clip-path: circle(150% at 50% 50%);
     }
   }
 `;
-
 
 const StyledWrapper = styled.div`
   cursor: pointer;
