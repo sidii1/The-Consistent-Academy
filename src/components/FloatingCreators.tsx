@@ -6,7 +6,7 @@ export const FloatingCreators = () => {
       initial={{ x: -100 }}
       animate={{ x: 0 }}
       transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
-      className="fixed left-0 top-6 md:top-8 z-[60] flex items-center bg-card/95 backdrop-blur-md border border-l-0 border-primary/20 shadow-neu-lg hover:shadow-neu-xl rounded-r-full rounded-l-none transition-all duration-500 ease-out overflow-hidden group h-[92px] w-[88px] hover:w-[194px] p-2"
+      className="fixed left-0 top-6 md:top-8 z-[60] flex items-center bg-card/95 backdrop-blur-md border border-l-0 border-primary/20  rounded-r-full rounded-l-none transition-all duration-500 ease-out overflow-hidden group h-[92px] w-[88px] hover:w-[194px] p-2"
     >
       {/* Image (Revealed on hover, slides in from left) */}
       <div className="relative h-[76px] flex-shrink-0 w-0 opacity-0 group-hover:w-[96px] group-hover:opacity-100 group-hover:mr-2 group-hover:ml-1 transition-all duration-500 ease-out overflow-hidden rounded-s shadow-neu-inset-sm">

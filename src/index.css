@@ -172,7 +172,7 @@
     box-shadow: inset 3px 3px 6px rgb(163 177 198 / 0.6), inset -3px -3px 6px rgba(255,255,255,0.5);
   }
   .neo-accent-surface {
-    background: linear-gradient(135deg, #795690, #9570C6);
+background: linear-gradient(to right, #DA22FF, #9733EE);
     box-shadow: 9px 9px 16px rgb(163 177 198 / 0.6), -9px -9px 16px rgba(255,255,255,0.5);
   }
 

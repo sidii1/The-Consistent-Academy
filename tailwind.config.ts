@@ -81,7 +81,7 @@ export default {
           // ── Purple palette (strongest → lightest) ──
           'accent-deep': '#391B49', // Russian Violet — deepest, text on light / dark surfaces
           'accent-mid':  '#795690', // Dark Lavender — secondary buttons, borders
-          accent:        '#9570C6', // Amethyst — PRIMARY CTA color & focus rings
+          accent:        '#9C37FC', // Lavender — PRIMARY CTA color & focus rings
           'accent-light':'#C29CE4', // Bright Lavender — gradient end, hover highlights
           'accent-soft': '#999ECF', // Ceil — muted purple tints, decorative
           // ────────────────────────────────────────────

@@ -231,9 +231,17 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-neo-base overflow-x-hidden">
+{/* 1. If loading is true, render ONLY the PageLoader */}
       {loading && <PageLoader onComplete={handleLoaderComplete} />}
-      <Navbar />
-      <FloatingCreators />
+
+      {/* 2. If loading is false, render the actual page content */}
+      {!loading && (
+        <>
+          <Navbar />
+          <FloatingCreators />
+          {/* ... the rest of your landing page components (Hero, Footer, etc.) go here */}
+        </>
+      )}
 
       <HeroSection startAnim={!loading} />
 
