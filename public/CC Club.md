@@ -165,7 +165,6 @@ These points will be awarded to the leaders only if there is smooth execution of
 | Vice President | 7          |
 | Team Leader    | 5          |
 | Event Team     | 3          |
-| Trainer Buddy  | 10         |
 
 ### **14.2 Total Score Includes**
 

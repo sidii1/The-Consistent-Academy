@@ -351,7 +351,7 @@ const CCClubAdminPanel: React.FC = () => {
                     disabled={updatingRole === selectedUser.uid}
                     style={{ ...inputBase, padding: "4px 8px" }}
                   >
-                    {["Student", "President", "Vice President", "Team Leader", "Event Team", "Trainer Buddy"].map((r) => (
+                    {["Student", "President", "Vice President", "Team Leader", "Event Team"].map((r) => (
                       <option key={r} value={r}>
                         {r}
                       </option>

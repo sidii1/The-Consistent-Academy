@@ -15,7 +15,6 @@ const ROLES: CCRole[] = [
   "Vice President",
   "Team Leader",
   "Event Team",
-  "Trainer Buddy",
 ];
 
 const COLLEGES = ["iFEEL"];

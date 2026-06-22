@@ -227,11 +227,8 @@ const Blog: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-12"
           >
-            <div className="w-10 h-10 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-neu-lg">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
             <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-4">
-              Community Blog
+              Community Blogs
             </h1>
             <p className="text-muted-foreground mt-2">
               Share insights, stories and learning experiences ✨
@@ -246,7 +243,7 @@ const Blog: React.FC = () => {
                   onClick={() => {
                     setShowForm(true);
                   }}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white shadow-neu-lg hover:shadow-neu-xl transition-all"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white shadow-neu-lg  transition-all"
                 >
                   <PenSquare className="w-5 h-5" />
                   Write a Blog
@@ -254,7 +251,7 @@ const Blog: React.FC = () => {
                 {isAdmin && (
                   <Link
                     to="/admin/blogs"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-accent text-white shadow-neu-lg hover:shadow-neu-xl transition-all"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-accent text-white shadow-neu-lg transition-all"
                   >
                     <Shield className="w-5 h-5" />
                     Admin Dashboard
@@ -262,7 +259,7 @@ const Blog: React.FC = () => {
                 )}
                 <button
                   onClick={handleLogout}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl shadow-neu-lg hover:shadow-neu-xl transition-all bg-secondary text-foreground"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl shadow-neu-lg transition-all bg-secondary text-foreground"
                 >
                   <LogOut className="w-5 h-5" />
                   Logout
@@ -274,14 +271,14 @@ const Blog: React.FC = () => {
                   onClick={() => {
                     navigate("/login?redirect=blog");
                   }}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white shadow-neu-lg hover:shadow-neu-xl transition-all"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-primary text-white shadow-neu-lg transition-all"
                 >
                   <PenSquare className="w-5 h-5" />
                   Write a Blog
                 </button>
                 <button
                   onClick={() => navigate("/login?redirect=blog")}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl shadow-neu-lg hover:shadow-neu-xl transition-all bg-secondary text-foreground"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl shadow-neu-lg transition-all bg-secondary text-foreground"
                 >
                   <LogIn className="w-5 h-5" />
                   Login / Register
@@ -405,7 +402,7 @@ const Blog: React.FC = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="p-6 rounded-3xl shadow-neu-lg bg-card hover:shadow-neu-xl transition-all flex flex-col"
+                    className="p-6 rounded-3xl shadow-neu-lg bg-card transition-all flex flex-col"
                   >
                     {blog.coverImageUrl && (
                       <img 

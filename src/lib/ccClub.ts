@@ -25,7 +25,6 @@ export type CCRole =
   | "Vice President"
   | "Team Leader"
   | "Event Team"
-  | "Trainer Buddy";
 
 export type SpeechStatus =
   | "Not Started"
@@ -191,7 +190,6 @@ export const ROLE_POINTS: Record<CCRole, number> = {
   "Vice President": 7,
   "Team Leader": 5,
   "Event Team": 3,
-  "Trainer Buddy": 10,
 };
 
 // ─────────────────────────────────────────────────────────────

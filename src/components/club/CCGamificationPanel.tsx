@@ -19,7 +19,6 @@ const ROLE_BADGE_META: Record<string, { icon: string; color: string; bg: string 
   "Vice President":{ icon: "🥈", color: "hsl(200 70% 55%)", bg: "var(--cc-surface-deep)" },
   "Team Leader":   { icon: "⚡", color: "var(--cc-accent-bright)", bg: "var(--cc-surface-deep)" },
   "Event Team":    { icon: "🎉", color: "hsl(280 60% 65%)", bg: "var(--cc-surface-deep)" },
-  "Trainer Buddy": { icon: "🧑‍🏫", color: "var(--cc-accent)", bg: "var(--cc-surface-deep)" },
   Student:         { icon: "📚", color: "var(--cc-text-muted)", bg: "var(--cc-surface-deep)" },
 };
 
