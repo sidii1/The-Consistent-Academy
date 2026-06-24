@@ -48,227 +48,168 @@ const CCGamificationPanel: React.FC<CCGamificationPanelProps> = ({ user }) => {
   const rolePts = ROLE_POINTS[user.club_role] ?? 0;
   const roleBadge = ROLE_BADGE_META[user.club_role] ?? ROLE_BADGE_META.Student;
 
-  // Determine which level badges are earned (all levels up to and including current)
   const earnedLevelBadges = LEVEL_BADGES.filter((b) => b.level < user.current_level);
 
-  return (
-    <div
-      style={{
-        borderRadius: "20px",
-        padding: "1.75rem",
-        background: "var(--cc-bg)",
-        boxShadow: "var(--cc-neu-md)",
-      }}
-    >
-      <h3
-        style={{
-          fontSize: "1rem",
-          fontWeight: 700,
-          color: "var(--cc-text)",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          marginBottom: "1.5rem",
-        }}
-      >
-        <Trophy size={16} color="var(--cc-amber)" />
-        Achievements & Score
-      </h3>
+  const [hoveredBadge, setHoveredBadge] = useState<string | null>(null);
 
-      {/* Score counter */}
+  return (
+    <>
+      <style>
+        {`
+          @keyframes floatBob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+          }
+          .cc-floating-badge {
+            animation: floatBob 3s ease-in-out infinite;
+          }
+        `}
+      </style>
       <div
         style={{
-          borderRadius: "16px",
-          padding: "1.5rem",
-          textAlign: "center",
-          marginBottom: "1.5rem",
-          background: "var(--cc-surface-inset)",
-          boxShadow: "var(--cc-neu-inset-md)",
+          position: "fixed",
+          top: "45%",
+          right: 0,
+          transform: "translateY(-50%)",
+          zIndex: 50,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-end",
+          gap: "1.5rem",
         }}
       >
+        {/* Semi-circle for Points */}
         <div
           style={{
-            fontSize: "3rem",
-            fontWeight: 900,
-            lineHeight: 1,
-            letterSpacing: "-0.03em",
-          }}
-          className="cc-text-amber-gradient cc-animate-score"
-        >
-          {animatedScore}
-        </div>
-        <div
-          style={{
-            fontSize: "0.75rem",
-            color: "var(--cc-text-muted)",
-            fontWeight: 600,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-            marginTop: "6px",
-          }}
-        >
-          Total Points
-        </div>
-
-        {/* Score breakdown */}
-        <div
-          style={{
+            width: "160px",
+            height: "320px",
+            background: "var(--cc-surface-inset)",
+            boxShadow: "var(--cc-neu-lg), -8px 0 20px rgba(0,0,0,0.15)",
+            borderTopLeftRadius: "160px",
+            borderBottomLeftRadius: "160px",
+            borderRight: "none",
             display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
             justifyContent: "center",
-            flexWrap: "wrap",
-            gap: "8px",
-            marginTop: "1rem",
+            paddingLeft: "10px",
           }}
         >
-          {[
-            { label: "Attendance", icon: "📅", color: "var(--cc-accent-bright)" },
-            { label: "Tests",      icon: "📝", color: "hsl(280 60% 65%)" },
-            { label: "Speeches",   icon: "🎤", color: "var(--cc-amber)" },
-            { label: `Role (+${rolePts})`, icon: "🏅", color: "hsl(38 88% 65%)" },
-          ].map(({ label, icon, color }) => (
-            <span
-              key={label}
-              style={{
-                fontSize: "0.7rem",
-                padding: "4px 10px",
-                borderRadius: "999px",
-                background: "var(--cc-surface-deep)",
-                boxShadow: "var(--cc-neu-inset-xs)",
-                color,
-                fontWeight: 600,
-              }}
-            >
-              {icon} {label}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Badges section */}
-      <div>
-        <p
-          style={{
-            fontSize: "0.72rem",
-            color: "var(--cc-text-faint)",
-            fontWeight: 600,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-            marginBottom: "10px",
-          }}
-        >
-          Earned Badges
-        </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-          {/* Role badge */}
+          <Trophy size={30} color="var(--cc-amber)" style={{ marginBottom: "12px" }} />
           <div
+            style={{
+              fontSize: "3.2rem",
+              fontWeight: 900,
+              lineHeight: 1,
+              letterSpacing: "-0.03em",
+            }}
+            className="cc-text-amber-gradient cc-animate-score"
+          >
+            {animatedScore}
+          </div>
+          <div
+            style={{
+              fontSize: "0.75rem",
+              color: "var(--cc-text-muted)",
+              fontWeight: 700,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              marginTop: "8px",
+              textAlign: "center",
+              lineHeight: 1.3,
+            }}
+          >
+            Total<br />Points
+          </div>
+        </div>
+
+        {/* Floating Badges */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px", alignItems: "flex-end", paddingRight: "15px" }}>
+          
+          {/* Role Badge */}
+          <div
+            className="cc-floating-badge"
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "8px",
-              padding: "8px 14px",
-              borderRadius: "12px",
+              gap: "10px",
+              padding: "10px 18px 10px 14px",
+              borderRadius: "999px",
               background: roleBadge.bg,
-              boxShadow: "var(--cc-neu-inset-sm)",
+              boxShadow: "var(--cc-neu-md), 0 4px 12px rgba(0,0,0,0.1)",
+              animationDelay: "0s",
             }}
           >
-            <span style={{ fontSize: "1rem" }}>{roleBadge.icon}</span>
-            <div>
-              <div style={{ fontSize: "0.75rem", fontWeight: 700, color: roleBadge.color }}>
+            <span style={{ fontSize: "1.4rem" }}>{roleBadge.icon}</span>
+            <div style={{ textAlign: "left" }}>
+              <div style={{ fontSize: "0.8rem", fontWeight: 700, color: roleBadge.color, lineHeight: 1.2 }}>
                 {user.club_role}
               </div>
-              <div style={{ fontSize: "0.62rem", color: "var(--cc-text-faint)" }}>Role Badge</div>
+              <div style={{ fontSize: "0.65rem", color: "var(--cc-text-faint)", marginTop: "1px" }}>
+                Role Badge {rolePts > 0 && `(+${rolePts}/wk)`}
+              </div>
             </div>
           </div>
 
-          {/* Current level (in-progress) badge */}
+          {/* Current Level Badge */}
           <div
+            className="cc-floating-badge"
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "8px",
-              padding: "8px 14px",
-              borderRadius: "12px",
+              gap: "10px",
+              padding: "10px 18px 10px 14px",
+              borderRadius: "999px",
               background: "var(--cc-surface-deep)",
-              boxShadow: "var(--cc-neu-inset-sm)",
+              boxShadow: "var(--cc-neu-md), inset 0 0 10px rgba(139,127,255,0.05)",
+              animationDelay: "0.6s",
             }}
           >
-            <Zap size={16} color="var(--cc-accent-bright)" fill="var(--cc-accent-bright)" />
-            <div>
-              <div style={{ fontSize: "0.75rem", fontWeight: 700, color: "var(--cc-accent-bright)" }}>
-                Level {user.current_level} — {LEVEL_NAMES[user.current_level]}
+            <div style={{ width: "24px", display: "flex", justifyContent: "center" }}>
+              <Zap size={20} color="var(--cc-accent-bright)" fill="var(--cc-accent-bright)" />
+            </div>
+            <div style={{ textAlign: "left" }}>
+              <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--cc-accent-bright)", lineHeight: 1.2 }}>
+                Level {user.current_level}
               </div>
-              <div style={{ fontSize: "0.62rem", color: "var(--cc-text-faint)" }}>In Progress</div>
+              <div style={{ fontSize: "0.65rem", color: "var(--cc-text-faint)", marginTop: "1px" }}>
+                In Progress
+              </div>
             </div>
           </div>
 
-          {/* Completed level badges */}
-          {earnedLevelBadges.map((b) => (
+          {/* Completed Level Badges */}
+          {earnedLevelBadges.map((b, i) => (
             <div
               key={b.level}
+              className="cc-floating-badge"
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "8px",
-                padding: "8px 14px",
-                borderRadius: "12px",
+                gap: "10px",
+                padding: "10px 18px 10px 14px",
+                borderRadius: "999px",
                 background: b.bg,
-                boxShadow: "var(--cc-neu-inset-sm)",
+                boxShadow: "var(--cc-neu-md), 0 4px 12px rgba(0,0,0,0.1)",
+                animationDelay: `${1.2 + i * 0.6}s`,
               }}
             >
-              <span style={{ fontSize: "1rem" }}>{b.icon}</span>
-              <div>
-                <div style={{ fontSize: "0.75rem", fontWeight: 700, color: b.color }}>
-                  Level {b.level} — {b.label}
+              <span style={{ fontSize: "1.4rem" }}>{b.icon}</span>
+              <div style={{ textAlign: "left" }}>
+                <div style={{ fontSize: "0.8rem", fontWeight: 700, color: b.color, lineHeight: 1.2 }}>
+                  Level {b.level}
                 </div>
-                <div style={{ fontSize: "0.62rem", color: "var(--cc-text-faint)" }}>Completed ✓</div>
+                <div style={{ fontSize: "0.65rem", color: "var(--cc-success)", marginTop: "1px" }}>
+                  Completed ✓
+                </div>
               </div>
             </div>
           ))}
-
-          {earnedLevelBadges.length === 0 && user.current_level === 1 && (
-            <div
-              style={{
-                padding: "8px 14px",
-                borderRadius: "12px",
-                background: "var(--cc-surface-deep)",
-                boxShadow: "var(--cc-neu-inset-sm)",
-                color: "var(--cc-text-faint)",
-                fontSize: "0.78rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "6px",
-              }}
-            >
-              <Star size={13} />
-              Complete Level 1 to earn your first badge!
-            </div>
-          )}
         </div>
       </div>
-
-      {/* Role points note */}
-      {rolePts > 0 && (
-        <div
-          style={{
-            marginTop: "1rem",
-            padding: "10px 14px",
-            borderRadius: "10px",
-            background: "var(--cc-surface-deep)",
-            boxShadow: "var(--cc-neu-inset-sm)",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-          }}
-        >
-          <Shield size={14} color="var(--cc-amber)" />
-          <p style={{ fontSize: "0.75rem", color: "var(--cc-amber)" }}>
-            As <strong>{user.club_role}</strong>, you earn{" "}
-            <strong>{rolePts} leadership points/week</strong>.
-          </p>
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 
 export default CCGamificationPanel;
+

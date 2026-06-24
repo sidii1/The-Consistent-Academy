@@ -12,7 +12,6 @@ import {
   type CCMeetingVideoSubmission,
 } from "@/lib/ccClub";
 import CCProgressTimeline from "./CCProgressTimeline";
-import CCSpeechTracker from "./CCSpeechTracker";
 import CCGamificationPanel from "./CCGamificationPanel";
 import CCMeetingPanel from "./CCMeetingPanel";
 import {
@@ -464,7 +463,6 @@ const exportPresidentReport = (
 
 // ── Main Dashboard ────────────────────────────────────────────
 const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => {
-  const [speeches, setSpeeches] = useState<CCSpeech[]>([]);
   const [members, setMembers] = useState<CCUser[]>([]);
   const [reports, setReports] = useState<CCMeetingReport[]>([]);
   const [videos, setVideos] = useState<CCMeetingVideoSubmission[]>([]);
@@ -478,14 +476,12 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [speechData, memberList, reportData, videoData, attStats] = await Promise.all([
-        getCCSpeeches(user.uid),
+      const [memberList, reportData, videoData, attStats] = await Promise.all([
         getCCUsersByCollege(user.college),
         getMeetingReports(user.college),
         getCollegeMeetingVideos(user.college),
         getCCAttendanceStats(user.college),
       ]);
-      setSpeeches(speechData);
       setMembers(memberList);
       setReports(reportData);
       setVideos(videoData);
@@ -493,12 +489,7 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
     } finally {
       setLoading(false);
     }
-  }, [user.uid, user.college]);
-
-  const loadSpeeches = useCallback(async () => {
-    const data = await getCCSpeeches(user.uid);
-    setSpeeches(data);
-  }, [user.uid]);
+  }, [user.college]);
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
@@ -536,7 +527,7 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
       style={{
         maxWidth: "1100px",
         margin: "0 auto",
-        padding: "2rem 1.5rem",
+        padding: "2rem 160px 2rem 1.5rem",
         display: "grid",
         gridTemplateColumns: "1fr",
         gap: "1.5rem",
@@ -592,8 +583,8 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
               background: "var(--cc-grad-accent)",
               border: "none",
               color: "hsl(210 18% 8%)",
-              fontWeight: 700,
-              fontSize: "0.82rem",
+              fontWeight: 600,
+              fontSize: "0.9rem",
               cursor: "pointer",
               opacity: exporting ? 0.7 : 1,
             }}
@@ -618,19 +609,8 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
         </div>
       </div>
 
-      {/* Progress Timeline */}
-      <CCProgressTimeline currentLevel={user.current_level} />
-
-      {/* Speech + Gamification */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "1.5rem", alignItems: "start" }}>
-        <CCSpeechTracker
-          uid={user.uid}
-          currentLevel={user.current_level}
-          speeches={speeches}
-          onSpeechSubmitted={loadSpeeches}
-        />
-        <CCGamificationPanel user={user} />
-      </div>
+      {/* Meeting Operations */}
+      <CCMeetingPanel president={user} />
 
       {/* Video review panel */}
       <VideoReviewPanel
@@ -640,8 +620,11 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
         onEvaluated={loadAll}
       />
 
-      {/* Meeting Operations */}
-      <CCMeetingPanel president={user} />
+      {/* Progress Timeline */}
+      <CCProgressTimeline currentLevel={user.current_level} />
+
+      {/* Gamification */}
+      <CCGamificationPanel user={user} />
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>

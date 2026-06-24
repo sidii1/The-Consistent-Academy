@@ -1,17 +1,14 @@
 import React, { useState, useCallback, useEffect } from "react";
 import {
-  getCCSpeeches,
   getMeetingReports,
   getStudentMeetingVideos,
   getStudentAttendanceStats,
   submitMeetingVideo,
   type CCUser,
-  type CCSpeech,
   type CCMeetingReport,
   type CCMeetingVideoSubmission,
 } from "@/lib/ccClub";
 import CCProgressTimeline from "./CCProgressTimeline";
-import CCSpeechTracker from "./CCSpeechTracker";
 import CCGamificationPanel from "./CCGamificationPanel";
 import {
   Loader2,
@@ -542,7 +539,6 @@ const buildNotifications = (
 
 // ── Main Dashboard ────────────────────────────────────────────
 const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
-  const [speeches, setSpeeches] = useState<CCSpeech[]>([]);
   const [reports, setReports] = useState<CCMeetingReport[]>([]);
   const [videos, setVideos] = useState<CCMeetingVideoSubmission[]>([]);
   const [attendance, setAttendance] = useState({ present: 0, total: 0, percentage: 0 });
@@ -551,13 +547,11 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [speechData, reportData, videoData, attStats] = await Promise.all([
-        getCCSpeeches(user.uid),
+      const [reportData, videoData, attStats] = await Promise.all([
         getMeetingReports(user.college),
         getStudentMeetingVideos(user.uid),
         getStudentAttendanceStats(user.uid, user.college),
       ]);
-      setSpeeches(speechData);
       setReports(reportData);
       setVideos(videoData);
       setAttendance(attStats);
@@ -567,11 +561,6 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
   }, [user.uid, user.college]);
 
   useEffect(() => { loadAll(); }, [loadAll]);
-
-  const loadSpeeches = useCallback(async () => {
-    const data = await getCCSpeeches(user.uid);
-    setSpeeches(data);
-  }, [user.uid]);
 
   const notifications = buildNotifications(reports, videos, user.uid);
 
@@ -599,7 +588,7 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
       style={{
         maxWidth: "1100px",
         margin: "0 auto",
-        padding: "2rem 1.5rem",
+        padding: "2rem 160px 2rem 1.5rem",
         display: "grid",
         gridTemplateColumns: "1fr",
         gap: "1.5rem",
@@ -694,27 +683,6 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
         </div>
       )}
 
-      {/* Progress Timeline */}
-      <CCProgressTimeline currentLevel={user.current_level} />
-
-      {/* Main grid: Speech tracker + Gamification */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
-          gap: "1.5rem",
-          alignItems: "start",
-        }}
-      >
-        <CCSpeechTracker
-          uid={user.uid}
-          currentLevel={user.current_level}
-          speeches={speeches}
-          onSpeechSubmitted={loadSpeeches}
-        />
-        <CCGamificationPanel user={user} />
-      </div>
-
       {/* Meeting video submissions */}
       <MeetingVideoPanel
         user={user}
@@ -722,6 +690,12 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
         videos={videos}
         onSubmitted={loadAll}
       />
+
+      {/* Progress Timeline */}
+      <CCProgressTimeline currentLevel={user.current_level} />
+
+      {/* Gamification */}
+      <CCGamificationPanel user={user} />
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
