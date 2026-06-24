@@ -115,7 +115,7 @@ const replacement = `/* ══════════════════�
   --cc-grad-amber:
     linear-gradient(135deg, hsl(38 80% 55%), hsl(38 92% 68%));
 
-  font-family: 'Inter', sans-serif;
+  font-family: 'Erica One', sans-serif;
   color: var(--cc-text);
   background: var(--cc-bg);
   min-height: 100vh;
