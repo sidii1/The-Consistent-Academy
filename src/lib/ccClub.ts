@@ -19,6 +19,8 @@ import { db } from "@/lib/firebase";
 // TYPES
 // ─────────────────────────────────────────────────────────────
 
+export type SpeechStatus = "Not Started" | "Pending Review" | "Well Done" | "Redo";
+
 export type CCRole =
   | "Student"
   | "President"
@@ -492,6 +494,8 @@ export interface CCMeetingVideoSubmission {
   week_number: number;
   video_url: string;
   status: "Pending Review" | "Well Done" | "Redo";
+  workflowState?: "submitted_to_president" | "validated" | "evaluated" | "needs_redo";
+  trainerRemarks?: string;
   evaluator_notes: string;
   submitted_at: Timestamp | null;
   evaluated_at: Timestamp | null;
@@ -516,6 +520,7 @@ export async function submitMeetingVideo(
       week_number: weekNumber,
       video_url: videoUrl,
       status: "Pending Review",
+      workflowState: "submitted_to_president",
       evaluator_notes: "",
       submitted_at: serverTimestamp(),
       evaluated_at: null,
@@ -544,25 +549,105 @@ export async function getCollegeMeetingVideos(
   if (reports.length === 0) return [];
 
   const reportIds = reports.map((r) => r.id!);
-  // Firestore 'in' supports max 30 items; chunk if needed
-  const chunks: string[][] = [];
-  for (let i = 0; i < reportIds.length; i += 30) {
-    chunks.push(reportIds.slice(i, i + 30));
-  }
-
   const allVideos: CCMeetingVideoSubmission[] = [];
-  for (const chunk of chunks) {
-    const q = query(
-      collection(db, "cc_meeting_videos"),
-      where("report_id", "in", chunk)
-    );
-    const snap = await getDocs(q);
-    snap.docs.forEach((d) => allVideos.push(d.data() as CCMeetingVideoSubmission));
-  }
+  
+  await Promise.all(
+    reportIds.map(async (reportId) => {
+      const q = query(
+        collection(db, "cc_meeting_videos"),
+        where("report_id", "==", reportId)
+      );
+      const snap = await getDocs(q);
+      snap.docs.forEach((d) => allVideos.push(d.data() as CCMeetingVideoSubmission));
+    })
+  );
+
   return allVideos;
 }
 
-/** President: evaluate a student's meeting video */
+/** President: validate a student's meeting video */
+export async function validateMeetingVideo(
+  reportId: string,
+  uid: string
+): Promise<void> {
+  await updateDoc(doc(db, "cc_meeting_videos", `${reportId}_${uid}`), {
+    workflowState: "validated",
+  });
+}
+
+/** President: reject a student's meeting video */
+export async function rejectMeetingVideo(
+  reportId: string,
+  uid: string,
+  reason: string
+): Promise<void> {
+  await updateDoc(doc(db, "cc_meeting_videos", `${reportId}_${uid}`), {
+    workflowState: "needs_redo",
+    status: "Redo",
+    evaluator_notes: reason,
+    evaluated_at: serverTimestamp(),
+  });
+}
+
+/** Trainer: get validated meeting videos for a college */
+export async function getValidatedMeetingVideos(
+  college: string
+): Promise<CCMeetingVideoSubmission[]> {
+  const reports = await getMeetingReports(college);
+  if (reports.length === 0) return [];
+
+  const reportIds = reports.map((r) => r.id!);
+  const allVideos: CCMeetingVideoSubmission[] = [];
+  
+  await Promise.all(
+    reportIds.map(async (reportId) => {
+      const q = query(
+        collection(db, "cc_meeting_videos"),
+        where("report_id", "==", reportId)
+      );
+      const snap = await getDocs(q);
+      snap.docs.forEach((d) => {
+        const data = d.data() as CCMeetingVideoSubmission;
+        if (data.workflowState === "validated") {
+          allVideos.push(data);
+        }
+      });
+    })
+  );
+  return allVideos;
+}
+
+/** Trainer: evaluate a student's meeting video */
+export async function evaluateMeetingVideoByTrainer(
+  reportId: string,
+  uid: string,
+  data: {
+    remarks: string;
+    needsRedo: boolean;
+  }
+): Promise<void> {
+  const docRef = doc(db, "cc_meeting_videos", `${reportId}_${uid}`);
+  
+  if (data.needsRedo) {
+    await updateDoc(docRef, {
+      workflowState: "needs_redo",
+      status: "Redo",
+      trainerRemarks: data.remarks,
+      evaluator_notes: data.remarks,
+      evaluated_at: serverTimestamp(),
+    });
+  } else {
+    await updateDoc(docRef, {
+      workflowState: "evaluated",
+      status: "Well Done",
+      trainerRemarks: data.remarks,
+      evaluator_notes: data.remarks,
+      evaluated_at: serverTimestamp(),
+    });
+  }
+}
+
+/** Legacy (President): evaluate a student's meeting video */
 export async function evaluateMeetingVideo(
   reportId: string,
   uid: string,

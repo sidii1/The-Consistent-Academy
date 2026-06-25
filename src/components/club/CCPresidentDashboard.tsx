@@ -5,7 +5,8 @@ import {
   getMeetingReports,
   getCollegeMeetingVideos,
   getCCAttendanceStats,
-  evaluateMeetingVideo,
+  validateMeetingVideo,
+  rejectMeetingVideo,
   getPendingPresidentSpeeches,
   validateSpeech,
   rejectSpeech,
@@ -17,6 +18,7 @@ import {
 import CCProgressTimeline from "./CCProgressTimeline";
 import CCGamificationPanel from "./CCGamificationPanel";
 import CCMeetingPanel from "./CCMeetingPanel";
+import CCInlineVideoPlayer from "./CCInlineVideoPlayer";
 import {
   Loader2,
   Crown,
@@ -51,21 +53,31 @@ const VideoReviewPanel: React.FC<{
     videos.map((v) => [`${v.report_id}_${v.uid}`, v])
   );
 
-  const pending = videos.filter((v) => v.status === "Pending Review");
+  const pending = videos.filter((v) => v.workflowState === "submitted_to_president" || (!v.workflowState && v.status === "Pending Review"));
 
-  const evaluate = async (
-    reportId: string,
-    uid: string,
-    status: "Well Done" | "Redo"
-  ) => {
+  const handleValidate = async (reportId: string, uid: string) => {
     const key = `${reportId}_${uid}`;
     setSubmitting((p) => ({ ...p, [key]: true }));
     try {
-      await evaluateMeetingVideo(reportId, uid, status, notes[key] || "");
-      toast.success(`Marked as ${status}`);
+      await validateMeetingVideo(reportId, uid);
+      toast.success("Video validated & forwarded to Trainer");
       onEvaluated();
     } catch {
-      toast.error("Failed to evaluate. Try again.");
+      toast.error("Failed to validate. Try again.");
+    } finally {
+      setSubmitting((p) => ({ ...p, [key]: false }));
+    }
+  };
+
+  const handleReject = async (reportId: string, uid: string) => {
+    const key = `${reportId}_${uid}`;
+    setSubmitting((p) => ({ ...p, [key]: true }));
+    try {
+      await rejectMeetingVideo(reportId, uid, notes[key] || "Invalid video. Please re-record.");
+      toast.success("Video marked as Redo");
+      onEvaluated();
+    } catch {
+      toast.error("Failed to reject. Try again.");
     } finally {
       setSubmitting((p) => ({ ...p, [key]: false }));
     }
@@ -184,38 +196,35 @@ const VideoReviewPanel: React.FC<{
                             <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--cc-text)" }}>
                               {member.name}
                             </span>
-                            <a
-                              href={video.video_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{
-                                display: "block",
-                                fontSize: "0.72rem",
-                                color: "var(--cc-accent-bright)",
-                                marginTop: "2px",
-                                wordBreak: "break-all",
-                              }}
-                            >
-                              {video.video_url}
-                            </a>
+                            <div style={{ marginTop: "6px" }}>
+                              <CCInlineVideoPlayer url={video.video_url} />
+                            </div>
                           </div>
                           <span
                             style={{
                               fontSize: "0.68rem",
                               fontWeight: 700,
                               color:
-                                video.status === "Well Done"
+                                video.workflowState === "evaluated" || video.status === "Well Done"
                                   ? "hsl(145 55% 45%)"
-                                  : video.status === "Redo"
+                                  : video.workflowState === "needs_redo" || video.status === "Redo"
                                   ? "hsl(0 65% 55%)"
+                                  : video.workflowState === "validated"
+                                  ? "var(--cc-accent-bright)"
                                   : "hsl(38 80% 55%)",
                             }}
                           >
-                            {video.status}
+                            {video.workflowState === "submitted_to_president" || video.status === "Pending Review" 
+                              ? "Pending Validation"
+                              : video.workflowState === "validated"
+                              ? "Forwarded"
+                              : video.workflowState === "needs_redo" ? "Needs Redo"
+                              : video.workflowState === "evaluated" ? "Evaluated"
+                              : video.status}
                           </span>
                         </div>
 
-                        {video.status === "Pending Review" && (
+                        {(video.workflowState === "submitted_to_president" || video.status === "Pending Review") && (
                           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                             <input
                               type="text"
@@ -239,7 +248,7 @@ const VideoReviewPanel: React.FC<{
                             <div style={{ display: "flex", gap: "8px" }}>
                               <button
                                 type="button"
-                                onClick={() => evaluate(report.id!, member.uid, "Well Done")}
+                                onClick={() => handleValidate(report.id!, member.uid)}
                                 disabled={submitting[key]}
                                 style={{
                                   flex: 1,
@@ -258,11 +267,11 @@ const VideoReviewPanel: React.FC<{
                                   border: "none",
                                 }}
                               >
-                                <CheckCircle2 size={13} /> Well Done
+                                <Forward size={13} /> Validate & Forward
                               </button>
                               <button
                                 type="button"
-                                onClick={() => evaluate(report.id!, member.uid, "Redo")}
+                                onClick={() => handleReject(report.id!, member.uid)}
                                 disabled={submitting[key]}
                                 style={{
                                   flex: 1,
@@ -281,7 +290,7 @@ const VideoReviewPanel: React.FC<{
                                   border: "none",
                                 }}
                               >
-                                <XCircle size={13} /> Redo
+                                <XCircle size={13} /> Reject
                               </button>
                             </div>
                           </div>
@@ -713,14 +722,9 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
                       {speech.title} {(speech.version || 1) > 1 ? `(v${speech.version})` : ""}
                     </span>
                     {speech.youtubeUrl && (
-                      <a
-                        href={speech.youtubeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ display: "block", fontSize: "0.72rem", color: "var(--cc-accent-bright)", marginTop: "2px", wordBreak: "break-all" }}
-                      >
-                        {speech.youtubeUrl}
-                      </a>
+                      <div style={{ marginTop: "6px" }}>
+                        <CCInlineVideoPlayer url={speech.youtubeUrl} />
+                      </div>
                     )}
                   </div>
                   <span style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--cc-amber)" }}>

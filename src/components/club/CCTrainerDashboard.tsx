@@ -1,14 +1,17 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
-import ReactPlayer from "react-player";
 import {
   getCCUsersByCollege,
   getValidatedSpeeches,
   getCCSpeeches,
   evaluateSpeechByTrainer,
   updateCCUser,
+  getValidatedMeetingVideos,
+  evaluateMeetingVideoByTrainer,
   type CCUser,
   type CCSpeech,
+  type CCMeetingVideoSubmission,
 } from "@/lib/ccClub";
+import CCInlineVideoPlayer from "./CCInlineVideoPlayer";
 import { uploadToCloudinary } from "@/lib/utils";
 import { toast } from "sonner";
 import {
@@ -30,26 +33,11 @@ interface CCTrainerDashboardProps {
   user: CCUser;
 }
 
-// ── Helper: extract YouTube thumbnail from a URL ──
-const getYoutubeThumbnail = (url: string): string | null => {
-  try {
-    const u = new URL(url);
-    let videoId = "";
-    if (u.hostname.includes("youtu.be")) {
-      videoId = u.pathname.slice(1);
-    } else {
-      videoId = u.searchParams.get("v") || "";
-    }
-    return videoId ? `https://img.youtube.com/vi/${videoId}/mqdefault.jpg` : null;
-  } catch {
-    return null;
-  }
-};
-
 // ── Types for grouped student data ──
 interface StudentSpeechGroup {
   user: CCUser;
   speeches: CCSpeech[]; // only validated speeches awaiting trainer evaluation
+  meetingVideos: CCMeetingVideoSubmission[]; // validated meeting videos awaiting evaluation
   allSpeeches: CCSpeech[]; // all speeches for analytics
 }
 
@@ -64,11 +52,7 @@ const CCTrainerDashboard: React.FC<CCTrainerDashboardProps> = ({ user }) => {
   const [uploadingPfp, setUploadingPfp] = useState(false);
   const pfpInputRef = useRef<HTMLInputElement>(null);
 
-  // ── Persistent Video Player state (Phase 4 rules) ──
-  // Rule 2: Single persistent instance — never destroyed
-  // Rule 3: Warm cache — URL is never cleared on close
-  const [videoUrl, setVideoUrl] = useState("");
-  const [isPlayerVisible, setIsPlayerVisible] = useState(false);
+
 
   // ── Evaluation form state ──
   const [evalRemarks, setEvalRemarks] = useState<Record<string, string>>({});
@@ -81,10 +65,29 @@ const CCTrainerDashboard: React.FC<CCTrainerDashboardProps> = ({ user }) => {
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [members, validatedList] = await Promise.all([
-        getCCUsersByCollege(user.college),
-        getValidatedSpeeches(user.college),
-      ]);
+      let members: any[] = [];
+      try {
+        members = await getCCUsersByCollege(user.college);
+      } catch (err: any) {
+        console.error("Error fetching users:", err);
+        throw new Error("fetching users: " + err.message);
+      }
+
+      let validatedList: any[] = [];
+      try {
+        validatedList = await getValidatedSpeeches(user.college);
+      } catch (err: any) {
+        console.error("Error fetching speeches:", err);
+        throw new Error("fetching speeches: " + err.message);
+      }
+
+      let validatedMeetingVideos: any[] = [];
+      try {
+        validatedMeetingVideos = await getValidatedMeetingVideos(user.college);
+      } catch (err: any) {
+        console.error("Error fetching meeting videos:", err);
+        throw new Error("fetching meeting videos: " + err.message);
+      }
 
       // Build student groups: include all members (students), not just those with validated speeches
       const studentMembers = members.filter(
@@ -94,15 +97,23 @@ const CCTrainerDashboard: React.FC<CCTrainerDashboardProps> = ({ user }) => {
       // Fetch all speeches for every student for analytics purposes
       const groups: StudentSpeechGroup[] = [];
       for (const student of studentMembers) {
-        const allSpeeches = await getCCSpeeches(student.uid);
+        let allSpeeches: any[] = [];
+        try {
+          allSpeeches = await getCCSpeeches(student.uid);
+        } catch (err: any) {
+          console.error(`Error fetching speeches for student ${student.uid}:`, err);
+          throw new Error("fetching student speeches: " + err.message);
+        }
         const validated = validatedList
           .filter((v) => v.uid === student.uid)
           .map((v) => v.speech);
-        groups.push({ user: student, speeches: validated, allSpeeches });
+        const meetingVideos = validatedMeetingVideos.filter((v) => v.uid === student.uid);
+        groups.push({ user: student, speeches: validated, meetingVideos, allSpeeches });
       }
       setStudentGroups(groups);
-    } catch {
-      toast.error("Failed to load trainer data.");
+    } catch (err: any) {
+      console.error("TRAINER DASHBOARD LOAD ERROR:", err);
+      toast.error("Failed to load trainer data: " + (err?.message || String(err)));
     } finally {
       setLoading(false);
     }
@@ -129,16 +140,7 @@ const CCTrainerDashboard: React.FC<CCTrainerDashboardProps> = ({ user }) => {
     }
   };
 
-  // ── Open video player (Rule 4: autoplay tied to visibility) ──
-  const openPlayer = (url: string) => {
-    setVideoUrl(url);
-    setIsPlayerVisible(true);
-  };
 
-  // Rule 3: On close, keep URL cached, only toggle visibility
-  const closePlayer = () => {
-    setIsPlayerVisible(false);
-  };
 
   // ── Submit evaluation ──
   const handleEvaluate = async (uid: string, speechId: string) => {
@@ -155,6 +157,23 @@ const CCTrainerDashboard: React.FC<CCTrainerDashboardProps> = ({ user }) => {
         presidentPoints: presidentPts,
       });
       toast.success(evalNeedsRedo[key] ? "Marked for redo." : "Evaluation submitted!");
+      loadAll();
+    } catch {
+      toast.error("Evaluation failed.");
+    } finally {
+      setSubmittingEval(null);
+    }
+  };
+
+  const handleEvaluateMeetingVideo = async (uid: string, reportId: string) => {
+    const key = `${uid}_${reportId}_mv`;
+    setSubmittingEval(key);
+    try {
+      await evaluateMeetingVideoByTrainer(reportId, uid, {
+        remarks: evalRemarks[key] || "",
+        needsRedo: evalNeedsRedo[key] || false,
+      });
+      toast.success(evalNeedsRedo[key] ? "Marked for redo." : "Meeting Video Evaluation submitted!");
       loadAll();
     } catch {
       toast.error("Evaluation failed.");
@@ -328,10 +347,10 @@ const CCTrainerDashboard: React.FC<CCTrainerDashboardProps> = ({ user }) => {
         }}
       >
         <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--cc-text)", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "8px" }}>
-          <Users size={16} color="hsl(160 60% 50%)" /> Student Speeches for Evaluation
-          {studentGroups.filter(g => g.speeches.length > 0).length > 0 && (
+          <Users size={16} color="hsl(160 60% 50%)" /> Student Submissions for Evaluation
+          {studentGroups.filter(g => g.speeches.length > 0 || g.meetingVideos.length > 0).length > 0 && (
             <span style={{ fontSize: "0.68rem", padding: "2px 8px", borderRadius: "999px", background: "hsl(160 30% 12%)", color: "hsl(160 60% 55%)", border: "1px solid hsl(160 40% 28%)", fontWeight: 700 }}>
-              {studentGroups.reduce((acc, g) => acc + g.speeches.length, 0)} to evaluate
+              {studentGroups.reduce((acc, g) => acc + g.speeches.length + g.meetingVideos.length, 0)} to evaluate
             </span>
           )}
         </h3>
@@ -401,9 +420,9 @@ const CCTrainerDashboard: React.FC<CCTrainerDashboardProps> = ({ user }) => {
                       </div>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      {group.speeches.length > 0 && (
+                      {(group.speeches.length > 0 || group.meetingVideos.length > 0) && (
                         <span style={{ fontSize: "0.68rem", padding: "2px 8px", borderRadius: "999px", background: "hsl(38 40% 14%)", color: "hsl(38 80% 55%)", border: "1px solid hsl(38 40% 28%)", fontWeight: 700 }}>
-                          {group.speeches.length} pending
+                          {group.speeches.length + group.meetingVideos.length} pending
                         </span>
                       )}
                       {isExpanded ? <ChevronUp size={14} color="var(--cc-text-faint)" /> : <ChevronDown size={14} color="var(--cc-text-faint)" />}
@@ -413,14 +432,14 @@ const CCTrainerDashboard: React.FC<CCTrainerDashboardProps> = ({ user }) => {
                   {/* Expanded content */}
                   {isExpanded && (
                     <div style={{ padding: "0 16px 16px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                      {group.speeches.length === 0 ? (
+                      {group.speeches.length === 0 && group.meetingVideos.length === 0 ? (
                         <p style={{ fontSize: "0.78rem", color: "var(--cc-text-faint)", padding: "8px 0" }}>
-                          No speeches awaiting evaluation from this student.
+                          No submissions awaiting evaluation from this student.
                         </p>
                       ) : (
-                        group.speeches.map((speech) => {
+                        <>
+                        {group.speeches.map((speech) => {
                           const key = `${group.user.uid}_${speech.speech_id}`;
-                          const thumbnail = speech.youtubeUrl ? getYoutubeThumbnail(speech.youtubeUrl) : null;
                           return (
                             <div
                               key={speech.speech_id}
@@ -432,37 +451,18 @@ const CCTrainerDashboard: React.FC<CCTrainerDashboardProps> = ({ user }) => {
                               }}
                             >
                               {/* Speech info row */}
-                              <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "12px", flexWrap: "wrap" }}>
-                                {/* Thumbnail — click to open player */}
-                                {thumbnail && (
-                                  <div
-                                    onClick={() => openPlayer(speech.youtubeUrl!)}
-                                    style={{
-                                      width: "120px",
-                                      height: "68px",
-                                      borderRadius: "8px",
-                                      background: `url(${thumbnail}) center/cover`,
-                                      cursor: "pointer",
-                                      flexShrink: 0,
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                      position: "relative",
-                                    }}
-                                  >
-                                    <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(0,0,0,0.6)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                      <Play size={14} color="#fff" fill="#fff" />
-                                    </div>
-                                  </div>
-                                )}
-                                <div style={{ flex: 1 }}>
+                              <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "12px", flexWrap: "wrap", flexDirection: "column" }}>
+                                <div>
                                   <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--cc-text)", marginBottom: "2px" }}>
-                                    {speech.title}
+                                    {speech.title} <span style={{ fontSize: "0.7rem", color: "hsl(160 60% 50%)", marginLeft: "8px" }}>SPEECH</span>
                                   </div>
                                   <div style={{ fontSize: "0.72rem", color: "var(--cc-text-faint)" }}>
                                     Version {speech.version || 1} · {speech.speech_id}
                                   </div>
                                 </div>
+                                {speech.youtubeUrl && (
+                                  <CCInlineVideoPlayer url={speech.youtubeUrl} />
+                                )}
                               </div>
 
                               {/* Evaluation Form */}
@@ -571,7 +571,89 @@ const CCTrainerDashboard: React.FC<CCTrainerDashboardProps> = ({ user }) => {
                               </div>
                             </div>
                           );
-                        })
+                        })}
+                        
+                        {group.meetingVideos.map((mv) => {
+                          const key = `${group.user.uid}_${mv.report_id}_mv`;
+                          return (
+                            <div
+                              key={key}
+                              style={{
+                                borderRadius: "12px",
+                                padding: "14px",
+                                background: "var(--cc-surface-deep)",
+                                boxShadow: "var(--cc-neu-inset-sm)",
+                              }}
+                            >
+                              <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "12px", flexWrap: "wrap", flexDirection: "column" }}>
+                                <div>
+                                  <div style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--cc-text)", marginBottom: "2px" }}>
+                                    Meeting Video <span style={{ fontSize: "0.7rem", color: "hsl(220 60% 60%)", marginLeft: "8px" }}>WEEK {mv.week_number}</span>
+                                  </div>
+                                </div>
+                                {mv.video_url && (
+                                  <CCInlineVideoPlayer url={mv.video_url} />
+                                )}
+                              </div>
+
+                              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                                <textarea
+                                  placeholder="Trainer remarks / feedback..."
+                                  value={evalRemarks[key] || ""}
+                                  onChange={(e) => setEvalRemarks((p) => ({ ...p, [key]: e.target.value }))}
+                                  rows={3}
+                                  style={{
+                                    width: "100%",
+                                    padding: "10px 12px",
+                                    borderRadius: "8px",
+                                    background: "hsl(210 18% 10%)",
+                                    border: "1px solid var(--cc-border)",
+                                    color: "var(--cc-text)",
+                                    fontSize: "0.82rem",
+                                    outline: "none",
+                                    resize: "vertical",
+                                    boxSizing: "border-box",
+                                    fontFamily: "inherit",
+                                    lineHeight: 1.6,
+                                  }}
+                                />
+
+                                <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center" }}>
+                                  <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "0.78rem", color: "var(--cc-danger)", cursor: "pointer", fontWeight: 600 }}>
+                                    <input
+                                      type="checkbox"
+                                      checked={evalNeedsRedo[key] || false}
+                                      onChange={(e) => setEvalNeedsRedo((p) => ({ ...p, [key]: e.target.checked }))}
+                                      style={{ accentColor: "hsl(0 65% 55%)" }}
+                                    />
+                                    Needs Redo
+                                  </label>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleEvaluateMeetingVideo(group.user.uid, mv.report_id)}
+                                  disabled={submittingEval === key}
+                                  className="cc-btn-primary"
+                                  style={{
+                                    padding: "10px",
+                                    borderRadius: "10px",
+                                    fontSize: "0.85rem",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: "6px",
+                                    opacity: submittingEval === key ? 0.6 : 1,
+                                  }}
+                                >
+                                  <Send size={13} />
+                                  {submittingEval === key ? "Submitting..." : "Submit Evaluation"}
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        </>
                       )}
                     </div>
                   )}
@@ -660,69 +742,7 @@ const CCTrainerDashboard: React.FC<CCTrainerDashboardProps> = ({ user }) => {
         </div>
       </div>
 
-      {/* ── Persistent Video Player (Phase 4) ── */}
-      {/* Rule 2: Always rendered in DOM — never conditionally destroyed */}
-      <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 100,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: isPlayerVisible ? "rgba(0,0,0,0.85)" : "transparent",
-          transition: "all 300ms cubic-bezier(0.16, 1, 0.3, 1)",
-          opacity: isPlayerVisible ? 1 : 0,
-          transform: isPlayerVisible ? "scale(1)" : "scale(0.95)",
-          pointerEvents: isPlayerVisible ? "auto" : "none",
-        }}
-      >
-        <div
-          style={{
-            width: "90%",
-            maxWidth: "800px",
-            aspectRatio: "16/9",
-            borderRadius: "16px",
-            overflow: "hidden",
-            position: "relative",
-          }}
-        >
-          {/* Rule 1: Direct YouTube import for minimal bundle */}
-          {/* Rule 4: playing prop tied directly to modal visibility */}
-          <ReactPlayer
-            url={videoUrl}
-            playing={isPlayerVisible}
-            controls
-            width="100%"
-            height="100%"
-            config={{ playerVars: { autoplay: 1, playsinline: 1 } }}
-          />
-        </div>
 
-        {/* Close button */}
-        <button
-          type="button"
-          onClick={closePlayer}
-          style={{
-            position: "absolute",
-            top: "20px",
-            right: "20px",
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.15)",
-            border: "none",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#fff",
-            backdropFilter: "blur(4px)",
-          }}
-        >
-          <X size={18} />
-        </button>
-      </div>
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>

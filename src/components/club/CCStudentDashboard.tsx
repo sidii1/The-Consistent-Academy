@@ -16,6 +16,7 @@ import { uploadToCloudinary } from "@/lib/utils";
 import CCProgressTimeline from "./CCProgressTimeline";
 import CCGamificationPanel from "./CCGamificationPanel";
 import CCSpeechTracker from "./CCSpeechTracker";
+import CCInlineVideoPlayer from "./CCInlineVideoPlayer";
 import {
   Loader2,
   CalendarCheck,
@@ -310,17 +311,28 @@ const MeetingVideoPanel: React.FC<{
               ? wasPresent
                 ? "var(--cc-amber)"
                 : "var(--cc-danger)"
-              : submission.status === "Well Done"
-              ? "var(--cc-success)"
-              : submission.status === "Redo"
+              : submission.workflowState === "needs_redo" || submission.status === "Redo"
               ? "var(--cc-danger)"
+              : submission.workflowState === "evaluated" || submission.status === "Well Done"
+              ? "var(--cc-success)"
+              : submission.workflowState === "validated"
+              ? "var(--cc-accent-bright)"
               : "var(--cc-amber)";
+
+          const stateLabels: Record<string, string> = {
+            submitted_to_president: "Awaiting Validation",
+            validated: "Forwarded to Trainer",
+            evaluated: "Evaluated ✅",
+            needs_redo: "Needs Redo",
+          };
 
           const statusLabel =
             !submission
               ? wasPresent
                 ? "Video Pending"
                 : "Absent — Submit Video"
+              : submission.workflowState 
+              ? stateLabels[submission.workflowState] 
               : submission.status;
 
           const statusIcon =
@@ -391,8 +403,15 @@ const MeetingVideoPanel: React.FC<{
                 </span>
               </div>
 
+              {/* Inline video player */}
+              {submission?.video_url && (
+                <div style={{ marginTop: "10px", marginBottom: "14px" }}>
+                  <CCInlineVideoPlayer url={submission.video_url} />
+                </div>
+              )}
+
               {/* Redo feedback */}
-              {submission?.status === "Redo" && submission.evaluator_notes && (
+              {(submission?.workflowState === "needs_redo" || submission?.status === "Redo") && (submission.trainerRemarks || submission.evaluator_notes) && (
                 <div
                   style={{
                     padding: "8px 12px",
@@ -403,13 +422,13 @@ const MeetingVideoPanel: React.FC<{
                   }}
                 >
                   <p style={{ fontSize: "0.72rem", color: "var(--cc-danger)" }}>
-                    <strong>Feedback:</strong> {submission.evaluator_notes}
+                    <strong>Feedback:</strong> {submission.trainerRemarks || submission.evaluator_notes}
                   </p>
                 </div>
               )}
 
               {/* Well Done praise */}
-              {submission?.status === "Well Done" && (
+              {(submission?.workflowState === "evaluated" || submission?.status === "Well Done") && (
                 <div
                   style={{
                     marginTop: "8px",
@@ -421,14 +440,12 @@ const MeetingVideoPanel: React.FC<{
                   }}
                 >
                   <CheckCircle2 size={13} />
-                  {submission.evaluator_notes
-                    ? submission.evaluator_notes
-                    : "Excellent work! Your video was approved."}
+                  {submission.trainerRemarks || submission.evaluator_notes || "Excellent work! Your video was approved."}
                 </div>
               )}
 
               {/* Submit input — show if no submission or Redo */}
-              {(!submission || submission.status === "Redo") && (
+              {(!submission || submission.workflowState === "needs_redo" || submission.status === "Redo") && (
                 <div style={{ display: "flex", gap: "8px" }}>
                   <div
                     style={{
@@ -519,25 +536,32 @@ const buildNotifications = (
         sub: "Submitting a video even when absent shows commitment.",
       });
     }
-    if (video?.status === "Redo") {
+    if (video?.workflowState === "needs_redo" || video?.status === "Redo") {
       notifications.push({
         type: "redo",
         message: `Week ${r.week_number} video needs to be redone.`,
-        sub: video.evaluator_notes || "Check the feedback and resubmit.",
+        sub: video.trainerRemarks || video.evaluator_notes || "Check the feedback and resubmit.",
       });
     }
-    if (video?.status === "Well Done") {
+    if (video?.workflowState === "evaluated" || video?.status === "Well Done") {
       notifications.push({
         type: "welldone",
-        message: `Week ${r.week_number} video approved! 🎉`,
-        sub: video.evaluator_notes || "Excellent work — keep it up!",
+        message: `Week ${r.week_number} video evaluated! 🎉`,
+        sub: video.trainerRemarks || video.evaluator_notes || "Excellent work — keep it up!",
       });
     }
-    if (video?.status === "Pending Review") {
+    if (video?.workflowState === "submitted_to_president" || video?.status === "Pending Review") {
       notifications.push({
         type: "pending",
-        message: `Week ${r.week_number} video is under review.`,
-        sub: "Your president will evaluate it soon.",
+        message: `Week ${r.week_number} video is awaiting validation.`,
+        sub: "Your president will validate it soon.",
+      });
+    }
+    if (video?.workflowState === "validated") {
+      notifications.push({
+        type: "pending",
+        message: `Week ${r.week_number} video forwarded to trainer.`,
+        sub: "Awaiting final evaluation.",
       });
     }
   });
@@ -829,6 +853,13 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
                     <div style={{ fontSize: "0.78rem", color: "var(--cc-success)", marginTop: "6px" }}>
                       ⭐ Score: {speech.studentPointsAwarded}/10
                       {speech.trainerRemarks && <span style={{ color: "var(--cc-text-muted)", marginLeft: "12px" }}>&mdash; {speech.trainerRemarks}</span>}
+                    </div>
+                  )}
+
+                  {/* Inline video player for speech */}
+                  {speech.youtubeUrl && (
+                    <div style={{ marginTop: "14px", marginBottom: "14px" }}>
+                      <CCInlineVideoPlayer url={speech.youtubeUrl} />
                     </div>
                   )}
 
