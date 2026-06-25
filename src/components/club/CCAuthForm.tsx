@@ -15,6 +15,7 @@ const ROLES: CCRole[] = [
   "Vice President",
   "Team Leader",
   "Event Team",
+  "Trainer",
 ];
 
 const COLLEGES = ["iFEEL"];
@@ -109,8 +110,13 @@ const CCAuthForm: React.FC = () => {
           current_level: 1,
           total_points: 0,
           badges: role !== "Student" ? [`${role} Badge`] : [],
+          ...(role === "Trainer" ? { approvalStatus: "pending" as const } : {}),
         });
-        toast.success(`Welcome to CC Club, ${name.trim()}! 🎉`);
+        if (role === "Trainer") {
+          toast.success(`Trainer account created! ⏳ Awaiting admin approval.`);
+        } else {
+          toast.success(`Welcome to CC Club, ${name.trim()}! 🎉`);
+        }
         // onAuthStateChanged in ClubPage will handle the redirect
       }
     } catch (err: unknown) {

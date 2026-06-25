@@ -6,6 +6,9 @@ import {
   getCollegeMeetingVideos,
   getCCAttendanceStats,
   evaluateMeetingVideo,
+  getPendingPresidentSpeeches,
+  validateSpeech,
+  rejectSpeech,
   type CCUser,
   type CCSpeech,
   type CCMeetingReport,
@@ -24,6 +27,8 @@ import {
   Video,
   ChevronDown,
   ChevronUp,
+  Mic2,
+  Forward,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -491,7 +496,46 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
     }
   }, [user.college]);
 
-  useEffect(() => { loadAll(); }, [loadAll]);
+  // ── Pending Speech Validations state ──
+  const [pendingSpeeches, setPendingSpeeches] = useState<{ uid: string; name: string; speech: CCSpeech }[]>([]);
+  const [validating, setValidating] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState<Record<string, string>>({});
+
+  const loadPendingSpeeches = useCallback(async () => {
+    try {
+      const ps = await getPendingPresidentSpeeches(user.college);
+      setPendingSpeeches(ps);
+    } catch { /* non-critical */ }
+  }, [user.college]);
+
+  const handleValidate = async (uid: string, speechId: string) => {
+    setValidating(speechId);
+    try {
+      await validateSpeech(uid, speechId);
+      toast.success("Speech forwarded to Trainer!");
+      loadPendingSpeeches();
+    } catch {
+      toast.error("Validation failed.");
+    } finally {
+      setValidating(null);
+    }
+  };
+
+  const handleReject = async (uid: string, speechId: string) => {
+    const reason = rejectReason[speechId]?.trim() || "Invalid video. Please re-record.";
+    setValidating(speechId);
+    try {
+      await rejectSpeech(uid, speechId, reason);
+      toast.success("Speech rejected — student will be notified.");
+      loadPendingSpeeches();
+    } catch {
+      toast.error("Rejection failed.");
+    } finally {
+      setValidating(null);
+    }
+  };
+
+  useEffect(() => { loadAll(); loadPendingSpeeches(); }, [loadAll, loadPendingSpeeches]);
 
   const handleExport = async () => {
     setExporting(true);
@@ -611,6 +655,151 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
 
       {/* Meeting Operations */}
       <CCMeetingPanel president={user} />
+
+      {/* ── Pending Speech Validations ── */}
+      {pendingSpeeches.length > 0 && (
+        <div
+          className="cc-surface"
+          style={{
+            borderRadius: "20px",
+            padding: "1.75rem",
+            border: "1px solid var(--cc-border)",
+          }}
+        >
+          <h3
+            style={{
+              fontSize: "1rem",
+              fontWeight: 700,
+              color: "var(--cc-text)",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              marginBottom: "1.25rem",
+            }}
+          >
+            <Mic2 size={16} color="var(--cc-accent-bright)" />
+            Pending Speech Validations
+            <span
+              style={{
+                fontSize: "0.68rem",
+                padding: "2px 8px",
+                borderRadius: "999px",
+                background: "hsl(38 40% 14%)",
+                color: "hsl(38 80% 55%)",
+                border: "1px solid hsl(38 40% 28%)",
+                fontWeight: 700,
+              }}
+            >
+              {pendingSpeeches.length} pending
+            </span>
+          </h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            {pendingSpeeches.map(({ uid, name, speech }) => (
+              <div
+                key={`${uid}_${speech.speech_id}`}
+                style={{
+                  borderRadius: "14px",
+                  padding: "14px 16px",
+                  background: "var(--cc-surface-inset)",
+                  boxShadow: "var(--cc-neu-inset-xs)",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "8px", marginBottom: "10px" }}>
+                  <div>
+                    <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--cc-text)" }}>
+                      {name}
+                    </span>
+                    <span style={{ fontSize: "0.72rem", color: "var(--cc-text-faint)", marginLeft: "8px" }}>
+                      {speech.title} {(speech.version || 1) > 1 ? `(v${speech.version})` : ""}
+                    </span>
+                    {speech.youtubeUrl && (
+                      <a
+                        href={speech.youtubeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ display: "block", fontSize: "0.72rem", color: "var(--cc-accent-bright)", marginTop: "2px", wordBreak: "break-all" }}
+                      >
+                        {speech.youtubeUrl}
+                      </a>
+                    )}
+                  </div>
+                  <span style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--cc-amber)" }}>
+                    <Clock size={11} style={{ verticalAlign: "middle", marginRight: "3px" }} />
+                    Awaiting Validation
+                  </span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <input
+                    type="text"
+                    placeholder="Rejection reason (optional)"
+                    value={rejectReason[speech.speech_id] || ""}
+                    onChange={(e) => setRejectReason((p) => ({ ...p, [speech.speech_id]: e.target.value }))}
+                    style={{
+                      width: "100%",
+                      padding: "8px 12px",
+                      borderRadius: "8px",
+                      background: "hsl(210 18% 10%)",
+                      border: "1px solid var(--cc-border)",
+                      color: "var(--cc-text)",
+                      fontSize: "0.8rem",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <button
+                      type="button"
+                      onClick={() => handleValidate(uid, speech.speech_id)}
+                      disabled={validating === speech.speech_id}
+                      style={{
+                        flex: 1,
+                        padding: "8px",
+                        borderRadius: "8px",
+                        background: "var(--cc-surface-deep)",
+                        boxShadow: "var(--cc-neu-sm)",
+                        color: "var(--cc-success)",
+                        fontWeight: 700,
+                        fontSize: "0.78rem",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "5px",
+                        border: "none",
+                      }}
+                    >
+                      <Forward size={13} /> Validate & Forward
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleReject(uid, speech.speech_id)}
+                      disabled={validating === speech.speech_id}
+                      style={{
+                        flex: 1,
+                        padding: "8px",
+                        borderRadius: "8px",
+                        background: "var(--cc-surface-deep)",
+                        boxShadow: "var(--cc-neu-sm)",
+                        color: "var(--cc-danger)",
+                        fontWeight: 700,
+                        fontSize: "0.78rem",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "5px",
+                        border: "none",
+                      }}
+                    >
+                      <XCircle size={13} /> Reject
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Video review panel */}
       <VideoReviewPanel

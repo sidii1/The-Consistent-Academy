@@ -103,6 +103,8 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
                 color:
                   user.club_role === "President" || user.club_role === "Vice President"
                     ? "var(--cc-amber)"
+                    : user.club_role === "Trainer"
+                    ? "hsl(160 60% 50%)"
                     : "var(--cc-accent-bright)",
               }}
             >

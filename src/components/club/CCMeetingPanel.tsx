@@ -9,6 +9,7 @@ import {
   Loader2,
   CheckSquare,
   Square,
+  ImagePlus,
 } from "lucide-react";
 import {
   getCCUsersByCollege,
@@ -17,6 +18,7 @@ import {
   type CCUser,
   type AttendanceEntry,
 } from "@/lib/ccClub";
+import { uploadToCloudinary } from "@/lib/utils";
 import { Timestamp } from "firebase/firestore";
 
 interface CCMeetingPanelProps {
@@ -94,9 +96,7 @@ const CCMeetingPanel: React.FC<CCMeetingPanelProps> = ({ president }) => {
   const [mom, setMom] = useState("");
   const [attendance, setAttendance] = useState<AttendanceEntry[]>([]);
   const [videoUrl, setVideoUrl] = useState("");
-  const [photo1, setPhoto1] = useState("");
-  const [photo2, setPhoto2] = useState("");
-  const [photo3, setPhoto3] = useState("");
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [weekNumber, setWeekNumber] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -131,14 +131,19 @@ const CCMeetingPanel: React.FC<CCMeetingPanelProps> = ({ president }) => {
     e.preventDefault();
     if (!mom.trim()) return toast.error("Minutes of Meeting cannot be empty.");
     if (!videoUrl.trim()) return toast.error("Please add the highlight video link.");
-    if (!photo1.trim()) return toast.error("Group photo link is mandatory.");
+    if (photoFiles.length === 0) return toast.error("Please upload at least one group photo.");
     if (!weekNumber || isNaN(Number(weekNumber)))
       return toast.error("Please enter a valid week number.");
 
-    const photos = [photo1, photo2, photo3].filter(Boolean);
-
     setSubmitting(true);
     try {
+      // Upload all photo files to Cloudinary using the cc_meeting preset
+      const photoUrls: string[] = [];
+      for (const file of photoFiles) {
+        const url = await uploadToCloudinary(file, "cc_meeting");
+        photoUrls.push(url);
+      }
+
       await createMeetingReport({
         college: president.college,
         uploaded_by_uid: president.uid,
@@ -148,7 +153,7 @@ const CCMeetingPanel: React.FC<CCMeetingPanelProps> = ({ president }) => {
         mom_text: mom.trim(),
         attendance,
         highlight_video_url: videoUrl.trim(),
-        photos,
+        photos: photoUrls,
       });
 
       toast.success("Meeting report submitted! ✅");
@@ -160,9 +165,7 @@ const CCMeetingPanel: React.FC<CCMeetingPanelProps> = ({ president }) => {
       // Reset form
       setMom("");
       setVideoUrl("");
-      setPhoto1("");
-      setPhoto2("");
-      setPhoto3("");
+      setPhotoFiles([]);
       setWeekNumber("");
       setAttendance((prev) => prev.map((a) => ({ ...a, present: false })));
     } catch {
@@ -438,28 +441,27 @@ const CCMeetingPanel: React.FC<CCMeetingPanelProps> = ({ president }) => {
         {/* Photos */}
         <div>
           <SectionTitle
-            icon={<Camera size={14} color="var(--cc-accent-bright)" />}
-            title="Photos (2–3 links)"
+            icon={<ImagePlus size={14} color="var(--cc-accent-bright)" />}
+            title="Meeting Photos (Upload 1-3 images)"
             required
           />
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            {[
-              { val: photo1, set: setPhoto1, placeholder: "📸 Group Photo link (mandatory)" },
-              { val: photo2, set: setPhoto2, placeholder: "📸 Photo 2 link (optional)" },
-              { val: photo3, set: setPhoto3, placeholder: "📸 Photo 3 link (optional)" },
-            ].map(({ val, set, placeholder }) => (
-              <input
-                key={placeholder}
-                type="url"
-                placeholder={placeholder}
-                value={val}
-                onChange={(e) => set(e.target.value)}
-                style={inputStyle}
-                onFocus={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-sm), var(--cc-glow-amber)")}
-                onBlur={(e) => (e.target.style.boxShadow = "var(--cc-neu-inset-sm)")}
-              />
-            ))}
-          </div>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={(e) => {
+              const files = Array.from(e.target.files || []).slice(0, 3);
+              setPhotoFiles(files);
+            }}
+            style={{ ...inputStyle, cursor: "pointer", padding: "12px 14px" }}
+          />
+          {photoFiles.length > 0 && (
+            <div style={{ marginTop: "6px", fontSize: "0.72rem", color: "var(--cc-text-muted)" }}>
+              {photoFiles.map((f, i) => (
+                <span key={i} style={{ display: "block" }}>📸 {f.name}</span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Submit */}

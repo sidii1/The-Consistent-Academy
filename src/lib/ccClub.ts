@@ -25,12 +25,9 @@ export type CCRole =
   | "Vice President"
   | "Team Leader"
   | "Event Team"
+  | "Trainer";
 
-export type SpeechStatus =
-  | "Not Started"
-  | "Pending Review"
-  | "Well Done"
-  | "Redo";
+
 
 export interface CCUser {
   uid: string;
@@ -43,6 +40,8 @@ export interface CCUser {
   badges: string[];
   created_at?: Timestamp;
   updated_at?: Timestamp;
+  approvalStatus?: "pending" | "approved";
+  profilePictureUrl?: string;
 }
 
 export interface CCSpeech {
@@ -57,6 +56,12 @@ export interface CCSpeech {
   submitted_at: Timestamp | null;
   evaluated_at: Timestamp | null;
   evaluator_notes: string;
+  youtubeUrl?: string;
+  workflowState?: "submitted_to_president" | "validated" | "evaluated" | "needs_redo";
+  trainerRemarks?: string;
+  studentPointsAwarded?: number;
+  presidentPointsAwarded?: number;
+  version?: number;
 }
 
 export interface AttendanceEntry {
@@ -190,6 +195,7 @@ export const ROLE_POINTS: Record<CCRole, number> = {
   "Vice President": 7,
   "Team Leader": 5,
   "Event Team": 3,
+  Trainer: 0,
 };
 
 // ─────────────────────────────────────────────────────────────
@@ -231,6 +237,23 @@ export async function getAllCCUsers(): Promise<CCUser[]> {
   return snap.docs.map((d) => d.data() as CCUser);
 }
 
+export async function getPendingTrainers(): Promise<CCUser[]> {
+  const q = query(
+    collection(db, "cc_users"),
+    where("club_role", "==", "Trainer"),
+    where("approvalStatus", "==", "pending")
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => d.data() as CCUser);
+}
+
+export async function approveTrainer(uid: string): Promise<void> {
+  await updateDoc(doc(db, "cc_users", uid), {
+    approvalStatus: "approved",
+    updated_at: serverTimestamp(),
+  });
+}
+
 export async function deleteCCUser(uid: string): Promise<void> {
   await deleteDoc(doc(db, "cc_users", uid));
 }
@@ -266,6 +289,7 @@ export async function getCCSpeeches(uid: string): Promise<CCSpeech[]> {
           submitted_at: null,
           evaluated_at: null,
           evaluator_notes: "",
+          version: 1,
         });
       }
     }
@@ -282,13 +306,16 @@ export async function submitCCSpeech(uid: string, speechId: string, url: string)
     speech_number: num,
     title: SPEECH_FRAMEWORK[lvl][num - 1].title,
     submission_url: url,
+    youtubeUrl: url,
     submission_type: "link",
     status: "Pending Review",
+    workflowState: "submitted_to_president",
     score: null,
     submitted_at: serverTimestamp(),
     evaluated_at: null,
     evaluator_notes: "",
-  });
+    version: 1,
+  }, { merge: true });
 }
 
 /** Admin: update speech evaluation status */
@@ -304,6 +331,103 @@ export async function evaluateCCSpeech(
     score,
     evaluator_notes: notes,
     evaluated_at: serverTimestamp(),
+  });
+}
+
+// ── 3-Tier Workflow Functions ─────────────────────────────────────────────
+
+export async function getPendingPresidentSpeeches(college: string): Promise<{ uid: string; name: string; speech: CCSpeech }[]> {
+  // First, get all users from the college
+  const users = await getCCUsersByCollege(college);
+  const pendingSpeeches: { uid: string; name: string; speech: CCSpeech }[] = [];
+
+  // Iterate and find pending speeches
+  for (const user of users) {
+    const colRef = collection(db, "cc_users", user.uid, "cc_speeches");
+    const q = query(colRef, where("workflowState", "==", "submitted_to_president"));
+    const snap = await getDocs(q);
+    snap.docs.forEach((d) => {
+      pendingSpeeches.push({ uid: user.uid, name: user.name, speech: d.data() as CCSpeech });
+    });
+  }
+  return pendingSpeeches;
+}
+
+export async function getValidatedSpeeches(college: string): Promise<{ uid: string; name: string; speech: CCSpeech }[]> {
+  const users = await getCCUsersByCollege(college);
+  const validatedSpeeches: { uid: string; name: string; speech: CCSpeech }[] = [];
+
+  for (const user of users) {
+    const colRef = collection(db, "cc_users", user.uid, "cc_speeches");
+    const q = query(colRef, where("workflowState", "==", "validated"));
+    const snap = await getDocs(q);
+    snap.docs.forEach((d) => {
+      validatedSpeeches.push({ uid: user.uid, name: user.name, speech: d.data() as CCSpeech });
+    });
+  }
+  return validatedSpeeches;
+}
+
+export async function validateSpeech(uid: string, speechId: string): Promise<void> {
+  await updateDoc(doc(db, "cc_users", uid, "cc_speeches", speechId), {
+    workflowState: "validated",
+  });
+}
+
+export async function rejectSpeech(uid: string, speechId: string, reason: string): Promise<void> {
+  await updateDoc(doc(db, "cc_users", uid, "cc_speeches", speechId), {
+    workflowState: "needs_redo",
+    trainerRemarks: reason, // Reusing field to pass rejection reason
+  });
+}
+
+export async function evaluateSpeechByTrainer(
+  uid: string,
+  speechId: string,
+  data: {
+    remarks: string;
+    needsRedo: boolean;
+    studentPoints: number;
+    presidentPoints: number;
+  }
+): Promise<void> {
+  const docRef = doc(db, "cc_users", uid, "cc_speeches", speechId);
+  const userRef = doc(db, "cc_users", uid);
+  
+  if (data.needsRedo) {
+    await updateDoc(docRef, {
+      workflowState: "needs_redo",
+      trainerRemarks: data.remarks,
+    });
+  } else {
+    await updateDoc(docRef, {
+      workflowState: "evaluated",
+      trainerRemarks: data.remarks,
+      studentPointsAwarded: data.studentPoints,
+      presidentPointsAwarded: data.presidentPoints,
+      status: "Well Done", // Synchronizing with old flow
+      score: data.studentPoints,
+      evaluated_at: serverTimestamp(),
+    });
+    
+    // Add points to student if evaluated successfully
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
+       const userData = userSnap.data() as CCUser;
+       await updateDoc(userRef, {
+          total_points: (userData.total_points || 0) + data.studentPoints
+       });
+    }
+  }
+}
+
+export async function resubmitSpeech(uid: string, speechId: string, newYoutubeUrl: string, currentVersion: number): Promise<void> {
+  await updateDoc(doc(db, "cc_users", uid, "cc_speeches", speechId), {
+    youtubeUrl: newYoutubeUrl,
+    submission_url: newYoutubeUrl, // keep sync
+    workflowState: "submitted_to_president",
+    version: currentVersion + 1,
+    submitted_at: serverTimestamp(),
   });
 }
 

@@ -40,6 +40,8 @@ import {
   evaluateCCSpeech,
   updateCCUser,
   deleteCCUser,
+  getPendingTrainers,
+  approveTrainer,
   type CCUser,
   type CCSpeech,
   type CCRole,
@@ -139,10 +141,15 @@ const CCClubAdminPanel: React.FC = () => {
   const [updatingRole, setUpdatingRole] = useState<string | null>(null);
   const [deletingProfile, setDeletingProfile] = useState<string | null>(null);
 
+  // Pending trainers state
+  const [pendingTrainers, setPendingTrainers] = useState<CCUser[]>([]);
+  const [approvingTrainer, setApprovingTrainer] = useState<string | null>(null);
+
+
   const handleRoleChange = async (u: CCUser, newRole: CCRole) => {
     setUpdatingRole(u.uid);
     try {
-      let updatedBadges = [...(u.badges || [])];
+      const updatedBadges = [...(u.badges || [])];
       if (newRole !== "Student") {
         const badgeName = `${newRole} Badge`;
         if (!updatedBadges.includes(badgeName)) {
@@ -188,7 +195,25 @@ const CCClubAdminPanel: React.FC = () => {
     getAllCCUsers()
       .then((list) => { setUsers(list); setLoadingUsers(false); })
       .catch(() => { toast.error("Failed to load CC Club members"); setLoadingUsers(false); });
+
+    // Load pending trainers for the approval subsection
+    getPendingTrainers()
+      .then((trainers) => setPendingTrainers(trainers))
+      .catch(() => { /* silently fail — non-critical */ });
   }, []);
+
+  const handleApproveTrainer = async (uid: string) => {
+    setApprovingTrainer(uid);
+    try {
+      await approveTrainer(uid);
+      setPendingTrainers((prev) => prev.filter((t) => t.uid !== uid));
+      toast.success("Trainer approved successfully!");
+    } catch {
+      toast.error("Failed to approve trainer.");
+    } finally {
+      setApprovingTrainer(null);
+    }
+  };
 
   const selectUser = useCallback(async (u: CCUser) => {
     setSelectedUser(u);
@@ -257,7 +282,90 @@ const CCClubAdminPanel: React.FC = () => {
   };
 
   return (
-    <div style={{ display: "flex", gap: "1.5rem", minHeight: "500px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+      {/* ── Pending Trainer Approvals ── */}
+      {pendingTrainers.length > 0 && (
+        <div
+          style={{
+            borderRadius: "12px",
+            padding: "16px 20px",
+            background: "hsl(210 18% 12%)",
+            border: "1px solid hsl(38 40% 28%)",
+          }}
+        >
+          <h4
+            style={{
+              fontSize: "0.82rem",
+              fontWeight: 700,
+              color: "hsl(38 80% 55%)",
+              marginBottom: "10px",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            <Shield size={14} /> Pending Trainer Approvals ({pendingTrainers.length})
+          </h4>
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            {pendingTrainers.map((t) => (
+              <div
+                key={t.uid}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "12px",
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  background: "hsl(210 15% 16%)",
+                  border: "1px solid hsl(210 15% 24%)",
+                }}
+              >
+                <div>
+                  <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "hsl(210 20% 88%)" }}>
+                    {t.name}
+                  </span>
+                  <span
+                    style={{
+                      display: "block",
+                      fontSize: "0.72rem",
+                      color: "hsl(210 15% 55%)",
+                      marginTop: "1px",
+                    }}
+                  >
+                    {t.email} · {t.college}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  disabled={approvingTrainer === t.uid}
+                  onClick={() => handleApproveTrainer(t.uid)}
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: "8px",
+                    background: "hsl(145 55% 20%)",
+                    border: "1px solid hsl(145 55% 35%)",
+                    color: "hsl(145 55% 70%)",
+                    fontSize: "0.78rem",
+                    fontWeight: 700,
+                    cursor: approvingTrainer === t.uid ? "wait" : "pointer",
+                    opacity: approvingTrainer === t.uid ? 0.6 : 1,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                  }}
+                >
+                  <CheckCircle2 size={13} />
+                  {approvingTrainer === t.uid ? "Approving..." : "Approve"}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── CC Members & Speeches ── */}
+      <div style={{ display: "flex", gap: "1.5rem", minHeight: "500px" }}>
       {/* User list */}
       <div style={{ width: "260px", flexShrink: 0 }}>
         <p
@@ -559,6 +667,7 @@ const CCClubAdminPanel: React.FC = () => {
       )}
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
     </div>
   );
 };

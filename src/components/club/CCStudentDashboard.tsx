@@ -1,15 +1,21 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   getMeetingReports,
   getStudentMeetingVideos,
   getStudentAttendanceStats,
   submitMeetingVideo,
+  getCCSpeeches,
+  resubmitSpeech,
+  updateCCUser,
   type CCUser,
   type CCMeetingReport,
   type CCMeetingVideoSubmission,
+  type CCSpeech,
 } from "@/lib/ccClub";
+import { uploadToCloudinary } from "@/lib/utils";
 import CCProgressTimeline from "./CCProgressTimeline";
 import CCGamificationPanel from "./CCGamificationPanel";
+import CCSpeechTracker from "./CCSpeechTracker";
 import {
   Loader2,
   CalendarCheck,
@@ -21,7 +27,9 @@ import {
   Send,
   Link2,
   TrendingUp,
+  Camera,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface CCStudentDashboardProps {
   user: CCUser;
@@ -543,22 +551,65 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
   const [videos, setVideos] = useState<CCMeetingVideoSubmission[]>([]);
   const [attendance, setAttendance] = useState({ present: 0, total: 0, percentage: 0 });
   const [loading, setLoading] = useState(true);
+  const [speeches, setSpeeches] = useState<CCSpeech[]>([]);
+  const [profilePic, setProfilePic] = useState(user.profilePictureUrl || "");
+  const [uploadingPfp, setUploadingPfp] = useState(false);
+  const pfpInputRef = useRef<HTMLInputElement>(null);
+  const [redoUrls, setRedoUrls] = useState<Record<string, string>>({});
+  const [resubmitting, setResubmitting] = useState<string | null>(null);
 
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [reportData, videoData, attStats] = await Promise.all([
+      const [reportData, videoData, attStats, speechData] = await Promise.all([
         getMeetingReports(user.college),
         getStudentMeetingVideos(user.uid),
         getStudentAttendanceStats(user.uid, user.college),
+        getCCSpeeches(user.uid),
       ]);
       setReports(reportData);
       setVideos(videoData);
       setAttendance(attStats);
+      setSpeeches(speechData);
     } finally {
       setLoading(false);
     }
   }, [user.uid, user.college]);
+
+  // Handle avatar upload
+  const handlePfpUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingPfp(true);
+    try {
+      const url = await uploadToCloudinary(file, "cc_pfp");
+      await updateCCUser(user.uid, { profilePictureUrl: url });
+      setProfilePic(url);
+      toast.success("Profile picture updated!");
+    } catch {
+      toast.error("Failed to upload profile picture.");
+    } finally {
+      setUploadingPfp(false);
+    }
+  };
+
+  // Handle speech redo resubmission
+  const handleResubmit = async (speech: CCSpeech) => {
+    const url = redoUrls[speech.speech_id]?.trim();
+    if (!url) return toast.error("Please paste a YouTube URL.");
+    try { new URL(url); } catch { return toast.error("Invalid URL."); }
+    setResubmitting(speech.speech_id);
+    try {
+      await resubmitSpeech(user.uid, speech.speech_id, url, speech.version || 1);
+      toast.success("Speech resubmitted for review!");
+      setRedoUrls((p) => ({ ...p, [speech.speech_id]: "" }));
+      loadAll();
+    } catch {
+      toast.error("Resubmission failed.");
+    } finally {
+      setResubmitting(null);
+    }
+  };
 
   useEffect(() => { loadAll(); }, [loadAll]);
 
@@ -615,20 +666,58 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
           gap: "12px",
         }}
       >
-        <div>
-          <h1
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          {/* Avatar with upload */}
+          <div
+            onClick={() => pfpInputRef.current?.click()}
+            title="Click to change profile picture"
             style={{
-              fontSize: "clamp(1.2rem, 3vw, 1.6rem)",
-              fontWeight: 800,
-              color: "var(--cc-text)",
-              marginBottom: "4px",
+              width: "52px",
+              height: "52px",
+              borderRadius: "50%",
+              background: profilePic ? `url(${profilePic}) center/cover` : "var(--cc-surface-inset)",
+              boxShadow: "var(--cc-neu-sm)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              flexShrink: 0,
+              overflow: "hidden",
+              position: "relative",
+              transition: "box-shadow 200ms",
             }}
           >
-            Welcome back, <span className="cc-text-gradient">{user.name}</span> 👋
-          </h1>
-          <p style={{ fontSize: "0.82rem", color: "var(--cc-text-muted)" }}>
-            {user.college} · Level {user.current_level} Student
-          </p>
+            {!profilePic && (
+              <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--cc-accent-bright)" }}>
+                {user.name.charAt(0).toUpperCase()}
+              </span>
+            )}
+            {uploadingPfp && (
+              <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Loader2 size={16} color="#fff" style={{ animation: "spin 1s linear infinite" }} />
+              </div>
+            )}
+            <div style={{ position: "absolute", bottom: 0, right: 0, width: "18px", height: "18px", borderRadius: "50%", background: "var(--cc-accent)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Camera size={10} color="#fff" />
+            </div>
+          </div>
+          <input ref={pfpInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handlePfpUpload} />
+
+          <div>
+            <h1
+              style={{
+                fontSize: "clamp(1.2rem, 3vw, 1.6rem)",
+                fontWeight: 800,
+                color: "var(--cc-text)",
+                marginBottom: "4px",
+              }}
+            >
+              Welcome back, <span className="cc-text-gradient">{user.name}</span> 👋
+            </h1>
+            <p style={{ fontSize: "0.82rem", color: "var(--cc-text-muted)" }}>
+              {user.college} · Level {user.current_level} Student
+            </p>
+          </div>
         </div>
         <div
           style={{
@@ -679,6 +768,107 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
             {notifications.map((n, i) => (
               <NotificationBanner key={i} {...n} />
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Speech Tracker */}
+      <CCSpeechTracker uid={user.uid} currentLevel={user.current_level} speeches={speeches} onSpeechSubmitted={loadAll} />
+
+      {/* Speech Workflow Status */}
+      {speeches.filter(s => s.workflowState).length > 0 && (
+        <div
+          style={{
+            borderRadius: "20px",
+            padding: "1.75rem",
+            background: "var(--cc-bg)",
+            boxShadow: "var(--cc-neu-md)",
+          }}
+        >
+          <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--cc-text)", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
+            <TrendingUp size={15} color="var(--cc-accent-bright)" /> Speech Evaluation Status
+          </h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            {speeches.filter(s => s.workflowState).map((speech) => {
+              const stateLabels: Record<string, { label: string; color: string }> = {
+                submitted_to_president: { label: "Awaiting President Validation", color: "var(--cc-amber)" },
+                validated: { label: "Forwarded to Trainer", color: "var(--cc-accent-bright)" },
+                evaluated: { label: "Evaluated ✅", color: "var(--cc-success)" },
+                needs_redo: { label: "Needs Redo", color: "var(--cc-danger)" },
+              };
+              const stateCfg = stateLabels[speech.workflowState!] || { label: speech.workflowState, color: "var(--cc-text-muted)" };
+
+              return (
+                <div
+                  key={speech.speech_id}
+                  style={{
+                    borderRadius: "14px",
+                    padding: "14px 16px",
+                    background: "var(--cc-surface-inset)",
+                    boxShadow: "var(--cc-neu-inset-xs)",
+                  }}
+                >
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: speech.workflowState === "needs_redo" ? "10px" : 0 }}>
+                    <div>
+                      <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--cc-text)" }}>
+                        {speech.title}
+                      </span>
+                      {(speech.version || 1) > 1 && (
+                        <span style={{ fontSize: "0.68rem", marginLeft: "8px", color: "var(--cc-text-faint)" }}>
+                          v{speech.version}
+                        </span>
+                      )}
+                    </div>
+                    <span style={{ fontSize: "0.72rem", fontWeight: 700, color: stateCfg.color }}>
+                      {stateCfg.label}
+                    </span>
+                  </div>
+
+                  {/* Points display for evaluated speeches */}
+                  {speech.workflowState === "evaluated" && speech.studentPointsAwarded !== undefined && (
+                    <div style={{ fontSize: "0.78rem", color: "var(--cc-success)", marginTop: "6px" }}>
+                      ⭐ Score: {speech.studentPointsAwarded}/10
+                      {speech.trainerRemarks && <span style={{ color: "var(--cc-text-muted)", marginLeft: "12px" }}>&mdash; {speech.trainerRemarks}</span>}
+                    </div>
+                  )}
+
+                  {/* Redo section */}
+                  {speech.workflowState === "needs_redo" && (
+                    <>
+                      {speech.trainerRemarks && (
+                        <div style={{ padding: "8px 12px", borderRadius: "10px", background: "var(--cc-surface-deep)", boxShadow: "var(--cc-neu-inset-xs)", marginBottom: "10px" }}>
+                          <p style={{ fontSize: "0.75rem", color: "var(--cc-danger)" }}>
+                            <strong>Feedback:</strong> {speech.trainerRemarks}
+                          </p>
+                        </div>
+                      )}
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "8px", padding: "9px 12px", borderRadius: "10px", background: "var(--cc-surface-deep)", boxShadow: "var(--cc-neu-inset-sm)" }}>
+                          <Link2 size={13} color="var(--cc-text-faint)" />
+                          <input
+                            type="url"
+                            placeholder="Paste updated YouTube URL"
+                            value={redoUrls[speech.speech_id] || ""}
+                            onChange={(e) => setRedoUrls((p) => ({ ...p, [speech.speech_id]: e.target.value }))}
+                            style={{ flex: 1, background: "none", border: "none", outline: "none", color: "var(--cc-text)", fontSize: "0.8rem", fontFamily: "inherit" }}
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleResubmit(speech)}
+                          disabled={resubmitting === speech.speech_id || !redoUrls[speech.speech_id]?.trim()}
+                          className="cc-btn-primary"
+                          style={{ padding: "9px 14px", borderRadius: "10px", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "5px", whiteSpace: "nowrap", opacity: !redoUrls[speech.speech_id]?.trim() ? 0.5 : 1 }}
+                        >
+                          <Send size={12} />
+                          {resubmitting === speech.speech_id ? "..." : "Resubmit"}
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
