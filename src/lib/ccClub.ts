@@ -228,7 +228,9 @@ export async function updateCCUser(uid: string, data: Partial<CCUser>): Promise<
 export async function getCCUsersByCollege(college: string): Promise<CCUser[]> {
   const q = query(collection(db, "cc_users"), where("college", "==", college));
   const snap = await getDocs(q);
-  return snap.docs.map((d) => d.data() as CCUser);
+  const users = snap.docs.map((d) => d.data() as CCUser);
+  // Exclude Trainers from president's attendance and student lists
+  return users.filter((u) => u.club_role !== "Trainer");
 }
 
 /** Get all CC Club members (for admin panel) */

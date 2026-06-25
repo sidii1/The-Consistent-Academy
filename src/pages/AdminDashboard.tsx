@@ -156,16 +156,41 @@ const CCClubAdminPanel: React.FC = () => {
           updatedBadges.push(badgeName);
         }
       }
+
+      // Ensure only 1 President per college
+      let existingPresidentsToDemote: CCUser[] = [];
+      if (newRole === "President") {
+        existingPresidentsToDemote = users.filter(
+          (m) => m.college === u.college && m.club_role === "President" && m.uid !== u.uid
+        );
+        for (const ep of existingPresidentsToDemote) {
+          await updateCCUser(ep.uid, { club_role: "Student" });
+        }
+      }
+
       await updateCCUser(u.uid, {
         club_role: newRole,
         badges: updatedBadges,
       });
+
       setUsers((prev) =>
-        prev.map((m) => (m.uid === u.uid ? { ...m, club_role: newRole, badges: updatedBadges } : m))
+        prev.map((m) => {
+          if (m.uid === u.uid) {
+            return { ...m, club_role: newRole, badges: updatedBadges };
+          }
+          if (existingPresidentsToDemote.some((ep) => ep.uid === m.uid)) {
+            return { ...m, club_role: "Student" };
+          }
+          return m;
+        })
       );
+
       if (selectedUser?.uid === u.uid) {
         setSelectedUser((s) => (s ? { ...s, club_role: newRole, badges: updatedBadges } : s));
+      } else if (selectedUser && existingPresidentsToDemote.some((ep) => ep.uid === selectedUser.uid)) {
+        setSelectedUser((s) => (s ? { ...s, club_role: "Student" } : s));
       }
+
       toast.success(`Role updated to ${newRole}.`);
     } catch {
       toast.error("Failed to update role.");
@@ -459,7 +484,7 @@ const CCClubAdminPanel: React.FC = () => {
                     disabled={updatingRole === selectedUser.uid}
                     style={{ ...inputBase, padding: "4px 8px" }}
                   >
-                    {["Student", "President", "Vice President", "Team Leader", "Event Team"].map((r) => (
+                    {["Student", "President", "Vice President", "Team Leader", "Event Team", "Trainer"].map((r) => (
                       <option key={r} value={r}>
                         {r}
                       </option>
