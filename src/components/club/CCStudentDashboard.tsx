@@ -796,8 +796,6 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
         </div>
       )}
 
-      {/* Speech Tracker */}
-      <CCSpeechTracker uid={user.uid} currentLevel={user.current_level} speeches={speeches} onSpeechSubmitted={loadAll} />
 
       {/* Speech Workflow Status */}
       {speeches.filter(s => s.workflowState).length > 0 && (
