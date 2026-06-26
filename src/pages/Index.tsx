@@ -22,11 +22,11 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import SplitText from "@/components/ui/SplitText";
 import EnrollNowButton from "@/components/ui/EnrollNowButton";
-import ClubButton from "@/components/ui/ClubButton";
+import CCButton from "@/components/ui/CCButton";
 
 import Founder from "../components/Founder";
 import Testimonials from "../components/Testimonials";
-import { FloatingCreators } from "../components/FloatingCreators";
+import { Developers } from "../components/Developers";
 import { PageLoader } from "@/components/PageLoader";
 
 /* ─────────────────────────────────────────────────────────────
@@ -210,7 +210,7 @@ const HeroSection = ({ startAnim }: { startAnim: boolean }) => {
           transition={{ delay: 1.0, duration: 0.6 }}
           className="absolute bottom-8 right-8 lg:right-16 z-20"
         >
-          <ClubButton />
+            <CCButton />
         </motion.div>
       )}
     </section>
@@ -238,7 +238,7 @@ const Index = () => {
       {!loading && (
         <>
           <Navbar />
-          <FloatingCreators />
+          <Developers />
           {/* ... the rest of your landing page components (Hero, Footer, etc.) go here */}
         </>
       )}

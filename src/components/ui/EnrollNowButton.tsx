@@ -77,9 +77,9 @@ const StyledWrapper = styled.div`
     outline: none;
     cursor: pointer;
     font-size: 23px;
-    font-family: Arial;
+    font-family: Fredoka;
     background: transparent;
-    letter-spacing: -1px;
+    letter-spacing: 0px;
     border: 0;
     position: relative;
     width: 220px;

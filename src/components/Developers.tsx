@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 
-export const FloatingCreators = () => {
+export const Developers = () => {
   return (
     <motion.div
       initial={{ x: -100 }}
       animate={{ x: 0 }}
       transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
-      className="fixed left-0 top-6 md:top-8 z-[60] flex items-center bg-card/95 backdrop-blur-md border border-l-0 border-primary/20  rounded-r-full rounded-l-none transition-all duration-500 ease-out overflow-hidden group h-[92px] w-[88px] hover:w-[194px] p-2"
+      className="fixed left-0 top-6 md:top-8 z-[60] flex items-center bg-[#E0E5EC]/95 backdrop-blur-md border border-l-0 border-primary/20 rounded-r-full rounded-l-none transition-all duration-500 ease-out overflow-hidden group h-[92px] w-[88px] hover:w-[194px] p-2"
     >
       {/* Image (Revealed on hover, slides in from left) */}
       <div className="relative h-[76px] flex-shrink-0 w-0 opacity-0 group-hover:w-[96px] group-hover:opacity-100 group-hover:mr-2 group-hover:ml-1 transition-all duration-500 ease-out overflow-hidden rounded-s shadow-neu-inset-sm">
@@ -42,11 +42,10 @@ export const FloatingCreators = () => {
       {/* Text block */}
       <div className="flex-shrink-0 flex flex-col items-center justify-center w-[70px] text-center font-black uppercase tracking-wider text-[9.5px] md:text-[10.5px] leading-[1.2] transition-transform duration-500 group-hover:scale-[1.02]">
         <span className="text-primary block">Designed</span>
-        <span className="text-foreground block text-[10.5px] my-[2px]">&</span>
+        <span className="text-foreground block text-[10.5px] my-[2px]">&amp;</span>
         <span className="text-primary block">Developed</span>
         <span className="text-foreground block text-[8.5px] mt-[3px] tracking-widest">by</span>
       </div>
     </motion.div>
   );
 };
-

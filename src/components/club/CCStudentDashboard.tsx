@@ -554,7 +554,7 @@ const buildNotifications = (
       notifications.push({
         type: "pending",
         message: `Week ${r.week_number} video is awaiting validation.`,
-        sub: "Your president will validate it soon.",
+        sub: "Your president will approve it soon.",
       });
     }
     if (video?.workflowState === "validated") {

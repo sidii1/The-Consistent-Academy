@@ -60,10 +60,10 @@ const VideoReviewPanel: React.FC<{
     setSubmitting((p) => ({ ...p, [key]: true }));
     try {
       await validateMeetingVideo(reportId, uid);
-      toast.success("Video validated & forwarded to Trainer");
+      toast.success("Video approved & forwarded to Trainer");
       onEvaluated();
     } catch {
-      toast.error("Failed to validate. Try again.");
+      toast.error("Failed to approve. Try again.");
     } finally {
       setSubmitting((p) => ({ ...p, [key]: false }));
     }
@@ -772,7 +772,7 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
                         border: "none",
                       }}
                     >
-                      <Forward size={13} /> Validate & Forward
+                      <Forward size={13} /> Approve
                     </button>
                     <button
                       type="button"
