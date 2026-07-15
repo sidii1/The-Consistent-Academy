@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   getCCSpeeches,
   getCCUsersByCollege,
@@ -10,11 +10,13 @@ import {
   getPendingPresidentSpeeches,
   validateSpeech,
   rejectSpeech,
+  updateCCUser,
   type CCUser,
   type CCSpeech,
   type CCMeetingReport,
   type CCMeetingVideoSubmission,
 } from "@/lib/ccClub";
+import { uploadToCloudinary } from "@/lib/utils";
 import CCProgressTimeline from "./CCProgressTimeline";
 import CCGamificationPanel from "./CCGamificationPanel";
 import CCMeetingPanel from "./CCMeetingPanel";
@@ -31,6 +33,7 @@ import {
   ChevronUp,
   Mic2,
   Forward,
+  Camera,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -202,8 +205,8 @@ const VideoReviewPanel: React.FC<{
                           </div>
                           <span
                             style={{
-                              fontSize: "0.68rem",
-                              fontWeight: 700,
+                              fontSize: "0.72rem",
+                              fontWeight: 500,
                               color:
                                 video.workflowState === "evaluated" || video.status === "Well Done"
                                   ? "hsl(145 55% 45%)"
@@ -486,6 +489,9 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
   const [speechesMap, setSpeechesMap] = useState<Record<string, CCSpeech[]>>({});
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [profilePic, setProfilePic] = useState(user.profilePictureUrl || "");
+  const [uploadingPfp, setUploadingPfp] = useState(false);
+  const pfpInputRef = useRef<HTMLInputElement>(null);
 
   const loadAll = useCallback(async () => {
     setLoading(true);
@@ -545,6 +551,23 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
   };
 
   useEffect(() => { loadAll(); loadPendingSpeeches(); }, [loadAll, loadPendingSpeeches]);
+
+  // Handle president avatar upload
+  const handlePfpUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingPfp(true);
+    try {
+      const url = await uploadToCloudinary(file, "cc_pfp");
+      await updateCCUser(user.uid, { profilePictureUrl: url });
+      setProfilePic(url);
+      toast.success("Profile picture updated!");
+    } catch {
+      toast.error("Failed to upload profile picture.");
+    } finally {
+      setUploadingPfp(false);
+    }
+  };
 
   const handleExport = async () => {
     setExporting(true);
@@ -607,19 +630,57 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
           gap: "12px",
         }}
       >
-        <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-            <Crown size={18} color="var(--cc-amber)" fill="var(--cc-amber)" />
-            <span className="cc-chip cc-chip-amber" style={{ fontSize: "0.68rem" }}>
-              Club President
-            </span>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          {/* Avatar with upload */}
+          <div
+            onClick={() => pfpInputRef.current?.click()}
+            title="Click to change profile picture"
+            style={{
+              width: "52px",
+              height: "52px",
+              borderRadius: "50%",
+              background: profilePic ? `url(${profilePic}) center/cover` : "var(--cc-surface-inset)",
+              boxShadow: "var(--cc-neu-sm)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              flexShrink: 0,
+              overflow: "hidden",
+              position: "relative",
+              transition: "box-shadow 200ms",
+            }}
+          >
+            {!profilePic && (
+              <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--cc-amber)" }}>
+                {user.name.charAt(0).toUpperCase()}
+              </span>
+            )}
+            {uploadingPfp && (
+              <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Loader2 size={16} color="#fff" style={{ animation: "spin 1s linear infinite" }} />
+              </div>
+            )}
+            <div style={{ position: "absolute", bottom: 0, right: 0, width: "18px", height: "18px", borderRadius: "50%", background: "var(--cc-amber)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Camera size={10} color="#fff" />
+            </div>
           </div>
-          <h1 style={{ fontSize: "clamp(1.2rem, 3vw, 1.6rem)", fontWeight: 800, color: "var(--cc-text)", marginBottom: "4px" }}>
-            Welcome, <span className="cc-text-amber-gradient">{user.name}</span> 👑
-          </h1>
-          <p style={{ fontSize: "0.82rem", color: "var(--cc-text-muted)" }}>
-            {user.college} · {members.length} members · {reports.length} meetings held
-          </p>
+          <input ref={pfpInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handlePfpUpload} />
+
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+              <Crown size={18} color="var(--cc-amber)" fill="var(--cc-amber)" />
+              <span className="cc-chip cc-chip-amber" style={{ fontSize: "0.68rem" }}>
+                Club President
+              </span>
+            </div>
+            <h1 style={{ fontSize: "clamp(1.2rem, 3vw, 1.6rem)", fontWeight: 800, color: "var(--cc-text)", marginBottom: "4px" }}>
+              Welcome, <span className="cc-text-amber-gradient">{user.name}</span> 👑
+            </h1>
+            <p style={{ fontSize: "0.82rem", color: "var(--cc-text-muted)" }}>
+              {user.college} · {members.length} members · {reports.length} meetings held
+            </p>
+          </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
           {/* Export Report button */}
@@ -727,7 +788,7 @@ const CCPresidentDashboard: React.FC<CCPresidentDashboardProps> = ({ user }) => 
                       </div>
                     )}
                   </div>
-                  <span style={{ fontSize: "0.68rem", fontWeight: 700, color: "var(--cc-amber)" }}>
+                  <span style={{ fontSize: "0.72rem", fontWeight: 500, color: "var(--cc-amber)" }}>
                     <Clock size={11} style={{ verticalAlign: "middle", marginRight: "3px" }} />
                     Awaiting Validation
                   </span>
