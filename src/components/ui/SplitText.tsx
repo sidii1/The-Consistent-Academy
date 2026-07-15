@@ -104,6 +104,11 @@ const SplitText: React.FC<SplitTextProps> = ({
         reduceWhiteSpace: false,
         onSplit: (self: GSAPSplitText) => {
           assignTargets(self);
+          // Clear the parent-level opacity/visibility that was suppressing the
+          // un-split text. From here on GSAP controls opacity on the individual
+          // chars/words, so the parent must be transparent to that animation.
+          el.style.opacity = '';
+          el.style.visibility = 'visible';
           return gsap.fromTo(
             targets,
             { ...from },
@@ -162,6 +167,14 @@ const SplitText: React.FC<SplitTextProps> = ({
       textAlign,
       wordWrap: 'break-word',
       willChange: 'transform, opacity',
+      // Keep the element invisible until GSAP has split and started animating it.
+      // This prevents two visual glitches:
+      //   1. The raw (un-split) text flashing in a single line before GSAP runs.
+      //   2. The fallback font rendering while the custom web-font is still loading.
+      // Once fontsLoaded=true, GSAP runs its fromTo (from: opacity 0) on the next
+      // tick so opacity:0 here closes any gap between font-load and GSAP start.
+      opacity: 0,
+      visibility: fontsLoaded ? 'visible' : 'hidden',
       ...styleProp,
     };
     const classes = `split-parent overflow-hidden inline-block whitespace-normal ${className}`;

@@ -2,7 +2,8 @@ import React from "react";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { toast } from "sonner";
-import { LogOut, Mic2 } from "lucide-react";
+import { LogOut, Mic2, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 import type { CCUser } from "@/lib/ccClub";
 
 interface CCNavbarProps {
@@ -40,44 +41,55 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
           justifyContent: "space-between",
         }}
       >
-        {/* Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div
-            style={{
-              width: "34px",
-              height: "34px",
-              borderRadius: "10px",
-              background: "var(--cc-bg)",
-              boxShadow: "var(--cc-neu-sm)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Mic2 size={18} color="var(--cc-accent)" strokeWidth={2.5} />
-          </div>
-          <div>
-            <span
+        {/* Left: Back link + Logo */}
+        <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+          {/* Back to main site */}
+          <Link to="/">
+            <button className="cc-btn-back" type="button">
+              <ArrowLeft size={12} />
+              TCA
+            </button>
+          </Link>
+
+          {/* Logo */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div
               style={{
-                fontWeight: 700,
-                fontSize: "0.9rem",
-                letterSpacing: "0.02em",
-                color: "var(--cc-text)",
+                width: "34px",
+                height: "34px",
+                borderRadius: "10px",
+                background: "var(--cc-bg)",
+                boxShadow: "var(--cc-neu-sm)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              CC Club
-            </span>
-            <span
-              style={{
-                display: "block",
-                fontSize: "0.65rem",
-                color: "var(--cc-text-faint)",
-                letterSpacing: "0.04em",
-                marginTop: "-2px",
-              }}
-            >
-              {user.college} · iFEEL Campus
-            </span>
+              <Mic2 size={18} color="var(--cc-accent)" strokeWidth={2.5} />
+            </div>
+            <div>
+              <span
+                style={{
+                  fontWeight: 700,
+                  fontSize: "0.9rem",
+                  letterSpacing: "0.02em",
+                  color: "var(--cc-text)",
+                }}
+              >
+                CC Club
+              </span>
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "0.65rem",
+                  color: "var(--cc-text-faint)",
+                  letterSpacing: "0.04em",
+                  marginTop: "-2px",
+                }}
+              >
+                {user.college} · iFEEL Campus
+              </span>
+            </div>
           </div>
         </div>
 

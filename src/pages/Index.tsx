@@ -33,7 +33,6 @@ import { PageLoader } from "@/components/PageLoader";
    DATA
 ───────────────────────────────────────────────────────────── */
 
-
 const socialLinks = [
   { icon: Instagram,     href: "https://www.instagram.com/the_consistent_academy/",          color: "#E4405F", label: "Instagram" },
   { icon: MessageCircle, href: "https://chat.whatsapp.com/Kw2YbntkWMqG66MVI9xSJq?mode=ac_t", color: "#25D366", label: "WhatsApp" },
@@ -231,96 +230,100 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-neo-base overflow-x-hidden">
-{/* 1. If loading is true, render ONLY the PageLoader */}
+      {/* 1. If loading is true, render ONLY the PageLoader */}
       {loading && <PageLoader onComplete={handleLoaderComplete} />}
 
-      {/* 2. If loading is false, render the actual page content */}
+      {/* 2. Once loading completes, render the entire page */}
       {!loading && (
         <>
           <Navbar />
           <Developers />
-          {/* ... the rest of your landing page components (Hero, Footer, etc.) go here */}
+          <HeroSection startAnim={true} />
+
+          {/* COURSES */}
+          <SectionWrapper id="courses">
+            <div className="text-center mb-10">
+              <AnimatedText className="text-neo-accent text-sm uppercase tracking-widest font-semibold mb-3">
+                Courses
+              </AnimatedText>
+              <AnimatedHeading>
+                Learn with{" "}
+                <span
+                  className="bg-clip-text text-transparent"
+                  style={{ backgroundImage: "linear-gradient(135deg, #6C63FF, #38B2AC)" }}
+                >
+                  Clarity &amp; Confidence
+                </span>
+              </AnimatedHeading>
+            </div>
+
+            <div className="relative h-[60vh] sm:h-[60vh] w-full overflow-hidden rounded-neo-card shadow-neo-flat">
+              <FlowingMenu
+                items={courseMenuItems}
+                speed={18}
+                textColor="#250060e7"
+                bgColor="#E0E5EC"
+                marqueeBgColor="#5c25b3"
+                marqueeTextColor="#ffffff"
+                borderColor="rgba(0,0,0,0.05)"
+              />
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-center mt-8"
+            >
+              <p className="text-lg text-neo-muted font-medium mb-6">and more…</p>
+              <Link to="/courses">
+                <NeumorphicButton size="lg" className="px-10">
+                  View All Courses
+                  <ArrowRight className="w-5 h-5" />
+                </NeumorphicButton>
+              </Link>
+            </motion.div>
+          </SectionWrapper>
+
+          {/* id="founder" enables Navbar scroll-spy to detect this section */}
+          <div id="founder">
+            <Founder />
+          </div>
+
+          {/* GALLERY */}
+          <SectionWrapper>
+            <div className="text-center mb-6">
+              <AnimatedHeading>
+                Learning in{" "}
+                <span
+                  className="bg-clip-text text-transparent"
+                  style={{ backgroundImage: "linear-gradient(135deg, #6C63FF, #38B2AC)" }}
+                >
+                  Action
+                </span>
+              </AnimatedHeading>
+            </div>
+
+            <div className="relative h-[620px] w-full overflow-hidden rounded-neo-card">
+              <CircularGallery
+                items={galleryItems}
+                bend={3}
+                textColor="#ffffff"
+                borderRadius={0.06}
+                scrollSpeed={2}
+                scrollEase={0.08}
+              />
+            </div>
+          </SectionWrapper>
+
+          {/* id="testimonials" enables Navbar scroll-spy to detect this section */}
+          <div id="testimonials">
+            <Testimonials />
+          </div>
+
+          <Footer />
         </>
       )}
-
-      <HeroSection startAnim={!loading} />
-
-      {/* COURSES */}
-      <SectionWrapper id="courses">
-        <div className="text-center mb-10">
-          <AnimatedText className="text-neo-accent text-sm uppercase tracking-widest font-semibold mb-3">
-            Courses
-          </AnimatedText>
-          <AnimatedHeading>
-            Learn with{" "}
-            <span
-              className="bg-clip-text text-transparent"
-              style={{ backgroundImage: "linear-gradient(135deg, #6C63FF, #38B2AC)" }}
-            >
-              Clarity & Confidence
-            </span>
-          </AnimatedHeading>
-        </div>
-
-        <div className="relative h-[60vh] sm:h-[60vh] w-full overflow-hidden rounded-neo-card shadow-neo-flat">
-          <FlowingMenu
-            items={courseMenuItems}
-            speed={18}
-            textColor="#250060e7"
-            bgColor="#E0E5EC"
-            marqueeBgColor="#5c25b3"
-            marqueeTextColor="#ffffff"
-            borderColor="rgba(0,0,0,0.05)"
-          />
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mt-8"
-        >
-          <p className="text-lg text-neo-muted font-medium mb-6">and more…</p>
-          <Link to="/courses">
-            <NeumorphicButton size="lg" className="px-10">
-              View All Courses
-              <ArrowRight className="w-5 h-5" />
-            </NeumorphicButton>
-          </Link>
-        </motion.div>
-      </SectionWrapper>
-
-      <Founder />
-
-      {/* GALLERY */}
-      <SectionWrapper>
-        <div className="text-center mb-6">
-          <AnimatedHeading>
-            Learning in{" "}
-            <span
-              className="bg-clip-text text-transparent"
-              style={{ backgroundImage: "linear-gradient(135deg, #6C63FF, #38B2AC)" }}
-            >
-              Action
-            </span>
-          </AnimatedHeading>
-        </div>
-
-        <div className="relative h-[620px] w-full overflow-hidden rounded-neo-card">
-          <CircularGallery
-            items={galleryItems}
-            bend={3}
-            textColor="#ffffff"
-            borderRadius={0.06}
-            scrollSpeed={2}
-            scrollEase={0.08}
-          />
-        </div>
-      </SectionWrapper>
-
-      <Testimonials />
-
-      <Footer />
     </div>
   );
 };

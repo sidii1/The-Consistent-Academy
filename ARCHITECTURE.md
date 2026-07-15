@@ -1,17 +1,38 @@
-# The Consistent Academy - System Architecture
+# The Consistent Academy — System Architecture
 
 ## 1. High-Level System Overview
 
-The Consistent Academy operates on a modern, decoupled serverless architecture.
+The Consistent Academy operates on a modern, decoupled serverless architecture with a dual-deployment setup and role-based access control.
 
 * **Frontend:** React with TypeScript, built using Vite (`vite.config.ts`).
-* **Styling:** Tailwind CSS integrated with `shadcn/ui` for modular, accessible component design.
-* **Backend Database & Auth:** Firebase (Firestore and Firebase Authentication).
-* **Media Storage:** Cloudinary (Dynamic) and Vercel/Local (Static).
-* **Serverless Functions:** A hybrid of Firebase Cloud Functions (`functions/src/`) and Vercel API routes (`api/contact.ts`).
-* **Deployment:** Hosted on Vercel, mapped via `vercel.json`.
+* **Styling:** Tailwind CSS (v3) with `shadcn/ui` for accessible component primitives and a fully custom neumorphic design system in `src/index.css`.
+* **Backend Database & Auth:** Firebase (Firestore + Firebase Authentication). Firestore is the single source of truth for all domain data.
+* **Media Storage:** Cloudinary (dynamic uploads) and the `public/` directory (static assets). Firebase Storage is **not used**.
+* **Serverless Functions:** A hybrid of Firebase Cloud Functions (`functions/src/`) for Firestore-triggered or scheduled logic, and Vercel API routes (`api/`) for frontend-facing HTTP endpoints.
+* **Deployment:** Vercel (primary hosting, mapped via `vercel.json`). Firebase Functions run on Firebase's own infrastructure but are called from the same frontend.
 
-## 2. Media and Asset Strategy
+---
+
+## 2. Environment Variables
+
+The project requires the following environment variables, stored in `.env` at the project root (never committed to version control):
+
+| Variable | Purpose |
+|---|---|
+| `VITE_FIREBASE_API_KEY` | Firebase Web SDK authentication |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase Auth domain |
+| `VITE_FIREBASE_PROJECT_ID` | Firestore project identifier |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Storage bucket (Cloudinary is used instead for uploads) |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase Cloud Messaging sender |
+| `VITE_FIREBASE_APP_ID` | Firebase App ID |
+| `VITE_CLOUDINARY_CLOUD_NAME` | Cloudinary cloud (value: `dftodlkkt`) |
+| `SENDGRID_API_KEY` (or equivalent) | Mailer service key, used server-side in `api/contact.ts` only |
+
+All `VITE_*` prefixed variables are exposed to the client bundle. Non-prefixed variables are only available in Vercel serverless functions and must never be referenced in `src/`.
+
+---
+
+## 3. Media and Asset Strategy
 
 To ensure optimal performance and strict adherence to project pricing constraints, media handling is divided into two distinct pipelines:
 
@@ -20,18 +41,21 @@ To ensure optimal performance and strict adherence to project pricing constraint
 Static, unchanging assets are stored locally within the repository in the `public/` directory. This includes:
 
 * **UI/Brand Elements:** Logos (`logo.png`, `logo2.png`), developer credits (`developers.png`).
-* **Educational Graphics:** Course thumbnails (`public/courses/img1.png` - `img14.png`) and assessment visuals (`public/leadership/`).
+* **Educational Graphics:** Course thumbnails (`public/courses/img1.png` – `img14.png`) and assessment visuals (`public/leadership/`).
 * **Literature Imagery:** Book covers located in `public/books/`.
 * **Gallery Showcase:** Hardcoded promotional event images found in `public/gallery/`.
 
 ### Dynamic Media (Cloudinary)
 
-**Crucial Architectural Rule:** We do not use Firebase Storage. All dynamic media uploads—most notably images embedded within the Blog engine—are processed and hosted through **Cloudinary** using the cloud name `dftodlkkt`.
+**Crucial Architectural Rule:** We do not use Firebase Storage. All dynamic media uploads—most notably images embedded within the Blog engine and the CC Club meeting video thumbnails—are processed and hosted through **Cloudinary** using the cloud name `dftodlkkt`.
 
 * When an admin authors a blog post via `AdminBlogs.tsx` or the `rich-text-editor.tsx`, the image is pushed directly to Cloudinary.
+* When a Trainer uploads their own profile picture in `CCTrainerDashboard.tsx`, it is pushed to Cloudinary via `uploadToCloudinary()` in `src/lib/utils.ts`.
 * The resulting secure Cloudinary URL is then saved to the Firestore document as a string.
 
-## 3. Database Schema (Firebase Firestore)
+---
+
+## 4. Database Schema (Firebase Firestore)
 
 The platform relies on Firebase Firestore for scalable NoSQL data management. Below are the active collections and their architectural purposes.
 
@@ -40,51 +64,157 @@ The platform relies on Firebase Firestore for scalable NoSQL data management. Be
 Serves as the content repository for the public-facing blog (`Blog.tsx`, `BlogPost.tsx`) and the admin management portal (`AdminBlogs.tsx`).
 
 * **Schema Design:**
-* `id` (Document ID): Unique identifier.
-* `title` (String): The headline of the post.
-* `content` (String/Rich Text): The body of the blog, containing HTML or markdown formatting.
-* `coverImageUrl` (String): The Cloudinary URL for the banner image.
-* `author` (String): Name or ID of the author.
-* `createdAt` (Timestamp): Publication date for sorting.
-* `tags` (Array of Strings): For filtering and categorization.
+  * `id` (Document ID): Unique identifier.
+  * `title` (String): The headline of the post.
+  * `content` (String/Rich Text): The body of the blog, containing HTML or markdown formatting from TipTap.
+  * `coverImageUrl` (String): The Cloudinary URL for the banner image.
+  * `author` (String): Name or ID of the author.
+  * `createdAt` (Timestamp): Publication date for sorting.
+  * `tags` (Array of Strings): For filtering and categorization.
 
 ### B. The `test_results` Collection
 
 Handles the persistence of data generated by the Assessment Engine (`saveTestResult.ts`). This is critical for tools like the Leadership Style Assessment and Grammar tests.
 
 * **Schema Design:**
-* `userId` (String): Links the result to an authenticated user (or an anonymous session ID if unauthenticated).
-* `testType` (String): e.g., "leadership_assessment", "grammar_kids".
-* `answers` (Map/Object): The raw input provided by the user.
-* `calculatedScore` / `resultProfile` (String/Number): The processed outcome (e.g., "Transformational Leader").
-* `timestamp` (Timestamp): When the assessment was completed.
+  * `userId` (String): Links the result to an authenticated user (or an anonymous session ID if unauthenticated).
+  * `testType` (String): e.g., `"leadership_assessment"`, `"grammar_kids"`.
+  * `answers` (Map/Object): The raw input provided by the user.
+  * `calculatedScore` / `resultProfile` (String/Number): The processed outcome (e.g., `"Transformational Leader"`).
+  * `timestamp` (Timestamp): When the assessment was completed.
 
 ### C. The Consistent Communicators (CC) Club Ecosystem
 
-The CC Club is a complex, role-based gamification and tracking module designed to facilitate a digital public speaking club. Data is segmented to ensure security and logical separation.
+The CC Club is a complex, role-based gamification and tracking module. Data is segmented across four collections to ensure security and logical separation.
 
-* **`cc_members` Collection:**
-* Stores user profiles interacting with the club (`ccClub.ts`).
-* `uid` (String): Maps to Firebase Authentication.
-* `role` (String): Enforces access control. Strict binary between `president` (admin access via `CCPresidentDashboard.tsx`) and `student` (user access via `CCStudentDashboard.tsx`).
-* `totalPoints` (Number): Powers the `CCGamificationPanel.tsx`.
-* `badges` (Array of Strings): Earned achievements.
+#### `cc_members` Collection
+Stores all user profiles interacting with the club (`ccClub.ts`).
 
-* **`cc_speeches` Collection:**
-* Tracks individual student performance (`CCSpeechTracker.tsx`).
-* `memberId` (String): Reference to the speaker.
+* `uid` (String): Maps to Firebase Authentication UID.
+* `name`, `email`, `college` (String): User identity.
+* `club_role` (String): One of `"Student"`, `"President"`, `"Vice President"`, `"Team Leader"`, `"Event Team"`, `"Trainer"`. Drives routing and permission logic.
+* `current_level` (Number, 1–4): The student's level in the CC Club curriculum.
+* `total_points` (Number): Powers the `CCGamificationPanel.tsx` leaderboard display.
+* `badges` (Array of Strings): Earned achievement badges.
+* `approvalStatus` (`"pending"` | `"approved"`): Used exclusively for the Trainer role — new Trainer accounts are gated until an admin approves them via `AdminDashboard.tsx`.
+* `profilePictureUrl` (String, optional): Cloudinary URL for Trainer profile photos.
+
+#### `cc_speeches` Collection
+Tracks individual student speech performance (`CCSpeechTracker.tsx`).
+
+* `memberId` (String): Reference to the speaker's UID.
 * `speechTitle` (String): The topic.
+* `college` (String): College scoping for multi-college support.
+* `level` (Number): Which curriculum level this speech belongs to.
+* `workflowState` (String): Tracks the speech through the President → Trainer review pipeline.
 * `dateDelivered` (Timestamp): Historical tracking for `CCProgressTimeline.tsx`.
 * `evaluatorFeedback` (String): Constructive notes provided by leadership.
-* `pointsAwarded` (Number): How many points this specific speech contributed to the gamification engine.
+* `pointsAwarded` (Number): Points contributed to the gamification engine.
 
-* **`cc_meetings` Collection:**
-* Managed by the President to orchestrate events (`CCMeetingPanel.tsx`).
-* `meetingDate` (Timestamp): Scheduling.
-* `agenda` (String): What will be covered.
-* `attendees` (Array of Strings): Roster of member UIDs who participated.
+#### `cc_meeting_reports` Collection
+Created by the President to document each weekly meeting.
 
-## 4. Core Modules and Mechanics
+* `college` (String): College identifier.
+* `week_number` (Number): Sequential meeting counter.
+* `meeting_date` (Timestamp): When the meeting was held.
+* `agenda` (String): What was covered.
+* `attendees` (Array of Strings): UIDs of attending members — used to compute attendance percentages.
+* `meetingVideoUrl` (String): Recording of the full meeting session (uploaded to Cloudinary by the President).
+
+#### `cc_meeting_video_submissions` Collection
+Tracks individual student video responses to each meeting report.
+
+* `uid` (String): The student who submitted.
+* `report_id` (String): References the `cc_meeting_reports` document.
+* `week_number` (Number): Denormalized for efficient querying.
+* `videoUrl` (String): Link submitted by the student (e.g., a Google Drive or YouTube link).
+* `status` (String): `"Pending Review"`, `"Approved"`, `"Redo"`, `"Trainer Evaluated"`.
+* `workflowState` (String): Granular workflow step (see Section 5 for the full pipeline).
+
+---
+
+## 5. Core Modules and Mechanics
+
+### The CC Club Video Workflow — Full Hierarchy
+
+This is the most architecturally significant flow in the CC Club system. It describes how a student's meeting video travels through the three-tier review hierarchy before final evaluation.
+
+```
+[President Creates Meeting Report]
+         |
+         | createMeetingReport() → stores meeting in cc_meeting_reports
+         |
+         ↓
+[Students See the Report in their Dashboard]
+         |
+         | MeetingVideoPanel in CCStudentDashboard.tsx
+         | Student pastes a video URL (Google Drive / YouTube)
+         |
+         ↓
+[submitMeetingVideo() → cc_meeting_video_submissions]
+         | workflowState: "submitted_to_president"
+         | status: "Pending Review"
+         |
+         ↓
+[President Reviews in CCPresidentDashboard.tsx → VideoReviewPanel]
+         |
+         |── APPROVE ──→ validateMeetingVideo()
+         |                 workflowState: "submitted_to_trainer"
+         |                 status: "Pending Review"
+         |                 → toast: "Video approved & forwarded to Trainer"
+         |
+         |── REJECT  ──→ rejectMeetingVideo()
+                          workflowState: "rejected_by_president"
+                          status: "Redo"
+                          → Student sees Redo notification; can resubmit
+                          ↓
+                     [Student resubmits via resubmitSpeech()]
+                          workflowState resets to "submitted_to_president"
+         |
+         ↓ (after President approval)
+[Trainer Reviews in CCTrainerDashboard.tsx]
+         |
+         | Trainer sees only "submitted_to_trainer" videos
+         | evaluateMeetingVideoByTrainer()
+         | Trainer fills: remarks, points for student, points for president
+         |
+         |── APPROVE ──→ workflowState: "trainer_evaluated"
+         |                 status: "Trainer Evaluated"
+         |                 pointsAwarded written to student's doc
+         |                 evaluatorFeedback stored
+         |
+         |── NEEDS REDO ─→ workflowState: "trainer_rejected"
+                            status: "Redo"
+                            → Student is notified and can re-record
+```
+
+**Why this three-tier design?**
+The President validates basic quality (was it a real speech? right topic?), while the Trainer provides professional pedagogical evaluation (style, vocabulary, clarity). The President also earns points from the Trainer's evaluation, incentivizing them to review carefully.
+
+### The Speech Tracker Pipeline
+
+Individual speeches follow a similar President → Trainer workflow via `CCSpeechTracker.tsx`:
+
+1. Student submits a speech record (title, date, level).
+2. `workflowState: "submitted_to_president"` — President validates via `validateSpeech()` / `rejectSpeech()`.
+3. On President approval → `workflowState: "submitted_to_trainer"` — Trainer evaluates via `evaluateSpeechByTrainer()`.
+4. On Trainer approval → points are awarded, feedback stored, and if 4 speeches are completed for the level, `current_level` increments.
+
+### The Role Hierarchy
+
+```
+Trainer (pedagogical authority, evaluates all speech & video quality)
+   │
+President (club operations — runs meetings, first-pass video review, creates reports)
+   │
+Vice President, Team Leader, Event Team (operational roles with extended visibility)
+   │
+Student (participates in speeches, submits videos, earns points)
+```
+
+* **Routing logic** in `ClubDashboard.tsx`: `isTrainer → CCTrainerDashboard`, `isPresident → CCPresidentDashboard`, else `CCStudentDashboard`.
+* **Trainer approval gate**: New Trainers are blocked from their dashboard until `approvalStatus === "approved"` is set by an admin in `AdminDashboard.tsx`.
+* **Data scoping**: All Firestore queries in CC Club are scoped to `college` field — enabling multi-campus expansion without data leakage.
 
 ### The Assessment Engine
 
@@ -92,12 +222,73 @@ Located within `src/components/tests/` and `src/lib/tests/`, this system dynamic
 
 * **Data Flow:** `testData.ts` and `leadershipTestData.ts` provide the hardcoded questions, logic, and weighting. `TestInterface.tsx` orchestrates the UI flow. Upon completion, local state processes the exact outcome, hands it to `LeadershipResults.tsx` for visual rendering, and simultaneously fires `saveTestResult.ts` to log the event in Firestore.
 
-### The CC Club Portal
-
-A closed-loop system requiring authentication (`CCAuthForm.tsx`).
-
-* **Role-Based Routing:** Upon login, the system evaluates the user's role. Presidents are routed to a macro-level view of all club activities, member progress, and meeting scheduling. Students are routed to a micro-level dashboard displaying their personal speech timeline, next meeting agendas, and gamification standings.
-
 ### The Serverless API Layer
 
-Instead of heavy backend servers, the app uses localized serverless routes. For example, `api/contact.ts` serves as a dedicated Vercel function to securely process input from the `Contact.tsx` page, shielding any third-party mailing service credentials from the frontend client.
+Instead of heavy backend servers, the app uses localized serverless routes. `api/contact.ts` serves as a dedicated Vercel function to securely process input from the `Contact.tsx` page, shielding any third-party mailing service credentials from the frontend client bundle.
+
+---
+
+## 6. Authentication Architecture
+
+There are **two separate authentication contexts** in this application — they share Firebase Auth but have distinct user profile structures:
+
+| Context | Gate | User Doc Location | Routing |
+|---|---|---|---|
+| **Main TCA Admin** | `AdminRoute.tsx` checks Firebase ID Token for `claims.admin === true` | Firebase ID Token claims (set via `setAdmin.cjs` / Firebase Admin SDK) | `/admin`, `/admin/blogs` |
+| **CC Club Members** | `ClubPage.tsx` checks Firebase Auth + Firestore `cc_members/{uid}` | `cc_members` Firestore collection | `/club` |
+
+**Key distinction:** A user can have a Firebase Auth account without a CC Club profile. `ClubPage.tsx` explicitly handles this case — if `getCCUser(uid)` returns null (no Firestore record), the user is treated as unauthenticated and shown the sign-up form even though Firebase Auth succeeded.
+
+---
+
+## 7. Frontend Asset Pipeline
+
+### Page Loader
+`PageLoader.tsx` renders a full-screen branded animation while the main bundle initializes. `Index.tsx` gates all page content behind `{!loading && ...}` to prevent layout flash during the loader animation.
+
+### Font Loading Strategy
+Custom fonts (`Fredoka`, and any editorial display fonts) are loaded via Google Fonts `@import` in `src/index.css`. Tailwind `fontFamily` config in `tailwind.config.ts` maps `font-sans` → DM Sans and `font-display` → Plus Jakarta Sans for component-level overrides.
+
+### Component Library
+`components.json` configures `shadcn/ui` with the project's custom radius and color tokens. New UI primitives should be added via `bunx shadcn-ui@latest add <component>` to maintain consistency.
+
+---
+
+## 8. Key File Map
+
+```
+src/
+├── components/
+│   ├── club/           CC Club feature components (scoped to .cc-club-scope)
+│   │   ├── CCHero.tsx              Landing hero for unauthenticated users
+│   │   ├── CCAuthForm.tsx          Login/signup for CC Club
+│   │   ├── CCNavbar.tsx            Authenticated nav (shows Back to TCA + logout)
+│   │   ├── CCStudentDashboard.tsx  Main student view (speeches, videos, timeline)
+│   │   ├── CCPresidentDashboard.tsx First-pass review + meeting management
+│   │   ├── CCTrainerDashboard.tsx  Professional evaluation + analytics
+│   │   ├── CCGamificationPanel.tsx Fixed side panel (points, badges, level)
+│   │   ├── CCProgressTimeline.tsx  4-level progress indicator
+│   │   ├── CCSpeechTracker.tsx     Submit/track individual speeches
+│   │   ├── CCMeetingPanel.tsx      President creates meeting reports + attendance
+│   │   └── CCInlineVideoPlayer.tsx Embedded video playback in dashboards
+│   ├── layout/         Navbar, Footer, PageTransition
+│   ├── tests/          Assessment engine components
+│   └── ui/             shadcn/ui primitives + custom neumorphic components
+├── pages/
+│   ├── club/
+│   │   ├── ClubPage.tsx            Auth gate (loading/unauthenticated/authenticated)
+│   │   └── ClubDashboard.tsx       Role-based dashboard router
+│   ├── Index.tsx                   Landing page
+│   ├── AdminDashboard.tsx          Admin portal (members, CC Club approvals)
+│   └── ...
+├── lib/
+│   ├── firebase.ts     Firebase SDK initialization
+│   ├── ccClub.ts       All CC Club Firestore operations + TypeScript types
+│   ├── utils.ts        Shared utilities (Cloudinary upload, cn(), etc.)
+│   └── tests/          Test data and result calculation logic
+├── index.css           Neumorphic design system + CC Club dark scope
+api/
+└── contact.ts          Vercel serverless function for contact form
+functions/src/
+└── index.ts            Firebase Cloud Functions entry point
+```

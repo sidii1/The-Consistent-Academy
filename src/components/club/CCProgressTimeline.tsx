@@ -93,9 +93,12 @@ const CCProgressTimeline: React.FC<CCProgressTimelineProps> = ({ currentLevel })
                   background: isCurrent
                     ? "var(--cc-bg)"
                     : "var(--cc-surface-inset)",
-                  boxShadow: isCurrent ? "var(--cc-neu-sm)" : "var(--cc-neu-inset-xs)",
-                  opacity: isLocked ? 0.6 : 1,
-                  transition: "opacity 200ms",
+                  boxShadow: isCurrent
+                    ? `var(--cc-neu-sm), 0 0 18px ${meta.color}28`
+                    : "var(--cc-neu-inset-xs)",
+                  opacity: isLocked ? 0.55 : 1,
+                  transition: "box-shadow 400ms ease, opacity 200ms",
+                  border: isCurrent ? `1px solid ${meta.color}22` : "none",
                 }}
               >
                 {/* Node icon */}

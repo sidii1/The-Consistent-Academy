@@ -73,8 +73,12 @@ const CCInlineVideoPlayer: React.FC<CCInlineVideoPlayerProps> = ({ url }) => {
     setHasPlaybackError(false);
   }, [url]);
 
-  const width = expanded ? "100%" : "240px";
-  const height = expanded ? "320px" : "135px";
+  /*
+   * Instead of animating width+height independently (which distorts the player
+   * mid-transition), we lock the container to a 16:9 aspect ratio and only
+   * transition max-width. The width is always 100% of the parent, so as
+   * max-width smoothly grows/shrinks the height follows perfectly.
+   */
   const maxWidth = expanded ? "600px" : "240px";
 
   const mediaStyle: React.CSSProperties = {
@@ -90,13 +94,13 @@ const CCInlineVideoPlayer: React.FC<CCInlineVideoPlayerProps> = ({ url }) => {
     <div
       style={{
         position: "relative",
-        width,
+        width: "100%",
         maxWidth,
-        height,
+        aspectRatio: "16 / 9",
         borderRadius: "8px",
         overflow: "hidden",
         boxShadow: "var(--cc-neu-sm)",
-        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        transition: "max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         marginBottom: "8px",
         marginTop: "4px",
         background: "#000",

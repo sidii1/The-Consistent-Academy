@@ -22,6 +22,9 @@ export const Footer = () => {
       { name: "Home", onClick: () => scrollToSection("home") },
       { name: "Careers", path: "/careers" },
       { name: "Courses", path: "/courses" },
+      { name: "Tests", path: "/tests" },
+      { name: "Blog", path: "/blog" },
+      { name: "CC Club", path: "/club" },
       { name: "Testimonials", onClick: () => scrollToSection("testimonials") },
     ]
   };
@@ -36,7 +39,7 @@ export const Footer = () => {
       <div className="absolute bottom-0 right-0 w-48 h-48 bg-accent/10 rounded-full blur-3xl" />
       
       <div className="container mx-auto px-4 py-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-12">
           {/* Brand */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -57,15 +60,16 @@ export const Footer = () => {
             </p>
             <div className="flex gap-3">
               {[
-                { Icon: Instagram, href: "https://www.instagram.com/the_consistent_academy/" },
-                { Icon: MessageCircle, href: "https://chat.whatsapp.com/Kw2YbntkWMqG66MVI9xSJq?mode=ac_t" },
-                { Icon: Linkedin, href: "https://www.linkedin.com/company/the-consistent-academy/" }
-              ].map(({ Icon, href }, index) => (
+                { Icon: Instagram, href: "https://www.instagram.com/the_consistent_academy/", label: "Instagram" },
+                { Icon: MessageCircle, href: "https://chat.whatsapp.com/Kw2YbntkWMqG66MVI9xSJq?mode=ac_t", label: "WhatsApp" },
+                { Icon: Linkedin, href: "https://www.linkedin.com/company/the-consistent-academy/", label: "LinkedIn" }
+              ].map(({ Icon, href, label }, index) => (
                 <motion.a
                   key={index}
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={label}
                   className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 shadow-neu-sm flex items-center justify-center text-primary hover:text-accent transition-colors"
                   whileHover={{ y: -2, scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}

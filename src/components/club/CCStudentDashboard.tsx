@@ -841,7 +841,7 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
                         </span>
                       )}
                     </div>
-                    <span style={{ fontSize: "0.72rem", fontWeight: 700, color: stateCfg.color }}>
+                    <span style={{ fontSize: "0.74rem", fontWeight: 500, color: stateCfg.color }}>
                       {stateCfg.label}
                     </span>
                   </div>

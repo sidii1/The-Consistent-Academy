@@ -65,7 +65,9 @@ const CCGamificationPanel: React.FC<CCGamificationPanelProps> = ({ user }) => {
           }
         `}
       </style>
+      {/* cc-gamification-panel class is used by CSS to hide on mobile (<900px) */}
       <div
+        className="cc-gamification-panel"
         style={{
           position: "fixed",
           top: "45%",
