@@ -830,13 +830,15 @@
 
   /* ── Glow tokens (accent color light emission) ── */
   --cc-glow-purple:     0 0 0 2px var(--cc-surface-deep), 0 0 0 4px var(--cc-accent);
-  --cc-glow-purple-sm:  0 0 16px rgba(139, 127, 255, 0.35);
-  --cc-glow-purple-md:  0 0 24px rgba(139, 127, 255, 0.40);
-  --cc-glow-purple-lg:  0 0 40px rgba(139, 127, 255, 0.45);
-  --cc-glow-amber:      0 0 24px rgba(255, 185, 85, 0.35);
-  --cc-glow-amber-sm:   0 0 14px rgba(255, 185, 85, 0.25);
-  --cc-glow-success:    0 0 18px rgba(74, 222, 128, 0.30);
-  --cc-glow-teal:       0 0 20px rgba(52, 211, 153, 0.30);
+  --cc-glow-purple-sm:  0 0 10px rgba(139, 127, 255, 0.28);
+  --cc-glow-purple-md:  0 0 16px rgba(139, 127, 255, 0.32);
+  --cc-glow-purple-lg:  0 0 22px rgba(139, 127, 255, 0.36);
+  /* Button-specific hover glow — tight, contained, no spread bleed */
+  --cc-glow-btn-hover:  0 0 18px rgba(139, 127, 255, 0.38), 0 4px 12px rgba(139, 127, 255, 0.22);
+  --cc-glow-amber:      0 0 16px rgba(255, 185, 85, 0.30);
+  --cc-glow-amber-sm:   0 0 10px rgba(255, 185, 85, 0.22);
+  --cc-glow-success:    0 0 14px rgba(74, 222, 128, 0.26);
+  --cc-glow-teal:       0 0 16px rgba(52, 211, 153, 0.26);
 
   /* ── Legacy aliases ── */
   --cc-glow-teal-lg:    var(--cc-glow-purple-lg);
@@ -921,7 +923,7 @@
 }
 
 .cc-club-scope .cc-btn-primary:hover {
-  box-shadow: var(--cc-neu-lg), var(--cc-glow-purple-lg);
+  box-shadow: var(--cc-neu-lg), var(--cc-glow-btn-hover);
   transform: translateY(-2px);
 }
 

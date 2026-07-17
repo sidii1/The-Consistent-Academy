@@ -1,242 +1,701 @@
-  # Avant-Garde Neumorphism & Deep Lavender Design System
+﻿# The Consistent Academy — Design System Reference
 
-  ## Design Philosophy
+> **Last Audited**: July 2026 — Full sweep of every file in /src, index.html, tailwind.config.ts, and index.css.
+> **Status**: Authoritative source of truth. All values are directly pulled from the live codebase.
 
-  **Core Principles**: This design system merges tactile Neumorphism (Soft UI) with high-contrast, editorial typography and vivid color blocking. Neumorphism creates the illusion of physical depth through carefully balanced dual shadows—one light source from the top-left, one dark shadow falling bottom-right—on specialized monochromatic surfaces. Elements appear to either extrude from the surface (convex/raised) or be pressed into it (concave/inset). Every component feels like it is molded directly from a continuous porcelain sheet, rather than layered flat on top of it.
+---
 
-  **Vibe**: Visually stunning, high-fashion, tactile, and arresting. By abandoning traditional, sterile greys for a brilliant white-porcelain canvas punctuated by striking lavender and deep violet details, the UI looks premium, intentional, and physically grounded. The aesthetic utilizes dramatic typography scales to command attention instantly, while adhering rigorously to WCAG AA and AAA accessibility contrast metrics.
+## Design Philosophy
 
-  **Unique Visual Signatures**:
+This design system is built on **Neumorphism (Soft UI)** — surfaces that appear physically extruded from or carved into a continuous material plane. There are no flat cards floating above a background. Everything is molded from the same material.
 
-  - **Dual Opposing Lavender-Tinted Shadows**: The top-left catches crisp white light, while the bottom-right projects a soft, diffuse shadow tinted with a drop of cool lavender pigment for smoother blending and richer depth.
-  - **Porcelain Surface Discipline (`#F4F5F9`)**: A hyper-clean, slightly warm off-white that acts as the physical plane. Cards and structural elements share this background code to maintain the "molded surface" illusion.
-  - **Deep Velvet Dark Intercepts**: Isolated, high-impact sections utilize an inverted dark palette built on a rich midnight-purple foundation (`#0B0813`), maintaining systemic continuity via matching neon lavender glows.
-  - **Deep Inset States**: Wells for icons and inputs that feel significantly deeper (`insetDeep`) than standard pressed states, creating true 3D depth.
-  - **Soft, Hyper-Rounded Corners**: `32px` for containers and `16px` for smaller elements, reinforcing the pillowed, organic aesthetic.
-  - **Complex Nested Depth**: Visuals formed by nesting elements (Extruded → Inset → Extruded) to showcase the physics of the system.
-  - **Smooth Micro-interactions**: 300ms transitions with scale, rotation, and shadow depth changes. Floating animations for ambient motion.
-  - **Mobile-First Responsive**: Fully responsive with touch-friendly targets (44px minimum), hamburger menu, and maintained neumorphic aesthetic on all screen sizes.
+**Two isolated design worlds:**
 
-  ---
+1. **Light Mode — Cool-Clay Neumorphic** (`#E0E5EC` base surface): The main public-facing site.
+2. **Dark Mode — CC Club Warm Clay** (`#252436` base surface): The CC Club portal, scoped entirely under `.cc-club-scope`.
 
-  ## Design Token System (The DNA)
+---
 
-  ### Colors (Primary Light Mode)
+## Part I — Main Site (Light Mode)
 
-  The palette balances clean, high-reflectivity porcelain fields with hyper-saturated, modern purples.
+### Fonts
 
-  - **Background**: `#F4F5F9` — The base porcelain surface. Clean, radiant, and soft.
-  - **Foreground**: `#110D20` — Deep obsidian-purple for primary typography. Yields an ultra-sharp 16.4:1 contrast ratio against the background.
-  - **Muted**: `#5A527A` — Medium slate-lavender for secondary typography and structural hints. Exceeds WCAG AA benchmarks (5.3:1 contrast ratio).
-  - **Accent**: `#6D28D9` — Electric Lavender-Violet for hero highlights, interactive focus anchors, and primary call-to-actions.
-  - **Accent Light**: `#A78BFA` — Pale pastel lavender used exclusively for gradient headers and internal hover glares.
-  - **Accent Secondary**: `#F472B6` — Radiant Orchid-Pink for success states, secondary badges, and micro-highlights.
-  - **Border**: `transparent` — Neumorphism **never** uses borders; shadows define all structural boundaries.
+Loaded in `index.html` via Google Fonts (both declared with `display=block`):
 
-  **Shadow Colors** (Light Mode Physics):
+```html
+<link href="https://fonts.googleapis.com/css2?family=Erica+One&family=Fredoka:wght@100;200;300;400;500;600;700&display=block" rel="stylesheet" />
+```
 
-  - **Shadow Light**: `rgba(255, 255, 255, 0.95)` — Intense white highlight focusing light on the top-left rim.
-  - **Shadow Dark**: `rgba(188, 192, 212, 0.45)` — A soft, desaturated lavender-grey shadow stabilizing the bottom-right footprint.
+| Font | Weights | Where Used |
+|---|---|---|
+| **Erica One** | 400 (single weight) | Hero section massive display heading only — `"The Consistent Academy"` in `Index.tsx`. Applied via inline `style={{ fontFamily: '"Erica One", cursive' }}` |
+| **Fredoka** | 100–700 | Body of entire site — overrides `font-sans` via `body { font-family: 'Fredoka', sans-serif }` in `index.css`. Also explicitly set in `EnrollNowButton` and `CCButton` |
 
-  ---
+Also declared in `tailwind.config.ts` (available via utility class, not active on body by default):
 
-  ### Special Section: Deep Velvet Dark Mode
+| Class | Font | Weights |
+|---|---|---|
+| `font-display` | Plus Jakarta Sans | 500, 600, 700 |
+| `font-sans` | DM Sans | 400, 500, 700 |
 
-  For the designated dark sections, the system reverses its polarities into an ultra-premium, light-emitting container structure.
+> **Live reality**: The active body font is **Fredoka**. `Plus Jakarta Sans` and `DM Sans` exist in Tailwind config but the body `font-family: 'Fredoka'` in `index.css` overrides `font-sans`. **Erica One** is the exclusive typeface for the hero headline — it is never used anywhere else in the codebase. These are the three fonts that define the visual identity.
 
-  - **Dark Background**: `#0B0813` — Infinite midnight-purple canvas.
-  - **Dark Foreground**: `#F5F3FF` — Ghostly lavender-white for pristine legibility.
-  - **Dark Muted**: `#9333EA` — Pure violet for secondary headers and glowing vectors.
+**Hero Heading Typography** (Erica One, `Index.tsx` lines 128–184):
+- `"The"` — `text-4xl sm:text-5xl md:text-6xl lg:text-7xl`, color `text-neo-fg`, word-split GSAP animation
+- `"Consistent"` — `text-[4rem] sm:text-[5.5rem] md:text-[7.5rem] lg:text-[10rem]`, color `#9738F9` (brand violet), char-split GSAP animation, `leading-none py-2`
+- `"Academy"` — `text-5xl sm:text-6xl md:text-7xl lg:text-8xl`, color `text-neo-fg`, char-split GSAP animation
+- All three stacked in a flex column with `leading-[1.0] tracking-tight`
 
-  **Dark Mode Shadow Physics**:
+**Section Label Pattern** (AnimatedText):
+```
+text-neo-accent text-sm uppercase tracking-widest font-semibold mb-3
+```
+
+**Section Heading Pattern** (AnimatedHeading):
+```
+text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight
+```
+
+---
+
+### Color Palette
+
+#### CSS Custom Properties (HSL via `hsl(var(...))`)
+
+| Token | HSL Value | Hex Approx. | Role |
+|---|---|---|---|
+| `--background` | `250 30% 96%` | `#EFEFF7` | Page body canvas |
+| `--foreground` | `262 30% 15%` | `#221A36` | Primary text |
+| `--card` | `250 25% 97%` | `#F2F1F8` | Card surface (shadcn) |
+| `--primary` | `262 83% 58%` | `#7C3AED` | Brand violet — CTA, focus rings |
+| `--primary-light` | `262 83% 75%` | `#A78BFA` | Gradient light terminus |
+| `--primary-dark` | `262 83% 45%` | `#5B21B6` | Pressed/darker variant |
+| `--secondary` | `262 20% 92%` | `#E6E3F0` | Secondary surfaces |
+| `--muted` | `262 18% 90%` | `#E2DFEE` | Muted surfaces |
+| `--muted-foreground` | `262 15% 45%` | `#6B637A` | Secondary/caption text |
+| `--accent` | `280 70% 65%` | `#B06FE0` | Accent highlights |
+| `--border` | `262 20% 86%` | `#D5D0E8` | Default borders (Tailwind only) |
+| `--ring` | `262 83% 58%` | `#7C3AED` | Focus ring |
+| `--radius` | `1.25rem` | `20px` | shadcn base radius token |
+
+#### Neumorphic Hard Hex Tokens (`neo.*` in Tailwind config)
+
+Used directly in neumorphic classes — not CSS vars.
+
+| Tailwind class | Hex | Role |
+|---|---|---|
+| `bg-neo-base` / `text-neo-base` | `#E0E5EC` | **THE neumorphic surface** — all light-mode molded elements |
+| `text-neo-fg` | `#3D4852` | Primary text on neo surfaces (7.5:1 AAA) |
+| `text-neo-muted` | `#6B7280` | Secondary text (4.6:1 AA) |
+| `text-neo-accent-deep` | `#391B49` | Russian Violet — deepest text on light |
+| `text-neo-accent-mid` | `#795690` | Dark Lavender — secondary buttons |
+| `text-neo-accent` | `#9C37FC` | Lavender — primary CTA + focus rings |
+| `text-neo-accent-light` | `#C29CE4` | Bright Lavender — gradient ends, hover highlights |
+| `text-neo-accent-soft` | `#999ECF` | Ceil — decorative muted tints |
+| `text-neo-success` | `#38B2AC` | Teal — success states |
+| `text-neo-placeholder` | `#A0AEC0` | Input placeholders only |
 
-  - **Dark Shadow Light**: `rgba(29, 21, 51, 0.6)` — Deep structural recess shadow (top-left).
-  - **Dark Shadow Dark**: `rgba(2, 1, 4, 0.9)` — Heavy anchoring ambient occlusion shadow (bottom-right).
-  - **Dark Inset Glow**: `rgba(167, 139, 250, 0.15)` — Internal radioactive lavender emission for interactive inputs.
+#### Hero Brand Colors (inline in `Index.tsx`)
 
-  ---
+| Where | Color | Value |
+|---|---|---|
+| `"Consistent"` word | Brand Violet | `#9738F9` |
+| Course gradient | Purple-Teal | `linear-gradient(135deg, #6C63FF, #38B2AC)` |
+| FlowingMenu background | Porcelain | `#E0E5EC` |
+| FlowingMenu marquee bg | Deep Purple | `#5c25b3` |
+| FlowingMenu text | Obsidian Purple | `#250060e7` |
+
+---
+
+### Border Radius
+
+| Token | Value | Used For |
+|---|---|---|
+| `rounded-neo-card` | `32px` | Containers, prominent cards |
+| `rounded-neo-btn` | `16px` | Buttons, inputs, chips |
+| `rounded-neo-inner` | `12px` | Inner elements, tags |
+| `rounded-full` | `9999px` | Icon wells, avatar circles, pill badges |
+| `rounded-[3rem]` / `rounded-[48px]` | `48px` | SectionWrapper raised/purple variant |
+
+---
+
+### Neumorphic Shadow System (Light Mode)
+
+**Surface**: `#E0E5EC`
+**Light source**: top-left
+**Shadow colors**: white highlight top-left, cool-grey shadow bottom-right
+
+#### Tailwind Shadow Tokens (in `tailwind.config.ts` boxShadow)
+
+```
+shadow-neo-flat:       9px  9px  16px rgb(163 177 198 / 0.6),  -9px  -9px  16px rgba(255,255,255,0.5)
+shadow-neo-lifted:     12px 12px 20px rgb(163 177 198 / 0.7),  -12px -12px 20px rgba(255,255,255,0.6)
+shadow-neo-flat-sm:    5px  5px  10px rgb(163 177 198 / 0.6),  -5px  -5px  10px rgba(255,255,255,0.5)
+shadow-neo-flat-xs:    3px  3px  6px  rgb(163 177 198 / 0.5),  -3px  -3px  6px  rgba(255,255,255,0.4)
+shadow-neo-inset:      inset 6px  6px  10px rgb(163 177 198 / 0.6), inset -6px  -6px  10px rgba(255,255,255,0.5)
+shadow-neo-inset-deep: inset 10px 10px 20px rgb(163 177 198 / 0.7), inset -10px -10px 20px rgba(255,255,255,0.6)
+shadow-neo-inset-sm:   inset 3px  3px  6px  rgb(163 177 198 / 0.6), inset -3px  -3px  6px  rgba(255,255,255,0.5)
+shadow-neo-focus:      0 0 0 2px #E0E5EC, 0 0 0 4px #9570C6
+```
+
+#### CSS Variable Shadow Tokens (in `index.css`, backing `.neu-*` classes)
+
+```css
+--neu-shadow-sm:       6px 6px 12px hsl(0 0% 82% / 0.4),   -6px  -6px  12px hsl(0 0% 100% / 0.9)
+--neu-shadow:          10px 10px 20px hsl(0 0% 82% / 0.45), -10px -10px 20px hsl(0 0% 100% / 0.9)
+--neu-shadow-lg:       15px 15px 30px hsl(0 0% 82% / 0.5),  -15px -15px 30px hsl(0 0% 100% / 0.95)
+--neu-shadow-xl:       20px 20px 60px hsl(0 0% 80% / 0.5),  -20px -20px 60px hsl(0 0% 100% / 1)
+--neu-shadow-2xl:      30px 30px 80px hsl(0 0% 78% / 0.55), -30px -30px 80px hsl(0 0% 100% / 1)
+--neu-shadow-inset-sm: inset 4px  4px  8px  hsl(0 0% 82% / 0.4),  inset -4px  -4px  8px  hsl(0 0% 100% / 0.7)
+--neu-shadow-inset:    inset 8px  8px  16px hsl(0 0% 82% / 0.45), inset -8px  -8px  16px hsl(0 0% 100% / 0.75)
+--neu-shadow-inset-lg: inset 12px 12px 24px hsl(0 0% 82% / 0.5),  inset -12px -12px 24px hsl(0 0% 100% / 0.8)
+--glow-purple:         0 0 30px hsl(262 83% 58% / 0.4)
+--glow-purple-lg:      0 0 50px hsl(262 83% 58% / 0.5)
+```
+
+#### CSS Utility Classes
 
-  ### Typography
+```css
+.neo-surface      -> bg: #E0E5EC + shadow-neo-flat (raised from surface)
+.neo-surface-sm   -> bg: #E0E5EC + shadow-neo-flat-sm
+.neo-inset        -> bg: #E0E5EC + shadow-neo-inset (carved into surface)
+.neo-inset-sm     -> bg: #E0E5EC + shadow-neo-inset-sm
+.neo-accent-surface -> violet gradient bg + shadow-neo-flat
 
-  To prevent standard "AI slop" or generic tech layout traits, the system employs high-character, structural display typefaces paired with crisp, neo-grotesque body frames.
+.neu-raised       -> gradient bg + --neu-shadow, 400ms transition
+.neu-raised-sm/lg/xl/2xl -> gradient + sized shadow
+.neu-pressed/sm/lg -> hsl(background) + inset shadow
 
-  - **Display Font**: **"Clash Display"** (500, 600, 700) by Custom Type Foundry — A high-fashion, structural sans with striking geometric quirks, tightly packed terminals, and intense visual weight. Applied via `.font-display`.
-  - **Body Font**: **"Cabinet Grotesk"** (400, 500, 700) — A wide, highly technical, yet incredibly scalable typeface that looks distinctly editorial. Applied via `.font-body`.
-  - **Weights**:
-    - Display Headings: `font-bold` (700) with custom `tracking-tight` (-0.03em)
-    - Standard Headings: `font-semibold` (600) with `tracking-tight`
-    - Body Text: `font-normal` (400) to `font-medium` (500)
-  - **Scale**: Aggressive, editorial scale ranging from `text-sm` (14px) up to an oversized `text-8xl` (96px) for massive hero phrases.
+.neu-hover-lift   -> :hover -> --neu-shadow-lg + translateY(-2px)
+.neu-hover-glow   -> :hover -> --neu-shadow-lg + --glow-purple
+.neu-active-press -> :active -> --neu-shadow-inset + translateY(0)
+```
 
-  ---
+---
 
-  ### Radius
+### Gradients
 
-  - **Container / Card**: `32px` (`rounded-[32px]`) — Very soft, organic, and pillowed frames.
-  - **Base / Button**: `16px` (`rounded-2xl`).
-  - **Inner Elements**: `12px` (`rounded-xl`) or `9999px` (`rounded-full`).
+```css
+--gradient-neu-raised:         linear-gradient(145deg, hsl(250 25% 99%), hsl(250 25% 94%))
+--gradient-neu-raised-reverse: linear-gradient(145deg, hsl(250 25% 94%), hsl(250 25% 99%))
+--gradient-purple-soft:        linear-gradient(145deg, hsl(262 40% 98%), hsl(262 30% 96%))
+--gradient-primary:            linear-gradient(135deg, hsl(262 83% 58%), hsl(280 70% 60%))
+--gradient-primary-soft:       linear-gradient(135deg, hsl(262 60% 92%), hsl(280 50% 90%))
+--gradient-purple-glow:        radial-gradient(circle at center, hsl(262 83% 75% / 0.15), transparent 70%)
+--gradient-accent-glow:        radial-gradient(ellipse at 50% 50%, hsl(280 70% 65% / 0.12), transparent 65%)
+```
 
-  ---
+Body background: `linear-gradient(180deg, hsl(250 30% 96%), hsl(260 25% 97%))`
 
-  ### Shadows & Effects (The Physics)
+**Text gradient utility**: `.text-gradient` clips `--gradient-primary` as background.
 
-  #### 1. Light Mode Formulas (Base Canvas: `#F4F5F9`)
+---
 
-  **Extruded (Standard)** — The default resting structural card:
+### Component Patterns (Light Mode)
 
-  ```css
-  box-shadow:
-    8px 8px 20px rgba(188, 192, 212, 0.45),
-    -8px -8px 20px rgba(255, 255, 255, 0.95);
-  ```
+#### NeumorphicButton (`components/ui/neumorphic-button.tsx`)
 
-  - **Tailwind**: `shadow-[8px_8px_20px_rgba(188,192,212,0.45),-8px_-8px_20px_rgba(255,255,255,0.95)]`
+Framer Motion powered. Three variants:
 
-  **Extruded Hover (Lifted)** — High interaction engagement:
+| Variant | Base Classes | Effect |
+|---|---|---|
+| `primary` | `neo-accent-surface text-white rounded-neo-btn` | Violet gradient, extruded |
+| `secondary` | `neo-surface text-neo-fg rounded-neo-btn` | Grey extruded |
+| `ghost` | `bg-transparent text-neo-muted rounded-neo-btn` | Gains `neo-surface-sm` on hover |
 
-  ```css
-  box-shadow:
-    14px 14px 28px rgba(188, 192, 212, 0.55),
-    -14px -14px 28px rgba(255, 255, 255, 1);
-  ```
+Sizes: `sm` = `h-9 px-5 text-sm`, `md` = `h-11 px-7 text-base`, `lg` = `h-12 px-10 text-lg`
 
-  - **Tailwind**: `shadow-[14px_14px_28px_rgba(188,192,212,0.55),-14px_-14px_28px_rgba(255,255,255,1)]`
+Motion config:
+- `whileHover`: `scale: 1.02, y: -2`, spring `stiffness: 400, damping: 20`
+- `whileTap`: `scale: 0.98, y: 0.5`, spring `stiffness: 600, damping: 25`
+- Focus: `shadow-neo-focus` (double-ring via box-shadow)
 
-  **Inset (Pressed)** — For standard inputs, sliders, and active depressions:
+#### EnrollNowButton (`components/ui/EnrollNowButton.tsx`)
 
-  ```css
-  box-shadow:
-    inset 6px 6px 12px rgba(188, 192, 212, 0.4),
-    inset -6px -6px 12px rgba(255, 255, 255, 0.9);
-  ```
+A highly animated styled-components button. The hero CTA — "Join Today / Join Now".
 
-  **Inset Deep** — For deep-set icon wells or dramatic text areas:
+- **Font**: Fredoka, 23px, 600 weight
+- **Palette**: CSS vars `--purple-100` (#ffe7ff) through `--purple-500` (#5e2b83) — hyper-purple gradient
+- **Shape**: `border-radius: 18px`, `width: 220px, height: 80px` (scaled to 80% = 176×64px)
+- **Resting shadow** (neumorphic outer): `6px 6px 14px rgba(45,15,66,0.7), -6px -6px 14px rgba(239,182,255,0.25)`
+- **Resting inner**: `inset 3px 3px 6px rgba(0,0,0,0.25), inset -3px -3px 6px rgba(255,255,255,0.2)`
+- **Hover shadow** (elevated): `9px 9px 20px rgba(45,15,66,0.85), -9px -9px 20px rgba(239,182,255,0.35)`
+- **Hover transform**: wrap `translate(2px, -2px)`, spin animation activates
+- **Active shadow** (compressed): `2px 2px 5px rgba(45,15,66,0.8), -2px -2px 5px rgba(239,182,255,0.2)`
+- **Active inner** (deeper press): `inset 5px 5px 10px rgba(0,0,0,0.4), inset -5px -5px 10px rgba(255,255,255,0.1)`
+- **Text animation**: chars slide up/down on hover using GSAP `charAppear`/`charDisappear` keyframes, staggered per character index
 
-  ```css
-  box-shadow:
-    inset 10px 10px 24px rgba(188, 192, 212, 0.5),
-    inset -10px -10px 24px rgba(255, 255, 255, 0.95);
-  ```
+#### CCButton (`components/ui/CCButton.tsx`)
 
-  #### 2. Dark Mode Formulas (Deep Velvet Section: `#0B0813`)
+The circular portal button — bottom-right of hero. Navigates to `/club` with a full-screen iris wipe.
 
-  **Dark Extruded (Standard)**:
+- **Shape**: `border-radius: 50%` — perfect circle, 144px diameter inner disc
+- **Background**: radial-gradient black base + linear-gradient `#181924 → #9d4edd → #c77dff → #5a189a → #181924`
+- **Outer ring**: blur spinning stripe overlay (`rgba(255,255,255,0.8), #db92e8`) — activates on hover
+- **Ambient float**: `hover-float` keyframe — `translateY(-4px)` every 2.5s while idle
+- **Hover**: stops float, `translateY(-2px)`, text-wrapper slides up revealing "C.C. Club" again in `#db92e8`
+- **Click splash**: `clip-path: circle(0 at cx cy)` → `circle(150vmax at cx cy)` — fills entire screen with `#252436` (CC Club dark clay) in 600ms, then navigates
+- **Font**: Fredoka, 24px, 600 weight, color `#E0E5EC`
 
-  ```css
-  box-shadow:
-    8px 8px 20px rgba(2, 1, 4, 0.9),
-    -8px -8px 20px rgba(29, 21, 51, 0.6);
-  ```
+#### NeumorphicCard (`components/ui/neumorphic-card.tsx`)
 
-  - **Tailwind**: `shadow-[8px_8px_20px_rgba(2,1,4,0.9),-8px_-8px_20px_rgba(29,21,51,0.6)]`
+- Resting: `neo-surface rounded-neo-card p-8`
+- Hover (when `hover=true`): `shadow-neo-lifted -translate-y-0.5`
+- Pressed (when `pressed=true`): `neo-inset bg-neo-base`
+- Entrance: `opacity:0 y:30` → `opacity:1 y:0`, `0.6s, ease [0.25,0.46,0.45,0.94]`
 
-  **Dark Inset (Pressed)**:
+#### SectionWrapper (`components/ui/section-wrapper.tsx`)
 
-  ```css
-  box-shadow:
-    inset 6px 6px 12px rgba(2, 1, 4, 0.9),
-    inset -6px -6px 12px rgba(29, 21, 51, 0.6);
-  ```
+- All sections: `py-16 md:py-14`, entrance `opacity:0 y:20` → `opacity:1 y:0`, `0.8s ease [0.25,0.46,0.45,0.94]`
+- `raised` variant: `rounded-[3rem] shadow-neu-lg bg-gradient-to-br from-card to-secondary/10 p-8 md:p-12 mx-4 md:mx-8`
+- `purple` variant: `bg-section-purple rounded-[3rem] p-8 md:p-12 mx-4 md:mx-8`
 
-  ---
+#### AnimatedHeading
 
-  ## Component Styling
+`text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight`, entrance `opacity:0 y:40` → `opacity:1 y:0`, `0.8s`
 
-  ### Buttons
+#### AnimatedText
 
-  - **Shape**: `rounded-2xl`
-  - **Transition**: `duration-300 cubic-bezier(0.16, 1, 0.3, 1)` (Ultra-smooth custom ease-out).
-  - **Default State**: Extruded light-mode shadow paired with an obsidian foreground color.
-  - **Hover State**: `translate-y-[-2px]` (Snappy vertical lift) + `Extruded Hover` shadow parameters.
-  - **Active State**: `translate-y-[0.5px]` (Physical click compress) + `Inset` shadow state.
-  - **Primary Lavender Variant**: Background colored completely in Accent Violet (`#6D28D9`). Text color switches to `#F4F5F9`. Active click state utilizes an internal dark purple alpha mask shadow to simulate color compression: `box-shadow: inset 4px 4px 8px rgba(0,0,0,0.4)`.
+Custom element tag (default `p`), entrance `opacity:0 y:30` → `opacity:1 y:0`, `0.6s`
 
-  ### Cards
+#### Social Icon Wells (Index.tsx hero)
 
-  - **Shape**: `rounded-[32px]` (Highly pronounced corner profiles).
-  - **Background**: `#F4F5F9`.
-  - **Padding**: `p-8` for telemetry readouts up to `p-24` for macro narrative heroes.
-  - **Micro-Physics**: When hovered, cards lift (`-translate-y-1`) and transition to an enhanced depth matrix, isolating the content. Internal features exploit layered hierarchy: Card (Extruded) $\rightarrow$ Inner Asset Pod (Inset Deep) $\rightarrow$ Active Interactive Icon (Extruded).
+```
+.neo-inset-sm rounded-full w-10 h-10
+  -> on hover: group-hover:neo-flat
+Tooltip: neo-surface-sm rounded-full
+```
 
-  ### Inputs
+#### Glass Surfaces
 
-  - **Shape**: `rounded-2xl`.
-  - **Background**: `#F4F5F9`.
-  - **Default**: Static `Inset` shadow map.
-  - **Focus**: `Inset Deep` shadow + structural outer Accent Violet outer halo (`ring-2 ring-[#6D28D9]`) offset by exactly `3px` using a `#F4F5F9` solid block color spacer.
-  - **Placeholder**: `#5A527A` at `50%` opacity.
+```css
+.glass       -> backdrop-blur-md + hsl(250 25% 97% / 0.8) + --neu-shadow-sm
+.glass-strong -> backdrop-blur-lg + hsl(250 25% 97% / 0.9) + --neu-shadow
+```
 
-  ### Visual Decorations
+#### Footer
 
-  - **Lavender Orbs**: Soft, blurred CSS radial gradients floating underneath structural layers, mixing with the soft-molded topography.
-  - **Icon Wells**: Deep-drilled circular sockets (`rounded-full` + `Inset Deep`) that ground iconography firmly into the grid architecture.
+- Background: `bg-gradient-to-b from-card via-primary/5 to-primary/10`
+- Decorative: `h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent` hairline top border
+- Blob accents: `bg-primary/10 rounded-full blur-3xl` positioned at corners
+- Social icons: `rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 shadow-neu-sm`
+- Layout: 3-column grid `gap-12`, `py-16`
+- Bottom divider: `border-t border-primary/20`
 
-  ---
+---
 
-  ## Layout Principles
+### Navigation (Navbar)
 
-  - **Spacing**: Expansive, luxury editorial layouts. Minimal structural friction. Standard grid matrices utilize `gap-16` on desktop viewports, with hero structures isolated with `py-40` spacers to provide clear shadow boundaries.
-  - **Container**: `max-w-7xl` with a mandatory responsive horizontal protective margin padding of `px-6`.
-  - **Background**: Page base must remain anchored to `#F4F5F9`. Transitions to `#0B0813` must occur across full screen-width section blocks to maintain visual continuity.
+- Entry animation: Framer Motion `y: -100` → `y: 0`, `duration: 0.6, ease [0.25,0.46,0.45,0.94]`
+- Scrolled (>20px): `neo-surface rounded-neo-card` — neumorphic extruded pill
+- Not scrolled: transparent, no shadow
+- Active nav item: `neo-inset text-neo-accent`
+- Inactive nav: `text-neo-muted hover:text-neo-fg hover:neo-surface-sm active:neo-inset-sm`
+- Mobile menu: `bg-neo-base/80 backdrop-blur-md`, panel `neo-surface rounded-neo-card`, staggered item entry `delay: index * 0.05`
 
-  ---
+---
 
-  ## Animation & Micro-interactions
+### Page Loader (`components/PageLoader.tsx`)
 
-  - **Duration**: `300ms` for standard interactive elements, `600ms` for large layout shifts or full dark-to-light scroll triggers.
-  - **Easing**: `cubic-bezier(0.16, 1, 0.3, 1)` for high-end, premium responsive snapping.
-  - **Hover Transitions**:
-  - Elements scale smoothly (`scale-[1.02]`) on hover while shifting their shadow depths.
-  - Nested components perform rotational or positional micro-offsets to showcase independent depth axes.
+GSAP timeline-driven entrance — 4 phases:
 
-  - **Ambient Levitation**: Custom `@keyframes softFloat` cycles architectural accents through a subtle 4px vertical animation loop every 6 seconds to breathe life into the application canvas.
+1. **Contraction** (0–1.85s): 4 concentric circles collapse from full-screen rects to circles using `back.inOut(1.2)` spring. Layer colors: `#3C096C → #5A189A → #7B2CBF → #9C37FC`
+2. **Logo injection** (1.4s): Innermost circle goes transparent, logo fades in
+3. **Coalesce** (2.0–2.8s): Outer rings collapse to logo size and fade out
+4. **Iris wipe** (3.0–4.0s): Logo scales to `scale(60)` covering entire viewport, container dissolves
 
-  ---
+---
 
-  ## Accessibility
+### Animations (Main Site)
 
-  - **Contrast Calculations**:
-  - Primary Obsidian Text (`#110D20`) on Porcelain (`#F4F5F9`): **16.4:1** (Exceeds WCAG AAA).
-  - Slate-Lavender Text (`#5A527A`) on Porcelain (`#F4F5F9`): **5.3:1** (Exceeds WCAG AA).
-  - Light-Violet Text (`#F5F3FF`) on Dark Canvas (`#0B0813`): **18.1:1** (Exceeds WCAG AAA).
+#### Tailwind keyframes (in `tailwind.config.ts`)
 
-  - **Focus States**: Explicit, high-visibility interactive focus outlines are mandatory. Every element supports tab-navigation indexing with clear responsive state indications.
-  - **Touch Targets**: Minimum interactive sizing maps out to `48px` absolute bounds on all layout screens.
+| Class | Duration | Behavior |
+|---|---|---|
+| `animate-fade-in` | 0.6s | `opacity 0→1, translateY(20px→0)` |
+| `animate-fade-in-up` | 0.8s | `opacity 0→1, translateY(40px→0)` |
+| `animate-scale-in` | 0.5s | `opacity 0→1, scale(0.95→1)` |
+| `animate-slide-in-right` | 0.6s | `translateX(50px→0)` |
+| `animate-slide-in-left` | 0.6s | `translateX(-50px→0)` |
+| `animate-neo-float` | 3s ∞ | `translateY(0→-12px→0)` |
+| `animate-neo-reveal` | 0.8s | `translateY(20px→0)` |
+| `animate-ambient-drift` | 15s ∞ | background-position drift |
 
-  ---
+#### CSS-only keyframes (in `index.css`)
 
-  ## Responsive Design
+```css
+float        -> 6s ∞ — translateY(0) <-> translateY(-20px) + rotate(2deg)
+float-slow   -> 8s ∞ — 3-stop X/Y drift
+pulse-glow   -> 4s ∞ — scale(1→1.05), opacity(0.4→0.7)
+blob         -> 10s ∞ — border-radius morph between two organic shapes
+```
 
-  - **Mobile First**: Fluid scaling workflows determine all breakpoint progressions.
-  - **Breakpoints**: Standardized across `sm:` (640px), `md:` (768px), `lg:` (1024px), and `xl:` (1280px).
-  - **Adaptation Controls**:
-  - Font scales transition using fluid typography equations (`text-4xl` up to `text-8xl` depending on the device environment).
-  - High-depth multi-layered card components simplify their internal physics matrices on mobile screens to save GPU rendering cycles on lower-end mobile displays.
-  - Navigation switches from an expansive, open horizontal top-bar to a full-screen, high-depth slide-down porcelain panel on smaller mobile devices.
+#### GSAP usage
 
-  ---
+- `PageLoader` — full timeline with `back.inOut`, `power2.out`, `power3.inOut`, `power4.inOut`
+- `SplitText` — character/word/line text reveal with `power3.out`, triggered by IntersectionObserver + ScrollTrigger
+- `EnrollNowButton` — CSS keyframe `charAppear`/`charDisappear` per character stagger
 
-  ## Anti-Patterns (Do Not Do)
+#### Framer Motion usage
 
-  - **Flat Pure Whites**: Do not use `bg-white` or `#FFFFFF` for structural containers or cards. It breaks the lighting model. All soft surfaces must remain anchored to `#F4F5F9`.
-  - **Saturated Dark Grays**: Dark mode sections must not use industrial charcoal or pure black backgrounds (e.g., `#121212`). They must use the designated deep midnight-purple tint (`#0B0813`).
-  - **Standard Generic Fonts**: Do not swap out the premium typographic pairing for generic system fonts like Arial, Inter, or Roboto. The visual identity relies heavily on the editorial feel of Clash Display and Cabinet Grotesk.
-  - **Opaque Hex Shadows**: Avoid hard, opaque black hex codes for drop shadows (e.g., `#000000`). Shadows must always use transparent alpha channels (`rgba`) to blend natively into the underlying lavender and porcelain pigments.
-  - **Unchecked Thin Weights**: Avoid utilizing font weights under `400` on colored background structures to protect visual clarity and readability.
+- All page-level section entrances
+- Navbar entry, mobile menu panel, nav item stagger
+- Social icons spring scale
+- NeumorphicButton spring hover/tap
+- NeumorphicCard entrance
+- Footer items
 
-  ---
+**Standard FM easing**: `[0.25, 0.46, 0.45, 0.94]` (custom ease-out)
+**Standard transition timing**: `400ms cubic-bezier(0.4, 0, 0.2, 1)` for CSS transitions
+**Spring**: `{ type: "spring", stiffness: 400, damping: 17–25 }`
 
-  ## CC Club Section — Dark Neumorphic System v2
+---
 
-  The **CC Club** section uses a specialized scoped theme (`.cc-club-scope`) that implements a monochromatic, warm dark clay surface (`#2D3039`). Unlike the main site's high-contrast porcelain approach, this section relies purely on physical depth to define boundaries, without utilizing borders or flat color blocks for UI elements.
+### Layout
 
-  ### Principles
-  - **Monochromatic Canvas**: Every structural element shares the exact same base color (`--cc-bg`: `#2D3039`).
-  - **Shadow Physics**: Depth is the only differentiator. Dark shadows (`rgba(0,0,0,0.35)`) drop bottom-right, while thin highlights (`rgba(255,255,255,0.06)`) define the top-left edge.
-  - **No Borders**: Neumorphic components use light and shadow, not lines, to create shape boundaries.
+- **Page root**: `min-h-screen bg-neo-base overflow-x-hidden`
+- **Navbar container**: `container mx-auto px-4 lg:max-w-6xl`
+- **Content sections**: `container mx-auto px-4`
+- **Section padding**: `py-16 md:py-14`
+- **Hero**: `min-h-screen`, content `px-8 lg:px-16`, heading left-aligned
+- **Breakpoints**: `sm: 640px, md: 768px, lg: 1024px, xl: 1280px`
 
-  ### Component Rules
-  - **Surfaces (`.cc-surface`)**: Standard raised UI containers, utilizing a medium drop-shadow (`var(--cc-neu-md)`).
-  - **Inset Wells (`.cc-inset`)**: Concave sections designed for inputs, image holders, or active depressed states.
-  - **Buttons (`.cc-btn-primary`)**: Utilizes a simpler 2-stop lavender-to-violet gradient (`--cc-grad-accent`) combined with an extruded physical base that compresses into an inset state upon clicking.
-  - **Accent Colors**: Used strictly for text highlights, iconography, progress bars, and glowing halos. Background fills are never used for functional surfaces.
+---
+
+## Part II — CC Club Dark Neumorphic System
+
+Scoped entirely to `.cc-club-scope`. The CCButton applies the transition: clicking it overlays `#252436` via a `clip-path` iris animation, then navigates to `/club`.
+
+### Core Principle
+
+Everything is carved from the same warm dark clay (`#252436`). Shadows are the only boundary. No borders on neumorphic elements. Accent colors are never used as surface fills.
+
+---
+
+### CC Club Color Tokens
+
+#### Surfaces (implied depth hierarchy)
+
+| Token | Hex | Role |
+|---|---|---|
+| `--cc-bg` | `#252436` | Base clay — page and standard surfaces |
+| `--cc-surface` | `#252436` | Raised elements (shadows do the work) |
+| `--cc-surface-raised` | `#2C2A40` | Elevated panels, key cards |
+| `--cc-surface-inset` | `#1C1A2B` | Inset wells, pressed inputs, chip backgrounds |
+| `--cc-surface-deep` | `#151322` | Deepest — icon wells, active states, divider fill |
+| `--cc-border` | `rgba(255,255,255,0.04)` | Hairline (used sparingly only) |
+
+#### Typography
+
+| Token | Value | Role |
+|---|---|---|
+| `--cc-text` | `#E8E6F0` | Primary — warm lavender-white |
+| `--cc-text-muted` | `#9B97AD` | Secondary labels, metadata |
+| `--cc-text-faint` | `#6E6A7C` | Tertiary — hints, placeholders |
+
+#### Accent (Purple / Lavender) — Text, Icons, Glows ONLY
+
+| Token | Value | Role |
+|---|---|---|
+| `--cc-accent` | `#8B7FFF` | Primary accent |
+| `--cc-accent-bright` | `#A89CFF` | Hover text, active icons |
+| `--cc-accent-vivid` | `#C4BCFF` | Gradient end, selected states |
+| `--cc-accent-soft` | `rgba(139,127,255,0.10)` | Badge fills |
+| `--cc-accent-glow` | `rgba(139,127,255,0.20)` | Ambient orb glow |
+
+#### Semantic Status Colors (Text / Icon only — never fills)
+
+| Token | Value | Role |
+|---|---|---|
+| `--cc-amber` | `hsl(38 88% 65%)` | Warning / gold |
+| `--cc-success` | `#4ADE80` | Pass / completed |
+| `--cc-danger` | `#F87171` | Fail / redo |
+| `--cc-pending` | `#60A5FA` | In-progress |
+| `--cc-teal` | `hsl(160 60% 50%)` | Trainer role |
+
+Soft variants: `--cc-amber-soft`, `--cc-success-soft`, `--cc-warning-soft`, `--cc-danger-soft`, `--cc-pending-soft`, `--cc-teal-soft` — all `rgba(..., 0.08–0.10)` for chip fills.
+
+---
+
+### CC Club Shadow Physics
+
+**Light source**: top-left. **Dark/light ratio**: ~35-45% dark, ~6-8% light. The asymmetry is what makes dark neumorphism work.
+
+```css
+--cc-shadow-dark:         rgba(0, 0, 0, 0.35)
+--cc-shadow-light:        rgba(255, 255, 255, 0.06)
+--cc-shadow-dark-strong:  rgba(0, 0, 0, 0.45)
+--cc-shadow-light-strong: rgba(255, 255, 255, 0.08)
+```
+
+#### Extruded Scale
+
+```
+--cc-neu-xs:  2px  2px  5px  dark,  -2px  -2px  5px  light
+--cc-neu-sm:  4px  4px  10px dark,  -4px  -4px  10px light
+--cc-neu-md:  6px  6px  16px dark,  -6px  -6px  16px light
+--cc-neu-lg:  8px  8px  22px dark*, -8px  -8px  22px light*   (* = strong variants)
+--cc-neu-xl:  12px 12px 30px dark*, -12px -12px 30px light*
+```
+
+#### Inset Scale
+
+```
+--cc-neu-inset-xs:   inset 2px 2px 4px   dark,  inset -2px -2px 4px   light
+--cc-neu-inset-sm:   inset 3px 3px 8px   dark,  inset -3px -3px 8px   light
+--cc-neu-inset-md:   inset 5px 5px 14px  dark,  inset -5px -5px 14px  light
+--cc-neu-inset-deep: inset 8px 8px 20px  dark*, inset -8px -8px 20px  light*
+```
+
+#### Glow Tokens
+
+```css
+--cc-glow-purple:    0 0 0 2px (surface-deep), 0 0 0 4px (accent)  /* focus ring */
+--cc-glow-purple-sm: 0 0 10px rgba(139,127,255,0.28)
+--cc-glow-purple-md: 0 0 16px rgba(139,127,255,0.32)
+--cc-glow-purple-lg: 0 0 22px rgba(139,127,255,0.36)
+--cc-glow-btn-hover: 0 0 18px rgba(139,127,255,0.38), 0 4px 12px rgba(139,127,255,0.22)  /* PRIMARY BUTTON HOVER */
+--cc-glow-amber:     0 0 16px rgba(255,185,85,0.30)
+--cc-glow-amber-sm:  0 0 10px rgba(255,185,85,0.22)
+--cc-glow-success:   0 0 14px rgba(74,222,128,0.26)
+--cc-glow-teal:      0 0 16px rgba(52,211,153,0.26)
+```
+
+> `--cc-glow-btn-hover` is a purpose-built tight glow for `.cc-btn-primary:hover`. The old `--cc-glow-purple-lg` (which was 40px radius) was replaced because it spread too far and looked jarring against the dark background.
+
+---
+
+### CC Club Gradients
+
+```css
+--cc-grad-accent:        linear-gradient(135deg, #8B7FFF 0%, #A89CFF 100%)
+--cc-grad-accent-subtle: linear-gradient(135deg, rgba(139,127,255,0.15), rgba(139,127,255,0.05))
+--cc-grad-amber:         linear-gradient(135deg, hsl(38 80% 55%), hsl(38 92% 68%))
+--cc-grad-success:       linear-gradient(135deg, hsl(145 65% 42%), hsl(160 65% 52%))
+--cc-grad-teal:          linear-gradient(135deg, hsl(160 55% 42%), hsl(175 60% 52%))
+```
+
+**Hero Orb Gradients** (parallax ambient backgrounds in CCHero):
+```css
+--cc-orb-purple: radial-gradient(circle, rgba(139,127,255,0.18) 0%, rgba(139,127,255,0.06) 50%, transparent 70%)
+--cc-orb-amber:  radial-gradient(circle, rgba(255,185,85,0.14) 0%, rgba(255,185,85,0.04) 50%, transparent 70%)
+--cc-orb-teal:   radial-gradient(circle, rgba(52,211,153,0.10) 0%, transparent 70%)
+```
+
+CCHero has mouse-parallax on three orbs: orb1 moves at 0.6x cursor offset, orb2 at -0.4x, orb3 at 0.25x.
+
+---
+
+### CC Club Surface Classes
+
+```css
+.cc-surface        -> bg: #252436  + --cc-neu-md
+.cc-surface-raised -> bg: #2C2A40  + --cc-neu-lg
+.cc-inset          -> bg: #1C1A2B  + --cc-neu-inset-md
+.cc-inset-sm       -> bg: #1C1A2B  + --cc-neu-inset-sm
+.cc-inset-deep     -> bg: #151322  + --cc-neu-inset-deep
+```
+
+---
+
+### CC Club Buttons
+
+#### .cc-btn-primary
+
+```
+Background:       --cc-grad-accent
+Text:             #F0EDFF
+Default shadow:   --cc-neu-sm + --cc-glow-purple-sm
+Hover shadow:     --cc-neu-lg + --cc-glow-btn-hover
+Hover transform:  translateY(-2px)
+Active shadow:    --cc-neu-inset-sm
+Active transform: translateY(0.5px)
+Disabled:         opacity 0.45 + --cc-neu-xs
+Transition:       box-shadow 300ms + transform 300ms cubic-bezier(0.16, 1, 0.3, 1)
+```
+
+#### .cc-btn-ghost
+
+```
+Background:    --cc-bg (same as surface)
+Text:          --cc-accent-bright
+Default:       --cc-neu-sm
+Hover:         --cc-neu-md + --cc-glow-purple-sm
+Hover text:    --cc-accent-vivid
+Hover:         translateY(-1px)
+Active:        --cc-neu-inset-sm
+```
+
+#### .cc-btn-back
+
+```
+Background:   --cc-bg
+Text:         --cc-text-muted (hover: --cc-accent-bright)
+Default:      --cc-neu-xs
+Hover:        --cc-neu-sm + translateY(-1px)
+Size:         padding 8px 14px, border-radius 10px, font-size 0.82rem
+```
+
+---
+
+### CC Club Chips (.cc-chip)
+
+```css
+Shape:     border-radius: 999px (pill)
+Shadow:    --cc-neu-inset-xs
+Text:      0.72rem, weight 500, tracking 0.04em, uppercase
+Padding:   3px 10px
+Background (all variants): --cc-surface-inset (#1C1A2B)
+
+.cc-chip-pending -> color: --cc-pending  (blue)
+.cc-chip-done    -> color: --cc-success  (green)
+.cc-chip-redo    -> color: --cc-danger   (red)
+.cc-chip-idle    -> color: --cc-text-faint
+.cc-chip-amber   -> color: --cc-amber    (gold)
+```
+
+### CC Club Divider (.cc-divider)
+
+```css
+height: 1px
+background: #151322
+box-shadow: 0 1px 0 rgba(255,255,255,0.06)  /* creates groove illusion */
+margin: 1.5rem 0
+```
+
+### CC Club Text Gradients
+
+```css
+.cc-text-gradient         -> accent -> accent-bright -> accent-vivid (purple)
+.cc-text-amber-gradient   -> --cc-grad-amber
+.cc-text-success-gradient -> --cc-grad-success
+.cc-text-teal-gradient    -> --cc-grad-teal
+```
+
+---
+
+### CC Club Animations
+
+```
+cc-shimmer-bg       8s ∞    orb: scale + opacity breathe (purple)
+cc-shimmer-amber    10s ∞   orb: scale + opacity breathe (amber)
+cc-pulse-ring       2.4s ∞  scale(0.92→1.08), opacity(0.6→0) — live/active badge pulsing
+cc-score-count      0.4s    translateY(6px→0) — score pop-in
+cc-node-pop         0.5s    scale(0.5→1) spring(0.34,1.56,0.64,1) — timeline nodes
+cc-fade-in-up       0.6s    translateY(20px→0) + opacity(0→1)
+cc-glow-pulse-amber 3s ∞    box-shadow between --cc-neu-sm+amber-sm and --cc-neu-md+amber
+cc-count-up         0.5s    spring(0.34,1.56,0.64,1) — stat number reveal
+```
+
+CSS animation utility classes: `.cc-animate-shimmer .cc-animate-shimmer-amber .cc-animate-pulse-ring .cc-animate-score .cc-animate-node .cc-animate-fade-up .cc-animate-glow-amber .cc-animate-count`
+
+**Framer Motion** (within CC Club components):
+- Default entrance: `initial: { opacity: 0, y: 16 }`, `animate: { opacity: 1, y: 0 }`, `duration: 0.6, delay: n * 0.08`
+- Stat pills: `{ opacity: 0, y: 16 }` stagger per pill
+
+---
+
+### CC Club Scrollbar
+
+```css
+Width:   5px
+Track:   #151322 (--cc-surface-deep)
+Thumb:   rgba(139,127,255,0.15) → 0.35 on hover
+Radius:  100px
+```
+
+### CC Club Responsive
+
+```css
+@media (max-width: 900px)     -> .cc-gamification-panel { display: none }
+@media (901px - 1100px)       -> .cc-dashboard-body { padding-right: 180px }
+@media (max-width: 640px)     -> .cc-hero-stats, .cc-hero-cta { flex-direction: column; gap: 12px }
+```
+
+---
+
+## Part III — Shared Tailwind Config Tokens
+
+### Timing
+
+```
+duration-neo:      300ms
+duration-neo-slow: 500ms
+ease-neo:          cubic-bezier(0.4, 0, 0.2, 1)
+```
+
+### Tailwind CC Shadow Utilities (shadow-cc-neo-* classes)
+
+```
+shadow-cc-neo-extruded:       6px  6px  16px rgba(0,0,0,0.35),  -6px  -6px  16px rgba(255,255,255,0.06)
+shadow-cc-neo-extruded-hover: 8px  8px  22px rgba(0,0,0,0.45),  -8px  -8px  22px rgba(255,255,255,0.08)
+shadow-cc-neo-extruded-sm:    4px  4px  10px rgba(0,0,0,0.35),  -4px  -4px  10px rgba(255,255,255,0.06)
+shadow-cc-neo-inset:          inset 5px 5px 14px rgba(0,0,0,0.35), inset -5px -5px 14px rgba(255,255,255,0.06)
+shadow-cc-neo-inset-deep:     inset 8px 8px 20px rgba(0,0,0,0.45), inset -8px -8px 20px rgba(255,255,255,0.08)
+shadow-cc-neo-inset-sm:       inset 3px 3px 8px rgba(0,0,0,0.35),  inset -3px -3px 8px rgba(255,255,255,0.06)
+```
+
+---
+
+## Admin / Print Fonts
+
+Used in generated print reports (PDF-rendered HTML within `AdminDashboard.tsx` and `CCPresidentDashboard.tsx`):
+
+- Body: `DM Sans`, 12px
+- Report title: `DM Serif Display`, 28px (Admin) / 26px (CC President)
+- Background: `#fff`, text: `#1a1a2e`
+
+These are print-context styles only — never used in the UI.
+
+---
+
+## Accessibility
+
+| Pairing | Ratio | WCAG |
+|---|---|---|
+| `neo-fg` (#3D4852) on `neo-base` (#E0E5EC) | 7.5:1 | **AAA** |
+| `neo-muted` (#6B7280) on `neo-base` (#E0E5EC) | 4.6:1 | **AA** |
+| `--cc-text` (#E8E6F0) on `--cc-bg` (#252436) | ~11:1 | **AAA** |
+| `--cc-text-muted` (#9B97AD) on `--cc-bg` (#252436) | ~5.2:1 | **AA** |
+
+- Touch targets: 48px minimum
+- Focus: `shadow-neo-focus` (main site), `--cc-glow-purple` (CC Club)
+- Use `motion-safe:` for ambient animations
+
+---
+
+## Anti-Patterns
+
+### Main Site
+- NO: `bg-white` / `#FFFFFF` — use `bg-neo-base` (#E0E5EC)
+- NO: Solid hex shadows — always rgba()
+- NO: Using `font-display` or `font-sans` for the hero brand name — it must be Erica One
+- NO: Borders to define structure — shadows only
+- NO: Using `bg-background` (#EFEFF7) for neumorphic element surfaces — use `bg-neo-base` (#E0E5EC)
+
+### CC Club
+- NO: `--cc-accent` as card/panel background fill
+- NO: Pure black (#000000, #121212) as canvas — must be #252436
+- NO: `--cc-glow-purple-lg` for button hover — use `--cc-glow-btn-hover`
+- NO: Borders on neumorphic CC elements
+- NO: `.neu-*` classes inside `.cc-club-scope` — CC scope uses only `.cc-*` tokens
+
+---
+
+## File Map
+
+| File | Purpose |
+|---|---|
+| `index.html` | Loads Erica One + Fredoka from Google Fonts |
+| `src/index.css` | All CSS vars, shadow tokens, .cc-club-scope, animations, utility classes |
+| `tailwind.config.ts` | Shadow, color, radius, keyframe, timing tokens |
+| `src/pages/Index.tsx` | Erica One hero heading + GSAP SplitText animations |
+| `src/components/ui/EnrollNowButton.tsx` | Styled-components CTA button — purple neumorphic with GSAP char animation |
+| `src/components/ui/CCButton.tsx` | Circular portal button — iris transition to CC Club |
+| `src/components/ui/neumorphic-button.tsx` | Main site NeumorphicButton (Framer Motion) |
+| `src/components/ui/neumorphic-card.tsx` | Main site NeumorphicCard (Framer Motion) |
+| `src/components/ui/SplitText.tsx` | GSAP SplitText wrapper for hero text animation |
+| `src/components/PageLoader.tsx` | GSAP 4-phase iris page loader |
+| `src/components/layout/Navbar.tsx` | Scroll-aware neumorphic navbar |
+| `src/components/layout/Footer.tsx` | Gradient footer with blob accents |
+| `src/components/club/CC*.tsx` | All CC Club components — always under .cc-club-scope |
