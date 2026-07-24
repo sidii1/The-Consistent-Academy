@@ -27,3 +27,4 @@ dist-ssr
 .env.local
 serviceAccountKey.json
 setAdmin.cjs
+screenshot.py

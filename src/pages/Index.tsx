@@ -90,7 +90,7 @@ const SocialIcon = ({ social, index, startAnim }: { social: typeof socialLinks[0
       <social.icon className="w-5 h-5" style={{ color: social.color }} />
     </div>
     {/* Tooltip */}
-    <div className="absolute -top-9 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap text-xs font-medium px-2.5 py-1 neo-surface-sm rounded-full text-neo-muted pointer-events-none">
+    <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap text-xs font-medium px-2.5 py-1 neo-surface-sm rounded-full text-neo-muted pointer-events-none">
       {social.label}
     </div>
   </motion.a>
@@ -105,6 +105,7 @@ const EnrollButton = ({ delay, startAnim }: { delay: number; startAnim: boolean 
     initial={{ opacity: 0, y: 20 }}
     animate={startAnim ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
     transition={{ delay, duration: 0.8, ease: "easeOut" }}
+    className="relative top-6"
   >
     <Link to="/contact">
       <EnrollNowButton />
@@ -125,7 +126,7 @@ const HeroSection = ({ startAnim }: { startAnim: boolean }) => {
       <div className="relative z-10 container mx-auto px-8 lg:px-16 flex flex-col items-start justify-center min-h-[90vh] pt-24">
 
         {/* Main heading — left aligned, massive, Erica One */}
-        <div style={{ fontFamily: '"Erica One", cursive' }} className="mb-10 flex flex-col leading-[1.0] tracking-tight">
+        <div style={{ fontFamily: '"Erica One", cursive' }} className="w-full mb-10 flex flex-col leading-[1.0] tracking-tight">
 
           {/* "The" — animated as a single word */}
           {startAnim && (
@@ -186,21 +187,26 @@ const HeroSection = ({ startAnim }: { startAnim: boolean }) => {
         {/* CTA */}
         <EnrollButton delay={0.6} startAnim={startAnim} />
 
-        {/* Social links */}
+        {/* Spacer to bring title text and enroll button slightly up (restores previous flex centering) */}
+        <div className="mt-10 h-[72px]" aria-hidden="true" />
+      </div>
+
+      {/* Social links - Right center vertical, aligned with "Consistent" and above C.C. Club */}
+      {startAnim && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={startAnim ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.8, duration: 0.7, ease: "easeOut" }}
-          className="mt-10"
+          className="absolute right-[74px] lg:right-[106px] top-[26%] -translate-y-1/2 z-20 hidden md:block"
         >
-          <div className="neo-surface rounded-neo-card px-6 py-4 inline-flex items-center gap-4">
+          <div className="neo-surface rounded-neo-card px-3 py-6 inline-flex flex-col items-center gap-4">
             {socialLinks.map((s, i) => (
               <SocialIcon key={i} social={s} index={i} startAnim={startAnim} />
             ))}
           </div>
         </motion.div>
-      </div>
-      
+      )}
+
       {/* C.C. Club Button in Hero Section — bottom right */}
       {startAnim && (
         <motion.div
