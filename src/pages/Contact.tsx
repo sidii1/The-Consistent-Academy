@@ -11,6 +11,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
+import { SEO } from "@/components/SEO";
 
 const contactInfo = [
   {
@@ -128,7 +129,13 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Contact Us | The Consistent Academy"
+        description="Get in touch with The Consistent Academy. We are here to answer your questions about our English language courses and test preparation programs."
+        canonical="/contact"
+      />
       <Navbar />
+      <main>
 
       {/* Hero Section */}
       <section className="relative pt-24 overflow-hidden mb-10">
@@ -298,7 +305,7 @@ const Contact = () => {
           </div>
         </div>
       </SectionWrapper>
-
+      </main>
       <Footer />
     </div>
   );

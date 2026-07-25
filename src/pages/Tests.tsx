@@ -33,6 +33,7 @@ import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { Navbar } from "@/components/layout/Navbar";
 import TestInterface from "@/components/tests/TestInterface";
 import LeadershipTestInterface from "@/components/tests/LeadershipTestInterface";
+import { SEO } from "@/components/SEO";
 
 const Tests = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -159,8 +160,13 @@ const Tests = () => {
 
   return (
     <>
+      <SEO 
+        title="English & Leadership Tests | The Consistent Academy"
+        description="Take our free English grammar proficiency tests for kids and adults, or assess your leadership style with our psychometric test."
+        canonical="/tests"
+      />
       <Navbar />
-      <div className="min-h-screen pt-24 px-4">
+      <main className="min-h-screen pt-24 px-4">
         <div className="max-w-6xl mx-auto">
           <AnimatePresence mode="wait">
             {!user ? (
@@ -453,7 +459,7 @@ const Tests = () => {
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </main>
     </>
   );
 };

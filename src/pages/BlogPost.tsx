@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, User, CalendarDays } from "lucide-react";
 import { Navbar } from "@/components/layout/Navbar";
 import DOMPurify from 'dompurify';
+import { SEO } from "@/components/SEO";
 
 interface BlogPostData {
   id: string;
@@ -109,10 +110,40 @@ const BlogPost: React.FC = () => {
     );
   }
 
+  const articleSchema = blog ? {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": blog.title,
+    "author": {
+      "@type": "Person",
+      "name": blog.author
+    },
+    "datePublished": blog.createdAt,
+    "image": blog.coverImageUrl || "https://www.theconsistentacademy.in/logo2.png",
+    "publisher": {
+      "@type": "Organization",
+      "name": "The Consistent Academy",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://www.theconsistentacademy.in/logo2.png"
+      }
+    }
+  } : undefined;
+
+  const plainTextContent = blog ? blog.content.replace(/<[^>]*>?/gm, '').substring(0, 160).trim() : "";
+
   return (
     <>
+    <SEO 
+      title={`${blog.title} | The Consistent Academy`}
+      description={plainTextContent}
+      canonical={`/blog/${id}`}
+      type="article"
+      schema={articleSchema}
+      image={blog.coverImageUrl}
+    />
     <Navbar />
-    <div className="min-h-screen pt-24 px-6 bg-gradient-to-br from-background to-secondary/30">
+    <main className="min-h-screen pt-24 px-6 bg-gradient-to-br from-background to-secondary/30">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -160,7 +191,7 @@ const BlogPost: React.FC = () => {
           />
         </article>
       </motion.div>
-    </div>
+    </main>
     </>
   );
 };

@@ -8,6 +8,7 @@ import { AnimatedHeading, AnimatedText } from "@/components/ui/animated-text";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import ExpandableCourseCard, { Course } from "@/components/ui/expandable-course-card";
+import { SEO } from "@/components/SEO";
 
 const courses: Course[] = [
   {
@@ -695,9 +696,51 @@ const kidsCourses = [
 
 
 const Courses = () => {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "item": {
+          "@type": "Course",
+          "name": "IELTS | TOEFL | PTE | CELPIP Preparation Course",
+          "description": "Comprehensive training for all four modules with real proficiency focus.",
+          "provider": {
+            "@type": "Organization",
+            "name": "The Consistent Academy",
+            "sameAs": "https://www.theconsistentacademy.in/"
+          }
+        }
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "item": {
+          "@type": "Course",
+          "name": "Corporate Survival & Success Program",
+          "description": "Transform into a corporate-ready professional with essential workplace skills.",
+          "provider": {
+            "@type": "Organization",
+            "name": "The Consistent Academy",
+            "sameAs": "https://www.theconsistentacademy.in/"
+          }
+        }
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="English Courses & IELTS Training | The Consistent Academy"
+        description="Explore our comprehensive courses for IELTS, TOEFL, PTE, spoken English, corporate communication, and kids. Expert trainers and proven methodologies."
+        canonical="/courses"
+        schema={schema}
+      />
       <Navbar />
+      <main>
 
       {/* Hero Section */}
       <section className="relative pt-28 overflow-hidden">
@@ -800,9 +843,9 @@ const Courses = () => {
         </NeumorphicCard>
       ))}
     </div>
-
   </div>
 </SectionWrapper>
+</main>
 
       {/* CTA Section */}
       <SectionWrapper className="bg-secondary/30">

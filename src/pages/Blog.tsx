@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { SEO } from "@/components/SEO";
 
 interface BlogPost {
   id: string;
@@ -218,8 +219,13 @@ const Blog: React.FC = () => {
 
   return (
     <>
+      <SEO 
+        title="Community Blogs | The Consistent Academy"
+        description="Read insights, stories, and learning experiences from the community at The Consistent Academy."
+        canonical="/blog"
+      />
       <Navbar />
-      <div className="min-h-screen pt-24 px-6 bg-gradient-to-br from-background to-secondary/30">
+      <main className="min-h-screen pt-24 px-6 bg-gradient-to-br from-background to-secondary/30">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <motion.div
@@ -454,7 +460,7 @@ const Blog: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
+      </main>
       <Footer />
     </>
   );

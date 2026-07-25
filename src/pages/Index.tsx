@@ -28,6 +28,7 @@ import Founder from "../components/Founder";
 import Testimonials from "../components/Testimonials";
 import { Developers } from "../components/Developers";
 import { PageLoader } from "@/components/PageLoader";
+import { SEO } from "@/components/SEO";
 
 /* ─────────────────────────────────────────────────────────────
    DATA
@@ -126,6 +127,7 @@ const HeroSection = ({ startAnim }: { startAnim: boolean }) => {
       <div className="relative z-10 container mx-auto px-8 lg:px-16 flex flex-col items-start justify-center min-h-[90vh] pt-24">
 
         {/* Main heading — left aligned, massive, Erica One */}
+        <h1 className="sr-only">The Consistent Academy - IELTS & English Learning</h1>
         <div style={{ fontFamily: '"Erica One", cursive' }} className="w-full mb-10 flex flex-col leading-[1.0] tracking-tight">
 
           {/* "The" — animated as a single word */}
@@ -234,8 +236,28 @@ const Index = () => {
     setLoading(false);
   };
 
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "The Consistent Academy",
+    "url": "https://www.theconsistentacademy.in/",
+    "logo": "https://www.theconsistentacademy.in/logo2.png",
+    "description": "Master English with The Consistent Academy. Expert IELTS preparation, spoken English, and writing skills courses.",
+    "sameAs": [
+      "https://www.instagram.com/the_consistent_academy/",
+      "https://www.linkedin.com/company/the-consistent-academy/"
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-neo-base overflow-x-hidden">
+      <SEO 
+        title="The Consistent Academy | IELTS & English Learning"
+        description="Master English with The Consistent Academy. Expert IELTS preparation, spoken English, and writing skills courses with proven methodology."
+        canonical="/"
+        schema={schema}
+      />
+      
       {/* 1. If loading is true, render ONLY the PageLoader */}
       {loading && <PageLoader onComplete={handleLoaderComplete} />}
 
@@ -244,7 +266,8 @@ const Index = () => {
         <>
           <Navbar />
           <Developers />
-          <HeroSection startAnim={true} />
+          <main>
+            <HeroSection startAnim={true} />
 
           {/* COURSES */}
           <SectionWrapper id="courses">
@@ -326,7 +349,7 @@ const Index = () => {
           <div id="testimonials">
             <Testimonials />
           </div>
-
+          </main>
           <Footer />
         </>
       )}

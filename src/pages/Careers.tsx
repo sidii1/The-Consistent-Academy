@@ -9,6 +9,7 @@ import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { AnimatedHeading, AnimatedText } from "@/components/ui/animated-text";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { SEO } from "@/components/SEO";
 
 /* ---------------- TYPES ---------------- */
 
@@ -161,8 +162,13 @@ const Careers = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO 
+        title="Careers | Join The Consistent Academy"
+        description="Join The Consistent Academy as an IELTS Trainer, Spoken English Mentor, or Teaching Assistant. Build your career with us."
+        canonical="/careers"
+      />
       <Navbar />
-
+      <main>
       {/* HERO */}
       <div className="pt-28 pb-2">
         <div className="text-center max-w-6xl mx-auto">
@@ -423,7 +429,7 @@ const Careers = () => {
           </NeumorphicCard>
         </div>
       </div>
-
+      </main>
       <Footer />
     </div>
   );
