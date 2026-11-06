@@ -16,6 +16,8 @@ const navLinks: NavItem[] = [
   { name: "Courses", path: "/courses" },
   { name: "Blog", path: "/blog" },
   { name: "Careers", path: "/careers" },
+  { name: "LBFP", path: "/lbfp" },
+  { name: "Webinars", path: "/webinars" },
   { name: "Tests", path: "/tests" },
   { name: "Contact", path: "/contact" },
 ];

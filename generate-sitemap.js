@@ -13,7 +13,9 @@ const staticRoutes = [
   '/careers',
   '/contact',
   '/tests',
-  '/blog'
+  '/blog',
+  '/lbfp',
+  '/webinars'
 ];
 
 function generateSitemap() {

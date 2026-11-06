@@ -62,17 +62,21 @@ const roleDetails: RoleDetails[] = [
     ]
   },
   {
-    title: "Teaching Assistant",
-    description: "Support our trainers in delivering high-quality education and managing classroom activities.",
+    title: "Experiential Learning Expert (ELE)",
+    description: "Design and deliver transformative experiential learning programmes that connect real-world challenges to classroom concepts, fostering leadership, creativity, and collaborative skills in learners.",
     responsibilities: [
-      "Assist trainers during sessions",
-      "Help with student assessments and grading",
-      "Manage learning materials and resources"
+      "Design and facilitate immersive, hands-on learning experiences",
+      "Develop project-based learning frameworks and activities",
+      "Mentor learners through reflection, feedback, and guided practice",
+      "Collaborate with trainers to integrate experiential elements into the curriculum",
+      "Track participant progress and adapt programmes based on outcomes"
     ],
     requirements: [
-      "Graduate in any field",
-      "Good communication skills",
-      "Willingness to learn and grow"
+      "Background in education, psychology, or a related field",
+      "Experience in facilitation, training, or experiential learning",
+      "Strong interpersonal and communication skills",
+      "Passion for innovative, learner-centred education",
+      "Certifications in facilitation or coaching are an advantage"
     ]
   },
   {
@@ -164,7 +168,7 @@ const Careers = () => {
     <div className="min-h-screen bg-background">
       <SEO 
         title="Careers | Join The Consistent Academy"
-        description="Join The Consistent Academy as an IELTS Trainer, Spoken English Mentor, or Teaching Assistant. Build your career with us."
+        description="Join The Consistent Academy as an IELTS Trainer, Spoken English Mentor, or Experiential Learning Expert (ELE). Build your career with us."
         canonical="/careers"
       />
       <Navbar />
@@ -358,11 +362,9 @@ const Careers = () => {
                   className="w-full px-4 py-3 rounded-xl bg-background shadow-neu-sm focus:outline-none"
                 >
                   <option value="">Select a role</option>
-                  <option>IELTS Trainer</option>
-                  <option>Spoken English Mentor</option>
-                  <option>Teaching Assistant</option>
-                  <option>Writing Skills Coach</option>
-                  <option>Corporate Communication Trainer</option>
+                  {roleDetails.map((role) => (
+                    <option key={role.title} value={role.title}>{role.title}</option>
+                  ))}
                 </select>
               </div>
 

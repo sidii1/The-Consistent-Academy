@@ -50,9 +50,6 @@ For local static assets, refer exclusively to the `public/` directory. The repos
 
 ### Custom Scripts and Design Specifications
 
-* The root directory contains a custom script named `apply_soft_noir.cjs`. Agents should interact with or modify this script only when explicitly instructed to alter the thematic or build configurations it governs.
-
-
 * Always consult `DESIGN.md` before making any layout, color, or typographical changes to ensure strict alignment with the brand identity of The Consistent Academy.
 
 

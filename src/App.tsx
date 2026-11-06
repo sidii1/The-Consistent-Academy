@@ -23,6 +23,8 @@ import AdminBlogs from "./pages/AdminBlogs";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminRoute from "@/components/AdminRoute";
 import ClubPage from "./pages/club/ClubPage";
+import LeadershipBentoForwardProgram from "./pages/LeadershipBentoForwardProgram";
+import Webinars from "./pages/Webinars";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +60,8 @@ const AnimatedRoutes = () => {
         />
         {/* CC Club — standalone, no navbar, self-managed auth gate */}
         <Route path="/club" element={<ClubPage />} />
+        <Route path="/lbfp" element={<LeadershipBentoForwardProgram />} />
+        <Route path="/webinars" element={<Webinars />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>

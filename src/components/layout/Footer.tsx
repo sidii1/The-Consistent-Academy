@@ -21,6 +21,8 @@ export const Footer = () => {
     pages: [
       { name: "Home", onClick: () => scrollToSection("home") },
       { name: "Careers", path: "/careers" },
+      { name: "LBFP", path: "/lbfp" },
+      { name: "Webinars", path: "/webinars" },
       { name: "Courses", path: "/courses" },
       { name: "Tests", path: "/tests" },
       { name: "Blog", path: "/blog" },

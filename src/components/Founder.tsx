@@ -4,6 +4,8 @@ import { AnimatedText, AnimatedHeading } from "@/components/ui/animated-text";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { SectionWrapper } from "@/components/ui/section-wrapper";
 import { BookCard } from "@/components/ui/book-card";
+import AdvisoryBoard from "./team/AdvisoryBoard";
+import ExperientialLearningExperts from "./team/ExperientialLearningExperts";
 import { sub } from "date-fns";
 
 const milestones = [
@@ -252,6 +254,12 @@ const Founder = () => {
               ))}
             </div>
           </motion.div>
+
+          {/* ================= ADVISORY BOARD SECTION ================= */}
+          <AdvisoryBoard />
+
+          {/* ================= EXPERIENTIAL LEARNING EXPERTS ================= */}
+          <ExperientialLearningExperts />
         </div>
       </SectionWrapper>
     </section>
