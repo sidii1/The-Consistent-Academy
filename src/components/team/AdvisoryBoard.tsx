@@ -78,12 +78,6 @@ export const AdvisoryBoard = () => {
             Distinguished academicians, corporate leaders, and pedagogy experts
             guiding our curriculum standards, pedagogical innovation, and institutional direction.
           </AnimatedText>
-
-          {/* Sample content indicator */}
-          <div className="inline-flex items-center gap-2 mt-4 px-3 py-1 rounded-full bg-neo-base shadow-neo-inset-sm text-neo-muted text-xs">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <span>Illustrative profiles — advisory appointments undergoing final confirmation</span>
-          </div>
         </motion.div>
       </div>
 

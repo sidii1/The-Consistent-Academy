@@ -1,20 +1,8 @@
+
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 
-/**
- * NeumorphicButton — Custom animated button primitive (Phase 2)
- *
- * Use this when you need Framer Motion spring animations (e.g. hero CTAs).
- * For regular UI buttons, prefer the shadcn <Button> component.
- *
- * Design Rules:
- *  - Primary: neo-accent-surface (violet gradient, extruded)
- *  - Secondary: neo-surface (base grey, extruded)
- *  - Ghost: transparent, gains neo-surface-sm on hover
- *  - Focus: shadow-neo-focus (2px accent ring via box-shadow)
- *  - No borders. No bg-white. No flat designs.
- */
 interface NeumorphicButtonProps {
   children: ReactNode;
   variant?: "primary" | "secondary" | "ghost";
@@ -38,18 +26,24 @@ export const NeumorphicButton = ({
     "relative font-semibold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden focus-visible:outline-none";
 
   const variants = {
-    primary: cn(
-      "neo-accent-surface",                 // violet gradient + extruded shadow
-      "text-white",
-      "rounded-neo-btn",
-      "focus-visible:shadow-neo-focus",
-    ),
+  primary: cn(
+    "bg-[#42106F] text-white",
+    "rounded-full",
+    "shadow-[inset_0_0.3rem_0.9rem_rgba(224,190,255,0.4),inset_0_-0.1rem_0.3rem_rgba(20,5,35,0.8),inset_0_-0.4rem_0.9rem_rgba(190,130,255,0.5),0_3rem_3rem_rgba(80,20,140,0.35),0_1rem_1rem_-0.6rem_rgba(20,5,40,0.85)]",
+    "hover:shadow-[inset_0_0.3rem_0.5rem_rgba(255,255,255,0.5),inset_0_-0.1rem_0.3rem_rgba(20,5,35,0.8),inset_0_-0.4rem_0.9rem_rgba(196,145,255,0.7),0_3rem_3rem_rgba(120,30,190,0.35),0_1rem_1rem_-0.6rem_rgba(20,5,40,0.85),0_0_32px_rgba(168,85,247,0.28)]",
+    "active:translate-y-1",
+    "focus-visible:shadow-neo-focus",
+    "before:content-[''] before:absolute before:-left-[15%] before:-right-[15%] before:-top-full before:bottom-[25%] before:rounded-[50%] before:bg-[rgba(192,132,252,0.22)] before:transition-transform before:duration-300 hover:before:-translate-y-[5%]",
+    "after:content-[''] after:absolute after:left-[6%] after:right-[6%] after:top-[12%] after:bottom-[40%] after:rounded-t-[22px] after:shadow-[inset_0_10px_8px_-10px_rgba(255,255,255,0.5)] after:bg-[linear-gradient(180deg,rgba(255,255,255,0.38)_0%,rgba(168,85,247,0)_50%)] after:transition-all after:duration-300 hover:after:translate-y-[5%] hover:after:opacity-45",
+  ),
+
     secondary: cn(
-      "neo-surface",                        // base grey extruded
+      "neo-surface",
       "text-neo-fg",
       "rounded-neo-btn",
       "focus-visible:shadow-neo-focus",
     ),
+
     ghost: cn(
       "bg-transparent text-neo-muted",
       "rounded-neo-btn",
@@ -59,9 +53,9 @@ export const NeumorphicButton = ({
   };
 
   const sizes = {
-    sm: "h-9  px-5  py-2   text-sm",
-    md: "h-11 px-7  py-2.5 text-base",
-    lg: "h-12 px-10 py-3   text-lg",
+    sm: "h-9 px-6 py-2 text-sm",
+    md: "h-11 px-9 py-2.5 text-base",
+    lg: "h-12 px-12 py-3 text-lg",
   };
 
   return (
@@ -89,7 +83,7 @@ export const NeumorphicButton = ({
       }
       onClick={onClick}
     >
-      <span className="relative z-10 flex items-center justify-center gap-2.5">
+      <span className="relative z-10 flex items-center justify-center gap-2.5 text-white">
         {children}
       </span>
     </motion.button>

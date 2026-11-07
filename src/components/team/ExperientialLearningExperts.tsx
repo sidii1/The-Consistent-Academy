@@ -81,12 +81,6 @@ export const ExperientialLearningExperts = () => {
           >
             Our dedicated team of facilitators crafting immersive, project-driven learning journeys that transform passive knowledge into real-world fluency and leadership confidence.
           </AnimatedText>
-
-          {/* Sample content indicator */}
-          <div className="inline-flex items-center gap-2 mt-4 px-3 py-1 rounded-full bg-neo-base shadow-neo-inset-sm text-neo-muted text-xs">
-            <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
-            <span>Interactive cards — hover on desktop or tap to reveal full bios</span>
-          </div>
         </motion.div>
       </div>
 

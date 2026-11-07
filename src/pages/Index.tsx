@@ -273,15 +273,15 @@ const Index = () => {
           <SectionWrapper id="courses">
             <div className="text-center mb-10">
               <AnimatedText className="text-neo-accent text-sm uppercase tracking-widest font-semibold mb-3">
-                Courses
+                Learn with Clarity & Confidence
               </AnimatedText>
               <AnimatedHeading>
-                Learn with{" "}
+                Our{" "}
                 <span
                   className="bg-clip-text text-transparent"
                   style={{ backgroundImage: "linear-gradient(135deg, #6C63FF, #38B2AC)" }}
                 >
-                  Clarity &amp; Confidence
+                  Courses
                 </span>
               </AnimatedHeading>
             </div>
