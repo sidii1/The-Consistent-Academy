@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { reveal } from "@/lib/device";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { ArrowRight, CheckCircle, ChevronDown, Clock, Wifi } from "lucide-react";
 import { Link } from "react-router-dom";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
@@ -16,6 +17,7 @@ import { KIDS_COURSE_PRICE, formatINR } from "../../shared/pricing";
 
 const courses: Course[] = [
   {
+    productId: "course-english-proficiency",
     title: " IELTS | TOEFL | PTE | CELPIP Preparation Course",
     subtitle: "Global English Proficiency Master Program",
     description: "Comprehensive training for all four modules with real proficiency focus, not just exam tricks.",
@@ -95,6 +97,7 @@ const courses: Course[] = [
     ]
   },
   {
+    productId: "course-corporate-survival",
     title: "Corporate Survival & Success Program",
     subtitle: "Fresher-Focused",
     description: "Transform into a corporate-ready professional with essential workplace skills and business etiquette.",
@@ -162,6 +165,7 @@ const courses: Course[] = [
     ]
   },
   {
+    productId: "course-crack-interview",
     title: "Crack Your Interview",
     subtitle: "Fresher-Focused",
     description: "Transform from nervous fresher to confident, clear, and convincing interviewee.",
@@ -229,6 +233,7 @@ const courses: Course[] = [
     ]
   },
   {
+    productId: "course-dining-etiquette",
     title: "Corporate Dining & Social Etiquette Masterclass",
     subtitle: "Because your career is also built outside the meeting room",
     description: "Master professional dining and social etiquette for corporate success.",
@@ -290,6 +295,7 @@ const courses: Course[] = [
     ]
   },
   {
+    productId: "course-manager-leadership",
     title: "Advanced English & Leadership Presence for Managers",
     subtitle: "Because managers are watched before they are heard",
     description: "Build executive presence, clarity, and leadership communication credibility.",
@@ -411,6 +417,7 @@ const courses: Course[] = [
     ]
   },
   {
+    productId: "course-communication-skill",
     title: "Communication Skill Training",
     description: "Clear, confident, and professional communication in interviews, meetings, and public speaking.",
     image: "/courses/img6.png",
@@ -487,6 +494,7 @@ const courses: Course[] = [
     ]
   },
   {
+    productId: "course-personality-development",
     title: "Personality Development Training",
     description: "Build a confident personality, strong body language, professional etiquette, and leadership skills.",
     image: "/courses/img7.png",
@@ -563,6 +571,7 @@ const courses: Course[] = [
     ]
   },
   {
+    productId: "course-eelta",
     title:"EELTA - Experiential English Language Teaching Approach",
   description: "India’s First Experiential English Teaching Certification for Global Classrooms",
     targetAudience: [
@@ -739,6 +748,7 @@ const kidsCourses = [
 
 const Courses = () => {
   const [payCourse, setPayCourse] = useState<string | null>(null);
+  const [audience, setAudience] = useState<"professional" | "kids">("professional");
   const [expandedKids, setExpandedKids] = useState<Record<number, boolean>>({});
   const schema = {
     "@context": "https://schema.org",
@@ -787,10 +797,10 @@ const Courses = () => {
       <main>
 
       {/* Hero Section */}
-      <section className="relative pt-28 max-sm:pt-24 max-sm:pb-8 overflow-hidden">
+      <section className="relative pt-28 max-sm:pt-24 max-sm:pb-2 overflow-hidden">
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-5xl mx-auto text-center">
             <motion.h1
               className="text-4xl md:text-6xl font-bold mb-6"
               initial={{ opacity: 0, y: 30 }}
@@ -806,32 +816,75 @@ const Courses = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              Choose from our carefully designed courses, each tailored to help you achieve 
-              specific English language milestones.
+              Choose from our carefully designed courses, each tailored to help you achieve specific English milestones.
             </motion.p>
           </div>
         </div>
       </section>
 
-      {/* Courses Grid */}
-      <SectionWrapper className="pt-0">
-        <div className="container mx-auto">
-          <ExpandableCourseCard courses={courses} />
+      {/* Audience toggle */}
+      <section className="pb-2 pt-7">
+        <div className="container mx-auto px-4 flex items-center justify-center gap-5">
+          <button
+            type="button"
+            onClick={() => setAudience("professional")}
+            className={cn(
+              "text-base sm:text-xl font-bold transition-colors duration-300",
+              audience === "professional" ? "text-neo-accent" : "text-neo-muted hover:text-neo-fg",
+            )}
+          >
+            Professional <br></br> Courses
+          </button>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={audience === "kids"}
+            aria-label="Switch between professional and kids courses"
+            onClick={() => setAudience((a) => (a === "kids" ? "professional" : "kids"))}
+            className="skeu-switch"
+          >
+            <span className="skeu-indicator left" />
+            <span className="skeu-indicator right" />
+            <span className="skeu-button" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setAudience("kids")}
+            className={cn(
+              "text-base sm:text-xl font-bold transition-colors duration-300",
+              audience === "kids" ? "text-neo-accent" : "text-neo-muted hover:text-neo-fg",
+            )}
+          >
+            Kids <br></br> Courses
+          </button>
         </div>
-      </SectionWrapper>
-{/* KIDS COURSES SECTION */}
-<SectionWrapper className="pt-8">
-  <div className="container mx-auto">
+      </section>
 
-    <div className="max-w-3xl mx-auto text-center mb-12">
-      <AnimatedHeading>
-        Courses for <span className="text-gradient">Kids</span>
-      </AnimatedHeading>
-      <AnimatedText className="text-muted-foreground text-lg mt-4">
-        Fun, engaging, and skill-building programs designed specially for young learners.
-      </AnimatedText>
-    </div>
-
+      <AnimatePresence mode="wait">
+        {audience === "professional" ? (
+          <motion.div
+            key="professional"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3 }}
+          >
+            <SectionWrapper className="!py-6">
+              <div className="container mx-auto">
+                <ExpandableCourseCard courses={courses} />
+              </div>
+            </SectionWrapper>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="kids"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.3 }}
+          >
+            <SectionWrapper className="!py-6">
+              <div className="container mx-auto">
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
       {kidsCourses.map((course, index) => {
         const expanded = expandedKids[index] ?? false;
@@ -936,8 +989,11 @@ const Courses = () => {
         );
       })}
     </div>
-  </div>
-</SectionWrapper>
+              </div>
+            </SectionWrapper>
+          </motion.div>
+        )}
+      </AnimatePresence>
 </main>
 
       {/* CTA Section */}

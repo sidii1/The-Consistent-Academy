@@ -11,7 +11,7 @@
 
 export type DiscountType = "none" | "early_bird" | "sibling" | "school_group";
 
-export type ProductKind = "package" | "kids_course";
+export type ProductKind = "package" | "kids_course" | "course";
 
 export interface DiscountRule {
   type: Exclude<DiscountType, "none">;
@@ -115,7 +115,28 @@ export const KIDS_COURSES: Product[] = [
   discounts: [],
 }));
 
-export const PRODUCTS: Product[] = [...PACKAGES, ...KIDS_COURSES];
+/** Adult / general programmes listed on the Courses page. */
+export const COURSES: Product[] = (
+  [
+    ["course-english-proficiency", "IELTS | TOEFL | PTE | CELPIP Preparation Course", 12000],
+    ["course-corporate-survival", "Corporate Survival & Success Program", 6000],
+    ["course-crack-interview", "Crack Your Interview", 3000],
+    ["course-dining-etiquette", "Corporate Dining & Social Etiquette Masterclass", 3000],
+    ["course-manager-leadership", "Advanced English & Leadership Presence for Managers", 6000],
+    ["course-communication-skill", "Communication Skill Training", 5000],
+    ["course-personality-development", "Personality Development Training", 6000],
+    ["course-eelta", "EELTA - Experiential English Language Teaching Approach", 15000],
+  ] as [string, string, number][]
+).map(([id, name, price]) => ({
+  id,
+  kind: "course" as const,
+  name,
+  tagline: "Instructor-led programme",
+  price,
+  discounts: [],
+}));
+
+export const PRODUCTS: Product[] = [...PACKAGES, ...KIDS_COURSES, ...COURSES];
 
 export const getProduct = (id: string): Product | undefined =>
   PRODUCTS.find((p) => p.id === id);

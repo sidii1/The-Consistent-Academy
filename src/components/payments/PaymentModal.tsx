@@ -149,7 +149,7 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
           productId: product.id,
           discountType: discount,
           customer: { name, email, phone },
-          meta: { studentName, mode, date, siblingName, schoolName, groupSize: Number(groupSize) || 0 },
+          meta: { studentName: product.kind === "kids_course" || product.id === "pkg-llf" ? studentName : "", mode, date, siblingName, schoolName, groupSize: Number(groupSize) || 0 },
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -200,6 +200,8 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
   const secondsLeft = Math.max(0, Math.floor((expiresAt - now) / 1000));
   const mmss = `${String(Math.floor(secondsLeft / 60)).padStart(2, "0")}:${String(secondsLeft % 60).padStart(2, "0")}`;
   const earlyOpen = isEarlyBirdOpen();
+  // Only kids' courses and Leadership Lab Forward are bought by a parent for a child.
+  const needsParent = product.kind === "kids_course" || product.id === "pkg-llf";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -212,12 +214,14 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
           {(step === "form" || step === "starting") && (
             <motion.form key="form" onSubmit={start} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4 mt-2">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Field label="Parent / Guardian name">
+                <Field label={needsParent ? "Parent / Guardian name" : "Your name"}>
                   <input required className={inputClass} value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" />
                 </Field>
-                <Field label="Student name" optional>
-                  <input className={inputClass} value={studentName} onChange={(e) => setStudentName(e.target.value)} placeholder="If different" />
-                </Field>
+                {needsParent && (
+                  <Field label="Student name" optional>
+                    <input className={inputClass} value={studentName} onChange={(e) => setStudentName(e.target.value)} placeholder="If different" />
+                  </Field>
+                )}
                 <Field label="Email">
                   <input required type="email" className={inputClass} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
                 </Field>

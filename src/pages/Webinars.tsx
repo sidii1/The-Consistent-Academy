@@ -856,9 +856,7 @@ const Webinars = () => {
               className="text-neo-muted text-lg mt-5 leading-relaxed max-w-2xl mx-auto"
               delay={0.2}
             >
-              Learn directly from seasoned trainers across communication,
-              English proficiency, and professional skills — from the comfort
-              of your screen.
+              Learn directly from seasoned trainers across communication, English proficiency, and professional skills — from the comfort of your screen.
             </AnimatedText>
           </div>
         </div>

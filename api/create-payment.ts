@@ -28,7 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const name = clean(customer.name);
     const email = clean(customer.email, 160).toLowerCase();
     const phone = clean(customer.phone, 20).replace(/[^\d+]/g, "");
-    if (name.length < 2) return res.status(400).json({ error: "Please enter the student/parent name." });
+    if (name.length < 2) return res.status(400).json({ error: "Please enter your name." });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: "Please enter a valid email." });
     if (phone.replace(/\D/g, "").length < 10) return res.status(400).json({ error: "Please enter a valid phone number." });
 
