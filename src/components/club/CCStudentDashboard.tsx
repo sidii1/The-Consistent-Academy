@@ -660,6 +660,7 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
 
   return (
     <div
+      className="cc-dashboard-root"
       style={{
         maxWidth: "1100px",
         margin: "0 auto",

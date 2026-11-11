@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { reveal } from "@/lib/device";
 import { Quote, Award, BookOpen, ExternalLink } from "lucide-react";
 import { AnimatedText, AnimatedHeading } from "@/components/ui/animated-text";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
@@ -66,10 +67,12 @@ const Founder = () => {
 
             {/* Content */}
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+              {...reveal({
+                initial: { opacity: 0, x: -50 },
+                whileInView: { opacity: 1, x: 0 },
+                viewport: { once: true },
+                transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] },
+              }, "none")}
             >
               <AnimatedText className="text-primary text-sm font-medium uppercase tracking-wider mb-4">
                 Meet the Founder
@@ -109,10 +112,12 @@ const Founder = () => {
             {/* Image */}
             <motion.div
               className="relative"
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+              {...reveal({
+                initial: { opacity: 0, x: 50 },
+                whileInView: { opacity: 1, x: 0 },
+                viewport: { once: true },
+                transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] },
+              })}
             >
               <div className="relative w-full max-w-lg mx-auto lg:mx-0">
                 <div className="w-full aspect-square rounded-full shadow-neu-2xl bg-gradient-to-br from-card to-secondary/30 overflow-hidden">
@@ -131,10 +136,12 @@ const Founder = () => {
           {/* Milestones Timeline - Full Width */}
           <motion.div 
             className="mt-8"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            {...reveal({
+              initial: { opacity: 0, y: 30 },
+              whileInView: { opacity: 1, y: 0 },
+              viewport: { once: true },
+              transition: { duration: 0.8, delay: 0.6 },
+            }, "none")}
           >
             <AnimatedText 
               className="text-foreground text-2xl font-semibold mb-8 text-center" 
@@ -145,36 +152,38 @@ const Founder = () => {
             
             <div className="relative px-2 sm:px-4">
               {/* Timeline Line */}
-              <div className="absolute top-6 sm:top-8 left-4 sm:left-8 right-4 sm:right-8 h-0.5 sm:h-1 bg-gradient-to-r from-primary/20 via-primary/40 to-primary/20 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)]" />
+              <div className="absolute top-6 sm:top-8 left-4 sm:left-8 right-4 sm:right-8 h-0.5 sm:h-1 bg-gradient-to-r from-primary/20 via-primary/40 to-primary/20 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] max-sm:left-[31px] max-sm:right-auto max-sm:top-6 max-sm:bottom-6 max-sm:h-auto max-sm:w-0.5 max-sm:bg-gradient-to-b" />
               
               {/* Timeline Items */}
-              <div className="relative flex justify-between items-start gap-1 sm:gap-2 md:gap-4">
+              <div className="relative flex justify-between items-start gap-1 sm:gap-2 md:gap-4 max-sm:flex-col max-sm:items-stretch max-sm:gap-4">
                 {milestones.map((milestone, index) => (
                   <motion.div
                     key={milestone.year}
-                    className="flex flex-col items-center flex-1 min-w-0"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.7 + index * 0.15, duration: 0.6 }}
+                    className="flex flex-col items-center flex-1 min-w-0 max-sm:flex-row max-sm:gap-4"
+                    {...reveal({
+                      initial: { opacity: 0, y: 30 },
+                      whileInView: { opacity: 1, y: 0 },
+                      viewport: { once: true },
+                      transition: { delay: 0.7 + index * 0.15, duration: 0.6 },
+                    })}
                   >
                     {/* Year Indicator */}
-                    <div className="relative z-10 w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-card via-background to-secondary/30 flex items-center justify-center mb-2 sm:mb-3 md:mb-4 group hover:shadow-neu-lg hover:scale-105 transition-all duration-300">
-                      <div className="absolute inset-1 sm:inset-1.5 md:inset-2 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center group-hover:from-primary/30 group-hover:to-accent/30 transition-all duration-300">
-                        <span className="text-primary font-bold text-[0.6rem] sm:text-xs md:text-sm group-hover:scale-110 transition-transform duration-300">
+                    <div className="relative z-10 w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-card via-background to-secondary/30 flex items-center justify-center mb-2 sm:mb-3 md:mb-4 max-sm:w-12 max-sm:h-12 max-sm:mb-0 max-sm:flex-shrink-0 max-sm:shadow-neu-sm group hover:shadow-neu-lg hover:scale-105 transition-all duration-300">
+                      <div className="absolute inset-1 sm:inset-1.5 md:inset-2 max-sm:inset-1.5 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center group-hover:from-primary/30 group-hover:to-accent/30 transition-all duration-300">
+                        <span className="text-primary font-bold text-[0.6rem] sm:text-xs md:text-sm max-sm:text-xs group-hover:scale-110 transition-transform duration-300">
                           {milestone.year}
                         </span>
                       </div>
                     </div>
                     
                     {/* Achievement Card */}
-                    <div className="w-full px-0.5 sm:px-1 md:px-2">
-                      <div className="relative p-1.5 sm:p-2 md:p-4 rounded-lg sm:rounded-xl bg-gradient-to-br from-card/80 via-background/90 to-secondary/20 backdrop-blur-sm hover:shadow-neu-lg transition-all duration-400 hover:-translate-y-1 group">
+                    <div className="w-full px-0.5 sm:px-1 md:px-2 max-sm:px-0 max-sm:flex-1 max-sm:min-w-0">
+                      <div className="relative p-1.5 sm:p-2 md:p-4 max-sm:px-4 max-sm:py-3 max-sm:shadow-neu-sm rounded-lg sm:rounded-xl bg-gradient-to-br from-card/80 via-background/90 to-secondary/20 backdrop-blur-sm hover:shadow-neu-lg transition-all duration-400 hover:-translate-y-1 group">
                         <div className="space-y-1 sm:space-y-1.5 md:space-y-2">
                           {milestone.achievements.map((achievement, i) => (
                             <p 
                               key={i} 
-                              className="text-[0.5rem] sm:text-xs md:text-sm font-semibold text-foreground leading-tight text-center group-hover:text-primary transition-colors duration-300"
+                              className="text-[0.5rem] sm:text-xs md:text-sm max-sm:text-sm max-sm:text-left font-semibold text-foreground leading-tight text-center group-hover:text-primary transition-colors duration-300"
                             >
                               {achievement}
                             </p>
@@ -191,10 +200,12 @@ const Founder = () => {
           {/* ================= BOOKS SECTION ================= */}
           <motion.div 
             className="mt-8 relative"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            {...reveal({
+              initial: { opacity: 0 },
+              whileInView: { opacity: 1 },
+              viewport: { once: true },
+              transition: { duration: 0.8 },
+            }, "none")}
           >
             {/* Background decorative elements */}
             <div className="absolute inset-0 -z-10 overflow-hidden">
@@ -205,10 +216,12 @@ const Founder = () => {
             {/* Section Header */}
             <div className="text-center mb-10">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
+                {...reveal({
+                  initial: { opacity: 0, y: 20 },
+                  whileInView: { opacity: 1, y: 0 },
+                  viewport: { once: true },
+                  transition: { duration: 0.6 },
+                })}
               >
                 <p className="text-primary text-sm font-medium uppercase tracking-wider mb-3">
                   Published Works

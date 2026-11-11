@@ -1125,7 +1125,7 @@ export const AdminDashboard: React.FC = () => {
           {/* Main content */}
           <section className="flex-1 min-h-[600px]">
             {activeTab === "cc_club" ? (
-              <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+              <div className="bg-card border border-border rounded-3xl p-6 max-sm:p-4 shadow-sm">
                 <div className="flex items-center gap-3 mb-6">
                   <Mic2 size={20} className="text-primary" />
                   <h2 className="text-xl font-semibold">CC Club Admin</h2>
@@ -1136,7 +1136,7 @@ export const AdminDashboard: React.FC = () => {
                 <CCClubAdminPanel />
               </div>
             ) : (
-              <div className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+              <div className="bg-card border border-border rounded-3xl p-6 max-sm:p-4 shadow-sm">
                 <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
                   <h2 className="text-xl font-semibold capitalize">
                     {(activeTab as string).replace(/([A-Z])/g, " $1")}

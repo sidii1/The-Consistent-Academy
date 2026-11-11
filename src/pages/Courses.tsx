@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { reveal } from "@/lib/device";
 import { useState } from "react";
 import { ArrowRight, CheckCircle, ChevronDown, Clock, Wifi } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -786,7 +787,7 @@ const Courses = () => {
       <main>
 
       {/* Hero Section */}
-      <section className="relative pt-28 overflow-hidden">
+      <section className="relative pt-28 max-sm:pt-24 max-sm:pb-8 overflow-hidden">
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
@@ -800,7 +801,7 @@ const Courses = () => {
               <span className="text-gradient">Every Goal</span>
             </motion.h1>
             <motion.p
-              className="text-xl text-muted-foreground"
+              className="text-xl max-sm:text-lg text-muted-foreground"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -952,10 +953,12 @@ const Courses = () => {
               the best program based on your goals and current English proficiency.
             </AnimatedText>
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
+              {...reveal({
+                initial: { opacity: 0, y: 20 },
+                whileInView: { opacity: 1, y: 0 },
+                viewport: { once: true },
+                transition: { delay: 0.2 },
+              })}
             >
               <Link to="/contact">
                 <NeumorphicButton variant="primary" size="lg">

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { reveal } from "@/lib/device";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Phone, MapPin, Instagram, MessageCircle, Linkedin } from "lucide-react";
 
@@ -40,14 +41,16 @@ export const Footer = () => {
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-0 w-48 h-48 bg-accent/10 rounded-full blur-3xl" />
       
-      <div className="container mx-auto px-4 py-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-12">
+      <div className="container mx-auto px-4 py-16 max-sm:py-12 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-12 max-sm:gap-10">
           {/* Brand */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            {...reveal({
+              initial: { opacity: 0, y: 20 },
+              whileInView: { opacity: 1, y: 0 },
+              viewport: { once: true },
+              transition: { duration: 0.6 },
+            })}
           >
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent shadow-neu flex items-center justify-center overflow-hidden">
@@ -84,13 +87,15 @@ export const Footer = () => {
 
           {/* Pages */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            {...reveal({
+              initial: { opacity: 0, y: 20 },
+              whileInView: { opacity: 1, y: 0 },
+              viewport: { once: true },
+              transition: { duration: 0.6, delay: 0.1 },
+            })}
           >
-            <h4 className="font-semibold text-foreground mb-6">Quick Links</h4>
-            <ul className="space-y-3">
+            <h4 className="font-semibold text-foreground mb-6 max-sm:mb-4">Quick Links</h4>
+            <ul className="space-y-3 max-sm:space-y-0 max-sm:grid max-sm:grid-cols-2 max-sm:gap-x-6 max-sm:gap-y-3">
               {footerLinks.pages.map((link, index) => (
                 <li key={index}>
                   {link.path ? (
@@ -116,12 +121,14 @@ export const Footer = () => {
          
           {/* Contact */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            {...reveal({
+              initial: { opacity: 0, y: 20 },
+              whileInView: { opacity: 1, y: 0 },
+              viewport: { once: true },
+              transition: { duration: 0.6, delay: 0.3 },
+            })}
           >
-            <h4 className="font-semibold text-foreground mb-6">Contact Us</h4>
+            <h4 className="font-semibold text-foreground mb-6 max-sm:mb-4">Contact Us</h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
                 <MapPin size={18} className="text-primary mt-0.5 flex-shrink-0" />
@@ -133,7 +140,7 @@ export const Footer = () => {
               </li>
               <li className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Mail size={18} className="text-primary flex-shrink-0" />
-                <span>theconsistentacademy@gmail.com</span>
+                <span className="[overflow-wrap:anywhere]">theconsistentacademy@gmail.com</span>
               </li>
             </ul>
           </motion.div>
@@ -141,19 +148,21 @@ export const Footer = () => {
 
         {/* Bottom */}
         <motion.div
-          className="mt-16 pt-8 border-t border-primary/20 flex flex-col md:flex-row justify-between items-center gap-6"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mt-16 max-sm:mt-12 pt-8 border-t border-primary/20 flex flex-col md:flex-row justify-between items-center gap-6"
+          {...reveal({
+            initial: { opacity: 0 },
+            whileInView: { opacity: 1 },
+            viewport: { once: true },
+            transition: { duration: 0.6, delay: 0.4 },
+          })}
         >
           <div className="flex flex-col items-center md:items-start gap-3">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground max-sm:text-center">
               © {currentYear} The Consistent Academy. All rights reserved.
             </p>
 
           </div>
-          <div className="flex gap-6">
+          <div className="flex gap-6 max-sm:flex-wrap max-sm:justify-center max-sm:gap-x-6 max-sm:gap-y-2">
             <Link to="/login?redirect=admin" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Admin Login
             </Link>

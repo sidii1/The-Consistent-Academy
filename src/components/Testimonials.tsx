@@ -5,6 +5,7 @@ import { AnimatedText, AnimatedHeading } from "@/components/ui/animated-text";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { SectionWrapper } from "@/components/ui/section-wrapper";
+import { IS_TOUCH } from "@/lib/device";
 
 const testimonials = [
   {
@@ -123,7 +124,7 @@ const Testimonials = () => {
         <div className="container mx-auto">
 
           {/* HEADER */}
-          <div className="text-center mb-16">
+          <div className="text-center mb-16 max-sm:mb-10">
             <AnimatedText className="text-primary text-sm uppercase mb-3">
               Testimonials
             </AnimatedText>
@@ -142,12 +143,24 @@ const Testimonials = () => {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -80 }}
                   transition={{ duration: 0.45, ease: "easeInOut" }}
+                  // Touch: swipe left/right to change testimonial.
+                  {...(IS_TOUCH && {
+                    drag: "x" as const,
+                    dragConstraints: { left: 0, right: 0 },
+                    dragElastic: 0.25,
+                    dragDirectionLock: true,
+                    style: { touchAction: "pan-y" },
+                    onDragEnd: (_: unknown, info: { offset: { x: number } }) => {
+                      if (info.offset.x < -60) next();
+                      else if (info.offset.x > 60) prev();
+                    },
+                  })}
                 >
-                  <div className="rounded-3xl bg-gradient-to-br from-primary/10 via-card to-accent/10 p-8 shadow-neu flex flex-col">
+                  <div className="rounded-3xl bg-gradient-to-br from-primary/10 via-card to-accent/10 p-8 max-sm:p-6 shadow-neu flex flex-col">
 
                     <div>
                       <Quote className="w-10 h-10 text-primary/30 mb-4" />
-                      <p className="text-lg leading-relaxed mb-1">
+                      <p className="text-lg max-sm:text-base leading-relaxed mb-1">
                         "{testimonials[current].text}"
                       </p>
 

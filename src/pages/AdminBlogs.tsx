@@ -210,7 +210,7 @@ const AdminBlogs: React.FC = () => {
     <>
       <Navbar />
 
-      <div className="min-h-screen pt-24 px-6 bg-gradient-to-br from-background to-secondary/30">
+      <div className="min-h-screen pt-24 px-6 max-sm:px-4 bg-gradient-to-br from-background to-secondary/30">
         <div className="max-w-6xl mx-auto">
           {/* HEADER */}
           <motion.div
@@ -292,7 +292,7 @@ const AdminBlogs: React.FC = () => {
                               {blog.title}
                             </h3>
 
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                            <div className="flex flex-wrap items-center gap-4 max-sm:gap-x-4 max-sm:gap-y-1 text-sm text-muted-foreground mb-4">
                               <div className="flex items-center gap-1">
                                 <User className="w-4 h-4" />
                                 {blog.author}
@@ -317,7 +317,7 @@ const AdminBlogs: React.FC = () => {
                         )}
                       </div>
 
-                      <div className="flex gap-3 md:flex-col md:ml-4 shrink-0">
+                      <div className="flex gap-3 max-md:flex-wrap md:flex-col md:ml-4 shrink-0">
                         {editingId === blog.id ? (
                           /* Save / Cancel when editing */
                           <>

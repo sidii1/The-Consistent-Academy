@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Mic2, Award, Users, TrendingUp, ArrowLeft, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { IS_TOUCH } from "@/lib/device";
 
 interface CCHeroProps {
   onScrollToAuth: () => void;
@@ -53,6 +54,8 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
   const orb3Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Cursor parallax only — no pointer to follow on touch screens.
+    if (IS_TOUCH) return;
     const handleMouseMove = (e: MouseEvent) => {
       const { innerWidth, innerHeight } = window;
       const x = (e.clientX / innerWidth - 0.5) * 30;

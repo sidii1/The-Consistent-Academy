@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
+import { IS_SMALL_SCREEN, LITE_MOTION, reveal } from "@/lib/device";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -124,7 +125,7 @@ const HeroSection = ({ startAnim }: { startAnim: boolean }) => {
       id="home"
       className="relative min-h-screen flex flex-col items-start justify-center overflow-hidden"
     >
-      <div className="relative z-10 container mx-auto px-8 lg:px-16 flex flex-col items-start justify-center min-h-[90vh] pt-24">
+      <div className="relative z-10 container mx-auto px-8 max-sm:px-6 lg:px-16 flex flex-col items-start justify-center min-h-[90vh] pt-24">
 
         {/* Main heading — left aligned, massive, Erica One */}
         <h1 className="sr-only">The Consistent Academy - IELTS & English Learning</h1>
@@ -154,11 +155,11 @@ const HeroSection = ({ startAnim }: { startAnim: boolean }) => {
               text="Consistent"
               tag="span"
               splitType="chars"
-              className="text-[4rem] sm:text-[5.5rem] md:text-[7.5rem] lg:text-[10rem] leading-none py-2"
+              className="text-[clamp(2.5rem,14.5vw,4rem)] sm:text-[5.5rem] md:text-[7.5rem] lg:text-[10rem] leading-none py-2"
               style={{ color: "#9738F9" }}
               textAlign="left"
-              delay={120}
-              duration={1.2}
+              delay={LITE_MOTION ? 60 : 120}
+              duration={LITE_MOTION ? 0.7 : 1.2}
               ease="power3.out"
               from={{ opacity: 0, y: 60 }}
               to={{ opacity: 1, y: 0 }}
@@ -175,8 +176,8 @@ const HeroSection = ({ startAnim }: { startAnim: boolean }) => {
               splitType="chars"
               className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-neo-fg mt-2"
               textAlign="left"
-              delay={55}
-              duration={0.65}
+              delay={LITE_MOTION ? 35 : 55}
+              duration={LITE_MOTION ? 0.5 : 0.65}
               ease="power3.out"
               from={{ opacity: 0, y: 50 }}
               to={{ opacity: 1, y: 0 }}
@@ -299,9 +300,11 @@ const Index = () => {
             </div>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              {...reveal({
+                initial: { opacity: 0, y: 20 },
+                whileInView: { opacity: 1, y: 0 },
+                transition: { duration: 0.5 },
+              })}
               className="text-center mt-8"
             >
               <p className="text-lg text-neo-muted font-medium mb-6">and more…</p>
@@ -333,10 +336,10 @@ const Index = () => {
               </AnimatedHeading>
             </div>
 
-            <div className="relative h-[620px] w-full overflow-hidden rounded-neo-card">
+            <div className="relative h-[620px] max-sm:h-[440px] w-full overflow-hidden rounded-neo-card">
               <CircularGallery
                 items={galleryItems}
-                bend={3}
+                bend={IS_SMALL_SCREEN ? 1.5 : 3}
                 textColor="#ffffff"
                 borderRadius={0.06}
                 scrollSpeed={2}

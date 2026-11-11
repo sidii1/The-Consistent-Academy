@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import { useState } from "react";
+import { IS_TOUCH, reveal } from "@/lib/device";
 
 interface BookLink {
   label: string;
@@ -21,14 +22,25 @@ export const BookCard = ({ title, description, imagePath, links, index }: BookCa
   return (
     <motion.div
       className="relative h-[500px] perspective-1000"
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay: index * 0.2 }}
+      {...reveal({
+        initial: { opacity: 0, y: 50 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true },
+        transition: { duration: 0.6, delay: index * 0.2 },
+      })}
       onHoverStart={() => setIsFlipped(true)}
       onHoverEnd={() => setIsFlipped(false)}
     >
       <motion.div
+        // Touch devices have no hover: tap the card to flip (links still work).
+        onClick={
+          IS_TOUCH
+            ? (e) => {
+                if ((e.target as HTMLElement).closest("a")) return;
+                setIsFlipped((f) => !f);
+              }
+            : undefined
+        }
         className="relative w-full h-full preserve-3d transition-transform duration-700"
         animate={{ rotateY: isFlipped ? 180 : 0 }}
         style={{ transformStyle: "preserve-3d" }}
@@ -62,7 +74,7 @@ export const BookCard = ({ title, description, imagePath, links, index }: BookCa
                   {title}
                 </h3>
                 <p className="text-sm text-primary/70 font-medium">
-                  Hover to explore
+                  {IS_TOUCH ? "Tap to explore" : "Hover to explore"}
                 </p>
               </div>
             </div>
@@ -126,7 +138,7 @@ export const BookCard = ({ title, description, imagePath, links, index }: BookCa
       </motion.div>
 
       {/* Hover indicator for mobile */}
-      <div className="md:hidden absolute -bottom-8 left-0 right-0 text-center">
+      <div className={`${IS_TOUCH ? "" : "md:hidden "}absolute -bottom-8 left-0 right-0 text-center`}>
         <button
           onClick={() => setIsFlipped(!isFlipped)}
           className="text-xs text-primary/70 hover:text-primary transition-colors"

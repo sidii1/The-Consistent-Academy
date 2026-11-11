@@ -325,7 +325,7 @@ const handleClearResponse = () => {
               transition={{ duration: 0.3 }}
             >
               <NeumorphicCard className="mb-4 hover:shadow-neu">
-                <div className="p-5 md:p-8">
+                <div className="p-5 md:p-8 max-sm:p-1">
                   {currentQuestion.section && (
                     <div className="mb-6">
                       <div className="inline-block px-3 py-1.5 rounded-lg shadow-neu-inset bg-gradient-to-br from-primary/10 to-accent/10 border mb-2 border-primary/20">

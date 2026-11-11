@@ -301,7 +301,7 @@ const Blog: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 onSubmit={handleSubmit}
-                className="max-w-3xl mx-auto bg-card p-8 rounded-3xl shadow-neu-xl mb-12 space-y-5"
+                className="max-w-3xl mx-auto bg-card p-8 max-sm:p-5 rounded-3xl shadow-neu-xl mb-12 space-y-5"
               >
                 <h2 className="text-2xl font-bold text-foreground mb-2">
                   Submit Your Blog

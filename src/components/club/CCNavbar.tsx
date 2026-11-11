@@ -4,6 +4,7 @@ import { auth } from "@/lib/firebase";
 import { toast } from "sonner";
 import { LogOut, Mic2, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import { IS_TOUCH } from "@/lib/device";
 import type { CCUser } from "@/lib/ccClub";
 
 interface CCNavbarProps {
@@ -31,6 +32,7 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
       }}
     >
       <div
+        className="cc-nav-inner"
         style={{
           maxWidth: "1200px",
           margin: "0 auto",
@@ -42,7 +44,7 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
         }}
       >
         {/* Left: Back link + Logo */}
-        <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+        <div className="cc-nav-left" style={{ display: "flex", alignItems: "center", gap: "14px", minWidth: 0 }}>
           {/* Back to main site */}
           <Link to="/">
             <button className="cc-btn-back" type="button">
@@ -74,11 +76,13 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
                   fontSize: "0.9rem",
                   letterSpacing: "0.02em",
                   color: "var(--cc-text)",
+                  whiteSpace: "nowrap",
                 }}
               >
                 CC Club
               </span>
               <span
+                className="cc-nav-sub"
                 style={{
                   display: "block",
                   fontSize: "0.65rem",
@@ -94,9 +98,10 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
         </div>
 
         {/* Right: User info + logout */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div style={{ textAlign: "right" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: 0 }}>
+          <div style={{ textAlign: "right", minWidth: 0 }}>
             <span
+              className="cc-nav-name"
               style={{
                 display: "block",
                 fontSize: "0.82rem",
@@ -140,11 +145,11 @@ const CCNavbar: React.FC<CCNavbarProps> = ({ user }) => {
               justifyContent: "center",
               transition: "color 200ms, box-shadow 200ms",
             }}
-            onMouseEnter={(e) => {
+            onMouseEnter={IS_TOUCH ? undefined : (e) => {
               (e.currentTarget as HTMLButtonElement).style.color = "var(--cc-danger)";
               (e.currentTarget as HTMLButtonElement).style.boxShadow = "var(--cc-neu-inset-sm)";
             }}
-            onMouseLeave={(e) => {
+            onMouseLeave={IS_TOUCH ? undefined : (e) => {
               (e.currentTarget as HTMLButtonElement).style.color = "var(--cc-text-muted)";
               (e.currentTarget as HTMLButtonElement).style.boxShadow = "var(--cc-neu-sm)";
             }}

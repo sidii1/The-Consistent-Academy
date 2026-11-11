@@ -219,7 +219,7 @@ export const Navbar = () => {
             />
             {/* Panel — extruded surface */}
             <motion.div
-              className="absolute top-24 left-4 right-4 rounded-neo-card neo-surface p-6"
+              className="absolute top-24 left-4 right-4 rounded-neo-card neo-surface p-6 max-h-[calc(100dvh-7rem)] overflow-y-auto overscroll-contain"
               initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}

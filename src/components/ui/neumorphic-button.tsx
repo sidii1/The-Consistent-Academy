@@ -52,10 +52,12 @@ export const NeumorphicButton = ({
     ),
   };
 
+  // max-sm: overrides keep long labels from clipping on phones (they may wrap
+  // onto two centred lines instead); ≥640px sizing is unchanged.
   const sizes = {
     sm: "h-9 px-6 py-2 text-sm",
-    md: "h-11 px-9 py-2.5 text-base",
-    lg: "h-12 px-12 py-3 text-lg",
+    md: "h-11 px-9 py-2.5 text-base max-sm:h-auto max-sm:min-h-11 max-sm:px-6 max-sm:leading-snug",
+    lg: "h-12 px-12 py-3 text-lg max-sm:h-auto max-sm:min-h-12 max-sm:px-7 max-sm:text-base max-sm:leading-snug",
   };
 
   return (
@@ -83,7 +85,7 @@ export const NeumorphicButton = ({
       }
       onClick={onClick}
     >
-      <span className={cn("relative z-10 flex items-center justify-center gap-2.5", variant === "primary" && "text-white")}>
+      <span className={cn("relative z-10 flex items-center justify-center gap-2.5 max-sm:text-center", variant === "primary" && "text-white")}>
         {children}
       </span>
     </motion.button>

@@ -299,9 +299,11 @@ const StyledWrapper = styled.div`
     opacity: 0.8;
   }
 
-  .button:hover .premium-icon {
-    transform: translateX(4px);
-    opacity: 1;
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover .premium-icon {
+      transform: translateX(4px);
+      opacity: 1;
+    }
   }
 
   .button:active .premium-icon {
@@ -309,26 +311,36 @@ const StyledWrapper = styled.div`
     transition: 0.1s;
   }
 
-  .button:hover {
-    animation: none;
-    transform: translateY(-2px);
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover {
+      animation: none;
+      transform: translateY(-2px);
+    }
   }
 
-  .button:hover::before {
-    animation-play-state: running;
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover::before {
+      animation-play-state: running;
+    }
   }
 
-  .button:hover .words {
-    transform: translateX(-12px); 
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover .words {
+      transform: translateX(-12px); 
+    }
   }
 
-  .button:hover .text-wrapper {
-    transform: translateY(-100%); 
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover .text-wrapper {
+      transform: translateY(-100%); 
+    }
   }
 
-  .button:hover .text svg {
-    right: 20px;
-    opacity: 1;
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover .text svg {
+      right: 20px;
+      opacity: 1;
+    }
   }
 
   .button:active {

@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { reveal } from "@/lib/device";
 import { CalendarCheck, Mic2, Users, Trophy } from "lucide-react";
 
 /**
@@ -74,10 +75,12 @@ const CCJourney: React.FC = () => (
 
     {/* Path illustration — dark line-art, so it sits on a light "paper" well */}
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
+      {...reveal({
+        initial: { opacity: 0, y: 24 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true },
+        transition: { duration: 0.6 },
+      })}
       style={{
         background: "#F1E6D8",
         borderRadius: 28,
@@ -96,10 +99,12 @@ const CCJourney: React.FC = () => (
 
     {/* Weekly offline meeting */}
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
+      {...reveal({
+        initial: { opacity: 0, y: 24 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true },
+        transition: { duration: 0.6 },
+      })}
       style={{ background: "var(--cc-surface-raised)", borderRadius: 24, padding: "28px", boxShadow: "var(--cc-neu-md)", marginBottom: 56 }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 18, flexWrap: "wrap" }}>
@@ -113,7 +118,7 @@ const CCJourney: React.FC = () => (
           </p>
         </div>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(220px, 100%), 1fr))", gap: 14 }}>
         {MEETING_PARTS.map((m) => (
           <div key={m.title} style={{ background: "var(--cc-surface-inset)", boxShadow: "var(--cc-neu-inset-sm)", borderRadius: 16, padding: "14px 16px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, color: "var(--cc-accent-bright)", fontWeight: 700, fontSize: "0.9rem" }}>
@@ -129,14 +134,16 @@ const CCJourney: React.FC = () => (
     <h3 style={{ color: "var(--cc-text)", fontSize: "1.4rem", fontWeight: 800, textAlign: "center", marginBottom: 24 }}>
       Five Levels of Development
     </h3>
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20 }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(300px, 100%), 1fr))", gap: 20 }}>
       {LEVELS.map((l, i) => (
         <motion.div
           key={l.n}
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.5, delay: (i % 3) * 0.08 }}
+          {...reveal({
+            initial: { opacity: 0, y: 24 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true, margin: "-40px" },
+            transition: { duration: 0.5, delay: (i % 3) * 0.08 },
+          })}
           style={{ background: "var(--cc-surface-raised)", borderRadius: 22, padding: "22px 22px 20px", boxShadow: "var(--cc-neu-md)", borderTop: `3px solid ${l.color}` }}
         >
           <div style={{ color: l.color, fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.16em", textTransform: "uppercase" }}>

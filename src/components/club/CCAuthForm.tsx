@@ -7,6 +7,7 @@ import { auth } from "@/lib/firebase";
 import { createCCUser, getCCUser, type CCRole } from "@/lib/ccClub";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { reveal } from "@/lib/device";
 import { Mail, Lock, User, Building2, Shield, Eye, EyeOff, Mic2 } from "lucide-react";
 
 const ROLES: CCRole[] = [
@@ -133,6 +134,7 @@ const CCAuthForm: React.FC = () => {
   return (
     <section
       id="cc-auth-section"
+      className="cc-auth-section"
       style={{
         minHeight: "100vh",
         display: "flex",
@@ -143,14 +145,17 @@ const CCAuthForm: React.FC = () => {
       }}
     >
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
+        {...reveal({
+          initial: { opacity: 0, y: 30 },
+          whileInView: { opacity: 1, y: 0 },
+          viewport: { once: true },
+          transition: { duration: 0.6 },
+        })}
         style={{ width: "100%", maxWidth: "460px" }}
       >
         {/* Card — neumorphic extruded surface */}
         <div
+          className="cc-auth-card"
           style={{
             borderRadius: "24px",
             padding: "2.5rem",

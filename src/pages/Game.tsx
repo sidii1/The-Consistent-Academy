@@ -27,7 +27,7 @@ const Game = () => (
           <AnimatedText className="text-neo-muted text-lg mb-10">
             A brand-new game from The Consistent Academy.
           </AnimatedText>
-          <NeumorphicCard className="p-10">
+          <NeumorphicCard className="p-10 max-sm:p-8">
             <div className="neo-inset rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-5">
               <Gamepad2 size={36} className="text-neo-accent" />
             </div>

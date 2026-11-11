@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { reveal } from "@/lib/device";
 import {
   ArrowRight,
   Mail,
@@ -277,10 +278,12 @@ const LlfVisual = () => {
       {llfTiles.map((t, i) => (
         <motion.div
           key={t.label}
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: i * 0.08 }}
+          {...reveal({
+            initial: { opacity: 0, y: 16 },
+            whileInView: { opacity: 1, y: 0 },
+            viewport: { once: true },
+            transition: { duration: 0.5, delay: i * 0.08 },
+          })}
           className={cn(
             "neo-surface rounded-neo-btn p-4 flex flex-col items-center justify-center text-center gap-2 min-h-[110px]",
             i === 4 && "col-span-2 md:col-span-1"
@@ -578,10 +581,12 @@ const LeadershipBentoForwardProgram = () => {
 
           {/* ——— Day 1 / Day 2 Schedule Tab Switcher ——— */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+            {...reveal({
+              initial: { opacity: 0, y: 30 },
+              whileInView: { opacity: 1, y: 0 },
+              viewport: { once: true, margin: "-50px" },
+              transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+            })}
             className="mb-10"
           >
 
@@ -649,10 +654,12 @@ const LeadershipBentoForwardProgram = () => {
 
           {/* ——— Workshop Details grid ——— */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+            {...reveal({
+              initial: { opacity: 0, y: 30 },
+              whileInView: { opacity: 1, y: 0 },
+              viewport: { once: true, margin: "-50px" },
+              transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+            })}
             className="mb-10"
           >
             <h3 className="text-neo-fg font-bold text-xl mb-5">
@@ -707,14 +714,16 @@ const LeadershipBentoForwardProgram = () => {
               {workshopDetails.map((detail, i) => (
                 <motion.div
                   key={detail.label}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{
-                    duration: 0.5,
-                    delay: i * 0.1,
-                    ease: [0.25, 0.46, 0.45, 0.94],
-                  }}
+                  {...reveal({
+                    initial: { opacity: 0, y: 20 },
+                    whileInView: { opacity: 1, y: 0 },
+                    viewport: { once: true },
+                    transition: {
+                      duration: 0.5,
+                      delay: i * 0.1,
+                      ease: [0.25, 0.46, 0.45, 0.94],
+                    },
+                  })}
                   className="neo-surface rounded-neo-btn p-4 flex items-start gap-3"
                 >
                   <div className="neo-inset rounded-full w-9 h-9 flex items-center justify-center shrink-0">
@@ -882,10 +891,12 @@ const LeadershipBentoForwardProgram = () => {
                 {passionProjectLevels.map((level, index) => (
                   <motion.div
                     key={level.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ duration: 0.6, delay: (index % 2) * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    {...reveal({
+                      initial: { opacity: 0, y: 30 },
+                      whileInView: { opacity: 1, y: 0 },
+                      viewport: { once: true, margin: "-50px" },
+                      transition: { duration: 0.6, delay: (index % 2) * 0.1, ease: [0.25, 0.46, 0.45, 0.94] },
+                    })}
                     className="neo-surface rounded-neo-card p-6 relative overflow-hidden"
                   >
                     <div
@@ -991,10 +1002,12 @@ const LeadershipBentoForwardProgram = () => {
                 return (
                   <motion.div
                     key={pkg.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ duration: 0.6, delay: i * 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    {...reveal({
+                      initial: { opacity: 0, y: 30 },
+                      whileInView: { opacity: 1, y: 0 },
+                      viewport: { once: true, margin: "-50px" },
+                      transition: { duration: 0.6, delay: i * 0.1, ease: [0.25, 0.46, 0.45, 0.94] },
+                    })}
                     className={cn(
                       "rounded-neo-card p-6 flex flex-col relative",
                       featured ? "neo-surface shadow-neo-lifted ring-2 ring-neo-accent/30" : "neo-surface"

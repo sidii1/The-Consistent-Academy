@@ -223,6 +223,7 @@ const CCTrainerDashboard: React.FC<CCTrainerDashboardProps> = ({ user }) => {
 
   return (
     <div
+      className="cc-dashboard-root"
       style={{
         maxWidth: "1100px",
         margin: "0 auto",
@@ -676,7 +677,7 @@ const CCTrainerDashboard: React.FC<CCTrainerDashboardProps> = ({ user }) => {
         <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--cc-text)", marginBottom: "1rem", display: "flex", alignItems: "center", gap: "8px" }}>
           <BarChart3 size={16} color="hsl(160 60% 50%)" /> Class Analytics
         </h3>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))", gap: "12px" }}>
           {/* Average Score */}
           <div
             style={{

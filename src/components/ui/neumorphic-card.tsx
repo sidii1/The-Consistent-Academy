@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
+import { reveal } from "@/lib/device";
 
 /**
  * NeumorphicCard — Custom animated card primitive (Phase 2)
@@ -36,8 +37,8 @@ export const NeumorphicCard = ({
   return (
     <motion.div
       className={cn(
-        // Shape
-        "rounded-neo-card p-8",
+        // Shape (slimmer padding on phones; ≥640px unchanged)
+        "rounded-neo-card p-8 max-sm:p-5",
         // Transitions
         "transition-shadow transition-transform duration-300 ease-out",
         // Surface state: extruded or inset
@@ -50,14 +51,16 @@ export const NeumorphicCard = ({
       )}
       onClick={onClick}
       // Entrance animation
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{
-        duration: 0.6,
-        delay,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      }}
+      {...reveal({
+        initial: { opacity: 0, y: 30 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, margin: "-50px" },
+        transition: {
+          duration: 0.6,
+          delay,
+          ease: [0.25, 0.46, 0.45, 0.94],
+        },
+      })}
     >
       {children}
     </motion.div>

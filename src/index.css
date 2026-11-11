@@ -250,16 +250,18 @@
      INTERACTIVE STATES - Hover, Active, Focus
      ───────────────────────────────────────────────────── */
   
-  /* Hover - Elevate slightly */
-  .neu-hover-lift:hover {
-    box-shadow: var(--neu-shadow-lg);
-    transform: translateY(-2px);
-  }
+  /* Hover - Elevate slightly (pointer devices only; no sticky hover on touch) */
+  @media (hover: hover) and (pointer: fine) {
+    .neu-hover-lift:hover {
+      box-shadow: var(--neu-shadow-lg);
+      transform: translateY(-2px);
+    }
 
-  .neu-hover-glow:hover {
-    box-shadow: 
-      var(--neu-shadow-lg),
-      var(--glow-purple);
+    .neu-hover-glow:hover {
+      box-shadow: 
+        var(--neu-shadow-lg),
+        var(--glow-purple);
+    }
   }
 
   /* Active/Click - Inset */
@@ -718,6 +720,35 @@
   text-decoration: line-through;
 }
 
+/* Phones: scale rich-text headings down and let wide tables / embeds scroll
+   horizontally instead of jamming cells together or overflowing the card. */
+@media (max-width: 639px) {
+  .blog-content h1 { font-size: 1.6rem; }
+  .blog-content h2 { font-size: 1.3rem; }
+  .blog-content h3 { font-size: 1.125rem; }
+  .blog-content img,
+  .blog-content video,
+  .blog-content iframe {
+    max-width: 100%;
+    height: auto;
+  }
+  .blog-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin: 1em 0;
+    font-size: 0.875rem;
+  }
+  .blog-content th,
+  .blog-content td {
+    padding: 0.5em 0.75em;
+    border: 1px solid hsl(var(--border));
+    vertical-align: top;
+    min-width: 7rem;
+  }
+}
+
 
 /* ═══════════════════════════════════════════════════════════
    🌙 CC CLUB — DARK NEUMORPHIC DESIGN SYSTEM v2
@@ -922,9 +953,11 @@
   box-shadow: var(--cc-neu-sm), var(--cc-glow-purple-sm);
 }
 
-.cc-club-scope .cc-btn-primary:hover {
-  box-shadow: var(--cc-neu-lg), var(--cc-glow-btn-hover);
-  transform: translateY(-2px);
+@media (hover: hover) and (pointer: fine) {
+  .cc-club-scope .cc-btn-primary:hover {
+    box-shadow: var(--cc-neu-lg), var(--cc-glow-btn-hover);
+    transform: translateY(-2px);
+  }
 }
 
 .cc-club-scope .cc-btn-primary:active {
@@ -952,10 +985,12 @@
     color      200ms ease;
 }
 
-.cc-club-scope .cc-btn-ghost:hover {
-  box-shadow: var(--cc-neu-md), var(--cc-glow-purple-sm);
-  transform: translateY(-1px);
-  color: var(--cc-accent-vivid);
+@media (hover: hover) and (pointer: fine) {
+  .cc-club-scope .cc-btn-ghost:hover {
+    box-shadow: var(--cc-neu-md), var(--cc-glow-purple-sm);
+    transform: translateY(-1px);
+    color: var(--cc-accent-vivid);
+  }
 }
 
 .cc-club-scope .cc-btn-ghost:active {
@@ -984,10 +1019,12 @@
   letter-spacing: 0.02em;
 }
 
-.cc-club-scope .cc-btn-back:hover {
-  box-shadow: var(--cc-neu-sm);
-  transform: translateY(-1px);
-  color: var(--cc-accent-bright);
+@media (hover: hover) and (pointer: fine) {
+  .cc-club-scope .cc-btn-back:hover {
+    box-shadow: var(--cc-neu-sm);
+    transform: translateY(-1px);
+    color: var(--cc-accent-bright);
+  }
 }
 
 /* ─────────────────────────────────────
@@ -1141,6 +1178,17 @@
   .cc-gamification-panel {
     display: none !important;
   }
+  /* Panel is hidden here, so release the 160px right gutter reserved for it */
+  .cc-dashboard-root {
+    padding: 2rem 1.5rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .cc-dashboard-root {
+    padding: 1.25rem 1rem 2rem !important;
+    gap: 1.25rem !important;
+  }
 }
 
 /* On tablets, give the dashboard some extra body padding 
@@ -1151,8 +1199,36 @@
   }
 }
 
+@media (max-width: 420px) {
+  .cc-nav-sub {
+    display: none !important;
+  }
+}
+
 /* Tighten CC Club hero padding on mobile */
 @media (max-width: 640px) {
+  /* Auth block: drop the full-viewport min-height that left large empty bands */
+  .cc-auth-section {
+    min-height: 0 !important;
+    padding: 2.5rem 1rem 3.5rem !important;
+  }
+  .cc-auth-card {
+    padding: 1.75rem 1.25rem !important;
+  }
+  /* Dashboard navbar: fit back button, logo, name and logout on one row */
+  .cc-nav-inner {
+    padding: 0 1rem !important;
+    gap: 10px;
+  }
+  .cc-nav-left {
+    gap: 10px !important;
+  }
+  .cc-nav-name {
+    max-width: 38vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .cc-hero-stats {
     flex-direction: column !important;
     gap: 12px !important;
@@ -1161,5 +1237,54 @@
     flex-direction: column !important;
     align-items: center !important;
     gap: 12px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   📱 MOBILE / TOUCH — performance & UX refinements
+   Only applies to touch devices and phone-sized viewports;
+   desktop rendering is untouched.
+   ═══════════════════════════════════════════════════════════ */
+
+@layer components {
+  /* Phones: the default 2rem container gutter wastes ~16% of the width.
+     Kept in the components layer so explicit px-* utilities still win. */
+  @media (max-width: 639px) {
+    .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+    /* A container nested inside another (e.g. SectionWrapper > page container)
+       would double the gutter; the outer one already provides it. */
+    .container .container {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+}
+
+@media (hover: none), (pointer: coarse), (max-width: 767px) {
+  /* Continuous decorative background loops are expensive on phones
+     (they repaint large blurred layers every frame). Freeze them. */
+  .animate-float,
+  .animate-float-slow,
+  .animate-pulse-glow,
+  .animate-blob,
+  .cc-animate-shimmer,
+  .cc-animate-shimmer-amber {
+    animation: none !important;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  /* Remove the grey tap flash on Android; elements have their own :active states. */
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }

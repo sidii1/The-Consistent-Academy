@@ -143,7 +143,7 @@ const BlogPost: React.FC = () => {
       image={blog.coverImageUrl}
     />
     <Navbar />
-    <main className="min-h-screen pt-24 px-6 bg-gradient-to-br from-background to-secondary/30">
+    <main className="min-h-screen pt-24 px-6 max-sm:px-4 max-sm:pb-12 bg-gradient-to-br from-background to-secondary/30">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -157,12 +157,12 @@ const BlogPost: React.FC = () => {
           Back to Blog
         </Link>
 
-        <article className="bg-card p-8 md:p-12 rounded-3xl shadow-neu-xl">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+        <article className="bg-card p-8 md:p-12 max-sm:px-5 max-sm:py-6 rounded-3xl shadow-neu-xl">
+          <h1 className="text-3xl md:text-4xl max-sm:text-[1.65rem] max-sm:leading-tight font-bold text-foreground mb-4">
             {blog.title}
           </h1>
 
-          <div className="flex items-center gap-6 text-sm text-muted-foreground mb-8 border-b border-border pb-6">
+          <div className="flex flex-wrap items-center gap-6 max-sm:gap-x-5 max-sm:gap-y-2 text-sm text-muted-foreground mb-8 max-sm:mb-6 border-b border-border pb-6">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
               {blog.author}

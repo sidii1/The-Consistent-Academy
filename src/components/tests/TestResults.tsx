@@ -92,7 +92,7 @@ const TestResults = ({
           className="max-w-4xl mx-auto px-4"
         >
           <NeumorphicCard>
-            <div className="p-6 md:p-8">
+            <div className="p-6 md:p-8 max-sm:p-1">
               {/* Header */}
               <div className="text-center mb-6">
                 <motion.div
@@ -339,7 +339,7 @@ const TestResults = ({
 
         <div className="max-w-5xl mx-auto">
           <NeumorphicCard className="w-full">
-            <div className="p-6 md:p-4 text-center">
+            <div className="p-6 md:p-4 max-sm:p-1 text-center">
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}

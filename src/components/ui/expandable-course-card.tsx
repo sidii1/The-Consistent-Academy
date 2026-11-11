@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { Clock, BookOpen, X, ArrowRight, Users, Target, Star, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LITE_MOTION } from "@/lib/device";
 import { Link } from "react-router-dom";
 
 interface CourseModule {
@@ -346,7 +347,8 @@ export default function ExpandableCourseCard({ courses }: ExpandableCourseCardPr
       {/* Course Cards Grid */}
       <motion.div
         variants={containerVariants}
-        initial="hidden"
+        // Mobile: render the (long, single-column) grid immediately instead of staggering in.
+        initial={LITE_MOTION ? false : "hidden"}
         whileInView="show"
         viewport={{ once: true, margin: "-50px" }}
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full"

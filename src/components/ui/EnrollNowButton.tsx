@@ -299,43 +299,59 @@ const StyledWrapper = styled.div`
 
   /** STATES */
 
-  .button:hover .words {
-    opacity: 1;
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover .words {
+      opacity: 1;
+    }
   }
-  .button:hover .words span {
-    animation-play-state: running;
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover .words span {
+      animation-play-state: running;
+    }
   }
 
-  .button:hover .char.state-1 span::before {
-    animation: charAppear 0.7s ease calc(var(--i) * 0.03s);
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover .char.state-1 span::before {
+      animation: charAppear 0.7s ease calc(var(--i) * 0.03s);
+    }
   }
 
-  .button:hover .char.state-1 span::after {
-    opacity: 1;
-    animation: charDisappear 0.7s ease calc(var(--i) * 0.03s);
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover .char.state-1 span::after {
+      opacity: 1;
+      animation: charDisappear 0.7s ease calc(var(--i) * 0.03s);
+    }
   }
 
   /* Smooth hover translation profile */
-  .button:hover .wrap {
-    transform: translate(2px, -2px);
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover .wrap {
+      transform: translate(2px, -2px);
+    }
   }
   
   /* Elevate neumorphic shadow state slightly on hover */
-  .button:hover .bg::before {
-    box-shadow:
-      9px 9px 20px 0px rgba(45, 15, 66, 0.85), 
-      -9px -9px 20px 0px rgba(239, 182, 255, 0.35);
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover .bg::before {
+      box-shadow:
+        9px 9px 20px 0px rgba(45, 15, 66, 0.85), 
+        -9px -9px 20px 0px rgba(239, 182, 255, 0.35);
+    }
   }
 
-  .button:hover .outline {
-    opacity: 1;
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover .outline {
+      opacity: 1;
+    }
   }
 
-  .button:hover .outline::before,
-  .button:hover .icon div::before,
-  .button:hover .icon div::after,
-  .button:hover .icon div {
-    animation-play-state: running;
+  @media (hover: hover) and (pointer: fine) {
+    .button:hover .outline::before,
+    .button:hover .icon div::before,
+    .button:hover .icon div::after,
+    .button:hover .icon div {
+      animation-play-state: running;
+    }
   }
 
   /* Compress the shadow depth on active press to look responsive */

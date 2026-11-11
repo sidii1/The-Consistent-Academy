@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { reveal } from "@/lib/device";
 import { Send, Mail, Phone, MapPin } from "lucide-react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
@@ -157,15 +158,17 @@ const Contact = () => {
       </section>
 
       {/* Contact Form & Info */}
-      <SectionWrapper className="pt-0 -mt-16">
+      <SectionWrapper className="pt-0 -mt-16 max-sm:mt-0">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Form */}
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              {...reveal({
+                initial: { opacity: 0, x: -50 },
+                whileInView: { opacity: 1, x: 0 },
+                viewport: { once: true },
+                transition: { duration: 0.6 },
+              }, "none")}
             >
               <NeumorphicCard className="p-8" hover={false}>
                 <h2 className="text-2xl font-bold text-foreground mb-6">
@@ -286,18 +289,20 @@ const Contact = () => {
 
             {/* Contact Info */}
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              {...reveal({
+                initial: { opacity: 0, x: 50 },
+                whileInView: { opacity: 1, x: 0 },
+                viewport: { once: true },
+                transition: { duration: 0.6 },
+              })}
               className="space-y-6"
             >
               {contactInfo.map((info, index) => (
                 <NeumorphicCard key={index} className="flex gap-4 p-5">
-                  <info.icon className="w-5 h-5 text-primary" />
-                  <div>
+                  <info.icon className="w-5 h-5 text-primary shrink-0" />
+                  <div className="min-w-0">
                     <p className="text-sm text-muted-foreground">{info.label}</p>
-                    <p className="font-medium">{info.value}</p>
+                    <p className="font-medium [overflow-wrap:anywhere]">{info.value}</p>
                   </div>
                 </NeumorphicCard>
               ))}

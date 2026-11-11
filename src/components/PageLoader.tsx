@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { LITE_MOTION } from "@/lib/device";
 
 interface PageLoaderProps {
   onComplete: () => void;
@@ -37,6 +38,9 @@ export const PageLoader = ({ onComplete }: PageLoaderProps) => {
         opacity: 1,
       }
     );
+
+    // Same choreography, played faster on phones so content appears sooner.
+    if (LITE_MOTION) tl.timeScale(1.6);
 
     // Ensure the logo remains hidden during the initial geometric phases
     tl.set(logoRef.current, { opacity: 0, scale: 1 });

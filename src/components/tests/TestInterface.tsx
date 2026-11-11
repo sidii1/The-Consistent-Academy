@@ -252,7 +252,7 @@ const TestInterface = ({
               transition={{ duration: 0.3 }}
             >
               <NeumorphicCard className="mb-4 ">
-                <div className="p-5">
+                <div className="p-5 max-sm:p-1">
                   {currentQuestion.section && (
                     <div className="mb-4">
                       <div className="inline-block px-3 py-1 rounded-lg shadow-neu-inset bg-gradient-to-br from-primary/10 to-accent/10">

@@ -197,7 +197,7 @@ const Tests = () => {
                 </div>
 
                 <NeumorphicCard>
-                  <div className="p-6 space-y-5">
+                  <div className="p-6 max-sm:p-1 space-y-5">
 
                     {/* Registration-only fields — animated */}
                     <AnimatePresence>
@@ -365,7 +365,7 @@ const Tests = () => {
                   {/* Kids Test */}
                   <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
                     <NeumorphicCard className="h-full hover:shadow-neu-xl transition-all duration-300">
-                      <div className="p-8 h-full flex flex-col">
+                      <div className="p-8 max-sm:p-2 h-full flex flex-col">
                         <div className="flex items-center gap-4 mb-6">
                           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center shadow-neu-lg">
                             <Baby className="w-8 h-8 text-white" />
@@ -393,7 +393,7 @@ const Tests = () => {
                   {/* Adults Test */}
                   <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
                     <NeumorphicCard className="h-full hover:shadow-neu-xl transition-all duration-300">
-                      <div className="p-8 h-full flex flex-col">
+                      <div className="p-8 max-sm:p-2 h-full flex flex-col">
                         <div className="flex items-center gap-4 mb-6">
                           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-neu-lg">
                             <GraduationCap className="w-8 h-8 text-white" />
@@ -421,7 +421,7 @@ const Tests = () => {
                   {/* Leadership Test */}
                   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
                     <NeumorphicCard className="h-full hover:shadow-neu-xl transition-all duration-300">
-                      <div className="p-8 h-full flex flex-col">
+                      <div className="p-8 max-sm:p-2 h-full flex flex-col">
                         <div className="flex items-center gap-4 mb-6">
                           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-neu-lg">
                             <Award className="w-8 h-8 text-white" />

@@ -29,6 +29,7 @@ import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { AnimatedHeading, AnimatedText } from "@/components/ui/animated-text";
 import { SEO } from "@/components/SEO";
+import { IS_TOUCH, reveal } from "@/lib/device";
 
 /* ─────────────────────────── TYPES ─────────────────────────── */
 
@@ -513,6 +514,12 @@ const RegistrationForm = ({
           >
             Payment coming soon — register your interest now
           </div>
+          {/* Touch screens can't hover the tooltip above — show the hint inline. */}
+          {IS_TOUCH && (
+            <p className="mt-2 text-center text-xs text-neo-muted">
+              Payment coming soon — register your interest now
+            </p>
+          )}
         </div>
       </div>
     </form>
@@ -697,14 +704,16 @@ const WebinarCard = ({
           transition-shadow duration-300
           ${isSelected ? "neo-inset" : "neo-surface hover:shadow-neo-lifted"}
         `}
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{
-          duration: 0.6,
-          delay: index * 0.1,
-          ease: [0.25, 0.46, 0.45, 0.94],
-        }}
+        {...reveal({
+          initial: { opacity: 0, y: 30 },
+          whileInView: { opacity: 1, y: 0 },
+          viewport: { once: true, margin: "-50px" },
+          transition: {
+            duration: 0.6,
+            delay: index * 0.1,
+            ease: [0.25, 0.46, 0.45, 0.94],
+          },
+        })}
         onClick={onSelect}
       >
         {/* Accent strip — gradient top bar */}

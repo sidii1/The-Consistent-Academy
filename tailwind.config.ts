@@ -235,5 +235,11 @@ export default {
       },
     },
   },
+  // `hover:` / `group-hover:` only apply on devices with a real hover-capable
+  // pointer, so touch screens don't get "sticky" hover states after a tap.
+  // Desktop behaviour is unchanged.
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;

@@ -1,7 +1,8 @@
-import { ReactNode } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Linkedin } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { IS_TOUCH, reveal } from "@/lib/device";
 
 /**
  * TeamMemberCard
@@ -112,14 +113,16 @@ const AdvisoryCard = ({
         "flex flex-col md:flex-row",
         isAlternate && "md:flex-row-reverse",
       )}
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.7, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+      {...reveal({
+        initial: { opacity: 0, y: 40 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, margin: "-60px" },
+        transition: { duration: 0.7, delay, ease: [0.25, 0.46, 0.45, 0.94] },
+      })}
       aria-label={`Team member: ${member.name}`}
     >
       {/* ── Portrait column ── */}
-      <div className="relative flex-shrink-0 md:w-72 flex items-center justify-center p-8 pb-4 md:pb-8">
+      <div className="relative flex-shrink-0 md:w-72 flex items-center justify-center p-6 pb-12 sm:p-8 sm:pb-12 md:pb-8">
         {/* Violet gradient ring effect around portrait */}
         <div
           className="relative"
@@ -188,7 +191,7 @@ const AdvisoryCard = ({
       </div>
 
       {/* ── Content column ── */}
-      <div className="relative flex-1 flex flex-col justify-center p-8 pl-6 md:pl-10 overflow-hidden">
+      <div className="relative flex-1 flex flex-col justify-center p-6 pt-4 sm:p-8 pl-6 md:pl-10 overflow-hidden">
         {/* Large decorative quote mark in background */}
         <QuoteDecoration className="text-neo-accent top-0 -left-4 w-32 h-24 opacity-80" />
 
@@ -209,7 +212,7 @@ const AdvisoryCard = ({
           )}
         />
 
-        <div className={cn("relative z-10", isAlternate ? "pr-10" : "pl-10")}>
+        <div className={cn("relative z-10", isAlternate ? "pr-6 sm:pr-10" : "pl-6 sm:pl-10")}>
           {/* Name */}
           <h3 className="text-xl md:text-2xl font-bold text-neo-fg mb-1 leading-tight">
             {member.name}
@@ -242,15 +245,27 @@ const FlipCard = ({
   footerLabel?: string;
 }) => {
   const delay = 0.1 + index * 0.12;
+  // Touch devices can't hover — let a tap toggle the flip instead.
+  const [flipped, setFlipped] = useState(false);
 
   return (
     <motion.div
       className="relative h-96 w-full max-w-[260px] mx-auto"
       style={{ perspective: "1000px" }}
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+      {...reveal({
+        initial: { opacity: 0, y: 50 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, margin: "-50px" },
+        transition: { duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] },
+      })}
+      onClick={
+        IS_TOUCH
+          ? (e) => {
+              if ((e.target as HTMLElement).closest("a")) return;
+              setFlipped((f) => !f);
+            }
+          : undefined
+      }
       aria-label={`Team member: ${member.name}`}
     >
       {/*
@@ -278,6 +293,7 @@ const FlipCard = ({
             "[backface-visibility:hidden]",
             // On group hover → rotate card to show back
             "group-hover:[transform:rotateY(180deg)]",
+            flipped && "[transform:rotateY(180deg)]",
             "transition-transform duration-700 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)]",
           )}
         >
@@ -337,7 +353,7 @@ const FlipCard = ({
 
           {/* Flip hint */}
           <div className="absolute bottom-3 right-4 text-[0.6rem] text-neo-muted opacity-60 select-none">
-            hover to learn more →
+            {IS_TOUCH ? "tap to learn more →" : "hover to learn more →"}
           </div>
         </div>
 
@@ -347,7 +363,7 @@ const FlipCard = ({
             "absolute inset-0 rounded-neo-card overflow-hidden",
             "bg-neo-base shadow-neo-lifted",
             // Back face starts rotated 180° (invisible), flips to visible on hover
-            "[transform:rotateY(180deg)]",
+            flipped ? "[transform:rotateY(360deg)]" : "[transform:rotateY(180deg)]",
             "[backface-visibility:hidden]",
             "group-hover:[transform:rotateY(360deg)]",
             "transition-transform duration-700 [transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)]",
