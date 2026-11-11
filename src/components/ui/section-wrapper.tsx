@@ -25,7 +25,7 @@ export const SectionWrapper = ({
     <motion.section
       id={id}
       className={cn(
-        "py-16 md:py-14 relative overflow-hidden",
+        "py-16 md:py-14 relative overflow-visible",
         variants[variant],
         className
       )}

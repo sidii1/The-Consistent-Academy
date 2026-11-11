@@ -6,45 +6,45 @@ import { TeamMemberCard, TeamMember } from "./TeamMemberCard";
 const eleTeamMembers: TeamMember[] = [
   {
     id: "ele1",
-    name: "Ms. Kavita Joshi",
+    name: "Aparna Jadhav",
     designation: "Experiential Learning Expert",
     role: "Leadership Facilitation & Group Dynamics",
     description:
-      "Kavita designs immersive learning experiences that bridge classroom concepts with real-world application, specialising in group dynamics, leadership presence, and interpersonal communication.",
-    photo: "/team/experiential-learning-experts/placeholder-1.jpg",
+      "Hi, I’m Aparna! I’m 100% powered by chai, coffee, and big ambitions. My height may be compact think cute, portable, and ridiculously adjustable but my mind and creative ideas are huge. I thrive when I’m managing events, hosting shows on stage, and putting my wildest ideas out there for the world to see. I’m built for the high-energy world of marketing, where my creativity gets to run the show. Dynamite really does come in small packages, and I’m ready to prove it! ",
+    photo: "/team/experiential-learning-experts/Aparna Jadhav.png",
     expertiseLink: null,
     isSample: true,
   },
   {
     id: "ele2",
-    name: "Mr. Aditya Kulkarni",
+    name: "Ishani Soundankar",
     designation: "Experiential Learning Expert",
     role: "Project-Based Learning & Innovation",
     description:
-      "Aditya brings a passion for project-based learning, helping students develop creative solutions to real-world challenges through structured experiential frameworks and interactive prototyping.",
-    photo: "/team/experiential-learning-experts/placeholder-2.jpg",
+      "I’m a curious soul with big dreams, a creative streak, and about 20 tabs open in my brain at all times! I love dancing, getting lost in art and craft, playing indoor and outdoor games, traveling, and watching movies that make me laugh, think, or leave me emotional. My passion? Creating, expressing, exploring, and turning random ideas into something real. I love discovering new places, meeting interesting people, and saying yes to experiences that help me grow. I’m basically a mix of an artist, an explorer, a dreamer, a achiever and someone who wants to try a little bit of everything! ",
+    photo: "/team/experiential-learning-experts/Ishani Soundankar.jpg",
     expertiseLink: null,
     isSample: true,
   },
   {
     id: "ele3",
-    name: "Ms. Tanvi Desai",
+    name: "Nidhi Pillia",
     designation: "Experiential Learning Expert",
     role: "Communication Workshops & Reflective Practice",
     description:
-      "Tanvi facilitates communication-centred workshops that employ storytelling, roleplay, and structured reflective journalling to help participants internalise learning at a deeper psychological level.",
-    photo: "/team/experiential-learning-experts/placeholder-3.jpg",
+      "Part engineer, part artist, and part person who will absolutely turn a random thought into a 5-minute speech. I’m into music, painting, crocheting, a little debate, and collecting experiences that make good stories later. From winning karate medals to surviving the chaos of college events, I like keeping life interesting. I love trying new things, exploring new places, and saying yes to adventures (after overthinking them for at least 20 minutes). Basically, I’m a curious human with too many hobbies and not enough hours!",
+    photo: "/team/experiential-learning-experts/NIDHI PILLIA.jpg",
     expertiseLink: null,
     isSample: true,
   },
   {
     id: "ele4",
-    name: "Mr. Nikhil Patil",
+    name: "Sakshi Masalkar",
     designation: "Experiential Learning Expert",
     role: "Outdoor & Action Learning",
     description:
-      "Nikhil specialises in action-learning methodologies and immersive team simulations, creating high-energy, collaborative environments that unlock team potential and self-confidence.",
-    photo: "/team/experiential-learning-experts/placeholder-4.jpg",
+      "I'm a happy-go-lucky, cheerful, sweet, and extroverted person. I love travelling and exploring new places. I've travelled to Rajasthan, Bangalore, Mysore, and explored various beautiful forts across Maharashtra.Apart from travelling, I love canvas painting. I'm also passionate about art, creativity, and handmade crafts. I enjoy making artistic things with my own hands and trying something new whenever I get the opportunity.I believe in enjoying little moments, exploring new experiences, and keeping my creative side alive.",
+    photo: "",
     expertiseLink: null,
     isSample: true,
   },
@@ -54,9 +54,9 @@ export const ExperientialLearningExperts = () => {
   return (
     <div className="mt-24 relative">
       {/* Background decorative glow */}
-      <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 -left-20 w-72 h-72 bg-accent/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 -right-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+      <div className="absolute inset-0 -z-10 overflow-visible pointer-events-none">
+        <div className="absolute top-1/2 -left-20 w-72 h-72 bg-accent/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 -right-20 w-80 h-80 bg-primary/10 rounded-full blur-3xl" />
       </div>
 
       {/* Section Header */}
@@ -84,14 +84,15 @@ export const ExperientialLearningExperts = () => {
         </motion.div>
       </div>
 
-      {/* Grid of 3D Flip Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+      {/* Members Grid (Magazine Spread Layout) */}
+      <div className="space-y-8 max-w-5xl mx-auto">
         {eleTeamMembers.map((member, index) => (
           <TeamMemberCard
             key={member.id}
             member={member}
-            variant="ele"
+            variant="spread"
             index={index}
+            isAlternate={index % 2 === 1}
           />
         ))}
       </div>

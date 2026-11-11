@@ -81,15 +81,15 @@ export const AdvisoryBoard = () => {
         </motion.div>
       </div>
 
-      {/* Members Grid (Magazine Spread Layout) */}
-      <div className="space-y-8 max-w-5xl mx-auto">
+      {/* Grid of 3D Flip Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
         {advisoryBoardMembers.map((member, index) => (
           <TeamMemberCard
             key={member.id}
             member={member}
-            variant="advisory"
+            variant="flip"
             index={index}
-            isAlternate={index % 2 === 1}
+            footerLabel="Advisory Board"
           />
         ))}
       </div>

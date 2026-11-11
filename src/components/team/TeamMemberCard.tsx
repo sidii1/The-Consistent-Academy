@@ -7,9 +7,9 @@ import { cn } from "@/lib/utils";
  * TeamMemberCard
  *
  * A versatile card component that renders in two distinct visual modes:
- *   - "advisory": Magazine-spread layout with alternating portrait left/right,
+ *   - "spread":   Magazine-spread layout with alternating portrait left/right,
  *                 deep neumorphic shadow, SVG quote decoration, and LinkedIn badge.
- *   - "ele":      Tall trading-card with CSS 3-D flip on hover — front shows photo
+ *   - "flip":     Tall trading-card with CSS 3-D flip on hover — front shows photo
  *                 and name; back reveals the full bio description.
  *
  * Design Rules (from DESIGN.md):
@@ -36,11 +36,13 @@ export interface TeamMember {
 
 interface TeamMemberCardProps {
   member: TeamMember;
-  variant: "advisory" | "ele";
+  variant: "spread" | "flip";
   /** Zero-based index used for stagger animation delay */
   index: number;
-  /** Advisory-only: flip the portrait to the right side */
+  /** Spread-only: flip the portrait to the right side */
   isAlternate?: boolean;
+  /** Flip-only: small label shown in the footer of the card back */
+  footerLabel?: string;
 }
 
 /* ─────────────────────────── helpers ─────────────────────────── */
@@ -84,7 +86,7 @@ const WaveDecoration = ({ className }: { className?: string }) => (
   </svg>
 );
 
-/* ─────────────────── Advisory card (magazine-spread) ─────────────────── */
+/* ─────────────────── ELE card (magazine-spread) ─────────────────── */
 
 const AdvisoryCard = ({
   member,
@@ -114,7 +116,7 @@ const AdvisoryCard = ({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.7, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
-      aria-label={`Advisory board member: ${member.name}`}
+      aria-label={`Team member: ${member.name}`}
     >
       {/* ── Portrait column ── */}
       <div className="relative flex-shrink-0 md:w-72 flex items-center justify-center p-8 pb-4 md:pb-8">
@@ -135,12 +137,18 @@ const AdvisoryCard = ({
                 "12px 12px 20px rgba(163,177,198,0.7), -12px -12px 20px rgba(255,255,255,0.6), 0 0 0 4px rgba(156,55,252,0.18), 0 0 0 8px rgba(156,55,252,0.08)",
             }}
           >
-            <img
-              src={member.photo}
-              alt={member.name}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
+            {member.photo ? (
+              <img
+                src={member.photo}
+                alt={member.name}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-neo-accent">
+                {member.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}
+              </div>
+            )}
           </div>
 
           {/* LinkedIn badge — floated top-right of the portrait */}
@@ -164,7 +172,7 @@ const AdvisoryCard = ({
         </div>
 
         {/* Expertise chip — below portrait */}
-        {member.expertise && (
+        {(member.expertise ?? member.role) && (
           <div className="absolute bottom-4 inset-x-0 flex justify-center px-4">
             <span
               className={cn(
@@ -173,7 +181,7 @@ const AdvisoryCard = ({
                 "tracking-wide",
               )}
             >
-              {member.expertise}
+              {member.expertise ?? member.role}
             </span>
           </div>
         )}
@@ -214,7 +222,7 @@ const AdvisoryCard = ({
 
           {/* Bio */}
           <p className="text-neo-muted leading-relaxed text-sm md:text-base">
-            {member.bio}
+            {member.bio ?? member.description}
           </p>
         </div>
       </div>
@@ -222,14 +230,16 @@ const AdvisoryCard = ({
   );
 };
 
-/* ─────────────────── ELE trading-card (flip effect) ─────────────────── */
+/* ─────────────────── Advisory board trading-card (flip effect) ─────────────────── */
 
-const EleCard = ({
+const FlipCard = ({
   member,
   index,
+  footerLabel,
 }: {
   member: TeamMember;
   index: number;
+  footerLabel?: string;
 }) => {
   const delay = 0.1 + index * 0.12;
 
@@ -241,7 +251,7 @@ const EleCard = ({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
-      aria-label={`ELE team member: ${member.name}`}
+      aria-label={`Team member: ${member.name}`}
     >
       {/*
        * Inner flip wrapper — CSS 3-D transform-style: preserve-3d.
@@ -281,12 +291,18 @@ const EleCard = ({
 
           {/* Portrait — fills top 60% */}
           <div className="relative h-[60%] overflow-hidden bg-neo-base shadow-neo-inset-sm">
-            <img
-              src={member.photo}
-              alt={member.name}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
+            {member.photo ? (
+              <img
+                src={member.photo}
+                alt={member.name}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-5xl font-bold text-neo-accent">
+                {member.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}
+              </div>
+            )}
             {/* Subtle gradient overlay at bottom of portrait */}
             <div
               className="absolute bottom-0 inset-x-0 h-10"
@@ -306,7 +322,7 @@ const EleCard = ({
             </p>
 
             {/* Role chip */}
-            {member.role && (
+            {(member.role ?? member.expertise) && (
               <span
                 className={cn(
                   "inline-block text-[0.65rem] font-medium px-2.5 py-1",
@@ -314,7 +330,7 @@ const EleCard = ({
                   "text-neo-muted tracking-wide leading-none",
                 )}
               >
-                {member.role}
+                {member.role ?? member.expertise}
               </span>
             )}
           </div>
@@ -352,13 +368,13 @@ const EleCard = ({
               {/* Name on back */}
               <h3 className="font-bold text-neo-fg text-base mb-0.5">{member.name}</h3>
               <p className="text-xs text-neo-accent font-semibold tracking-wide mb-4">
-                {member.role}
+                {member.role ?? member.expertise}
               </p>
 
               {/* Inset bio area — carved into the surface */}
               <div className="bg-neo-base shadow-neo-inset-sm rounded-neo-inner p-3">
                 <p className="text-neo-muted text-xs leading-relaxed">
-                  {member.description}
+                  {member.description ?? member.bio}
                 </p>
               </div>
             </div>
@@ -371,7 +387,7 @@ const EleCard = ({
                   "text-neo-accent-light",
                 )}
               >
-                ELE Expert
+                {footerLabel}
               </span>
               {member.expertiseLink && (
                 <a
@@ -394,7 +410,7 @@ const EleCard = ({
 /* ─────────────────────────── main export ─────────────────────────── */
 
 /**
- * TeamMemberCard — renders either an advisory magazine-spread card or an ELE flip-card
+ * TeamMemberCard — renders either a magazine-spread card or a flip-card
  * depending on the `variant` prop.
  */
 export const TeamMemberCard = ({
@@ -402,13 +418,14 @@ export const TeamMemberCard = ({
   variant,
   index,
   isAlternate = false,
+  footerLabel,
 }: TeamMemberCardProps) => {
-  if (variant === "advisory") {
+  if (variant === "spread") {
     return (
       <AdvisoryCard member={member} index={index} isAlternate={isAlternate} />
     );
   }
-  return <EleCard member={member} index={index} />;
+  return <FlipCard member={member} index={index} footerLabel={footerLabel} />;
 };
 
 export default TeamMemberCard;

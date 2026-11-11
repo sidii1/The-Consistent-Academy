@@ -353,15 +353,15 @@ const LeadershipBentoForwardProgram = () => {
           {/* Ambient blobs */}
           <div
             aria-hidden
-            className="pointer-events-none absolute -top-32 -left-32 w-[480px] h-[480px] rounded-full bg-primary/10 blur-3xl"
+            className="pointer-events-none absolute -top-3 -left-32 w-[480px] h-[480px] rounded-full bg-primary/10 blur-3xl"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute top-10 right-0 w-[320px] h-[320px] rounded-full bg-accent/10 blur-3xl"
+            className="pointer-events-none absolute top-100 right-0 w-[320px] h-[320px] rounded-full bg-accent/10 blur-3xl"
           />
 
           <div className="container mx-auto px-4 text-center relative z-10">
-            {/* Programme badge */}
+            {/* Programme badge
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -372,7 +372,7 @@ const LeadershipBentoForwardProgram = () => {
               <span className="text-neo-accent text-sm font-semibold tracking-wide uppercase">
                 Lead with Unparalleled Confidence
               </span>
-            </motion.div>
+            </motion.div> */}
 
             <AnimatedHeading className="text-neo-fg mb-5 " delay={0.1}>
               Leadership{" "}
@@ -380,7 +380,7 @@ const LeadershipBentoForwardProgram = () => {
             </AnimatedHeading>
 
             <AnimatedText
-              className="text-neo-muted text-lg md:text-xl max-w-2xl mx-auto leading-relaxed"
+              className="text-neo-muted text-lg md:text-xl max-w-4xl mx-auto leading-relaxed"
               delay={0.2}
             >
               The LBFP is a cohort-based programme that equips emerging leaders
@@ -389,12 +389,15 @@ const LeadershipBentoForwardProgram = () => {
               projects.
             </AnimatedText>
           </div>
-        </div>
+        
 
         {/* ================================================================
             SECTION 1 — TWO-DAY WORKSHOP
             ================================================================ */}
         <SectionWrapper id="workshop" variant="default">
+
+          <div className="max-w-6xl mx-auto">
+
           {/* Section label */}
           <AnimatedText
             as="span"
@@ -577,11 +580,6 @@ const LeadershipBentoForwardProgram = () => {
                 </motion.div>
               ))}
             </div>
-
-            {/* Fees note — SAMPLE */}
-            <div className="mt-4 neo-inset rounded-neo-btn px-5 py-3 text-sm text-neo-muted">
-              💰 <strong className="text-neo-fg">Fees:</strong> To be announced.{" "}
-            </div>
           </motion.div>
 
           {/* Workshop CTA */}
@@ -591,17 +589,19 @@ const LeadershipBentoForwardProgram = () => {
               <ArrowRight size={18} />
             </NeumorphicButton>
           </div>
-        </SectionWrapper>
-
-        {/* Gradient separator bar */}
-        <div className="container mx-auto px-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent my-2" />
+        
         </div>
-
+        
+        </SectionWrapper>
+        
         {/* ================================================================
             SECTION 2 — PASSION PROJECTS
             ================================================================ */}
-        <SectionWrapper id="passion-projects" variant="purple">
+
+       <div className="max-w-[95%] mx-auto">   
+        <SectionWrapper id="passion-projects" variant="purple" className="!overflow-x-clip !overflow-y-visible">
+
+          <div className="max-w-6xl mx-auto">
           {/* Section label */}
           <AnimatedText
             as="span"
@@ -774,28 +774,19 @@ const LeadershipBentoForwardProgram = () => {
               <ArrowRight size={18} />
             </NeumorphicButton>
           </div>
-        </SectionWrapper>
-
-        {/* Gradient separator bar */}
-        <div className="container mx-auto px-4">
-          <div className="h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent my-2" />
+        
         </div>
-
+        </SectionWrapper>
+        </div>  
+      </div>
         {/* ================================================================
             SECTION 3 — ENQUIRY FORM
             ================================================================ */}
-        <SectionWrapper id="lbfp-enquiry-form" variant="default">
+        <SectionWrapper id="lbfp-enquiry-form" variant="default" className="!pt-8 md:!pt-8">
           <div className="max-w-2xl mx-auto">
-            {/* Section label */}
-            <AnimatedText
-              as="span"
-              className="text-neo-accent text-sm uppercase tracking-widest font-semibold mb-3 block text-center"
-            >
-              Section 03
-            </AnimatedText>
 
             <AnimatedHeading className="text-neo-fg mb-3 text-center">
-              Register Your <span className="text-gradient">Interest</span>
+              Register Your <span className="text-gradient">Child Now !</span>
             </AnimatedHeading>
 
             <AnimatedText className="text-neo-muted text-center mb-8">

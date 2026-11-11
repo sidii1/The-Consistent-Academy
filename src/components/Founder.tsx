@@ -104,12 +104,6 @@ const Founder = () => {
                 every classroom she leads.
               </AnimatedText>
 
-              <AnimatedText className="text-muted-foreground text-lg mb-6" delay={0.5}>
-                She is the author of <strong>three books</strong>, including the
-                widely appreciated <em>“Cakewalk IELTS”</em>,{" "}
-                <em>“Reading Detective – Solving Comprehension Mysteries for Kids”</em>, and{" "}
-                <em>“101 Management Books You’ll Never Read But Should”</em>.
-              </AnimatedText>
             </motion.div>
 
             {/* Image */}
@@ -129,21 +123,6 @@ const Founder = () => {
                   />
                 </div>
 
-                {/* Quote */}
-                <NeumorphicCard className="p-6 bg-gradient-to-br from-primary/15 to-accent/10 mt-8" hover={false}>
-                  <div className="flex gap-4">
-                    <Quote className="w-8 h-8 text-primary flex-shrink-0" />
-                    <div>
-                      <p className="text-foreground italic mb-2">
-                        “Confidence in communication is not a talent — it's a skill.
-                        With the right structure and consistency, anyone can master it.”
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        — Vidya Wankhade
-                      </p>
-                    </div>
-                  </div>
-                </NeumorphicCard>
               </div>
             </motion.div>
 
@@ -151,14 +130,14 @@ const Founder = () => {
 
           {/* Milestones Timeline - Full Width */}
           <motion.div 
-            className="mt-16"
+            className="mt-8"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.6 }}
           >
             <AnimatedText 
-              className="text-foreground text-2xl font-semibold mb-12 text-center" 
+              className="text-foreground text-2xl font-semibold mb-8 text-center" 
               delay={0.6}
             >
               Journey of Excellence
@@ -180,7 +159,7 @@ const Founder = () => {
                     transition={{ delay: 0.7 + index * 0.15, duration: 0.6 }}
                   >
                     {/* Year Indicator */}
-                    <div className="relative z-10 w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full shadow-neu bg-gradient-to-br from-card via-background to-secondary/30 flex items-center justify-center mb-2 sm:mb-3 md:mb-4 group hover:shadow-neu-lg hover:scale-105 transition-all duration-300">
+                    <div className="relative z-10 w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-card via-background to-secondary/30 flex items-center justify-center mb-2 sm:mb-3 md:mb-4 group hover:shadow-neu-lg hover:scale-105 transition-all duration-300">
                       <div className="absolute inset-1 sm:inset-1.5 md:inset-2 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center group-hover:from-primary/30 group-hover:to-accent/30 transition-all duration-300">
                         <span className="text-primary font-bold text-[0.6rem] sm:text-xs md:text-sm group-hover:scale-110 transition-transform duration-300">
                           {milestone.year}
@@ -190,7 +169,7 @@ const Founder = () => {
                     
                     {/* Achievement Card */}
                     <div className="w-full px-0.5 sm:px-1 md:px-2">
-                      <div className="relative p-1.5 sm:p-2 md:p-4 rounded-lg sm:rounded-xl shadow-neu bg-gradient-to-br from-card/80 via-background/90 to-secondary/20 backdrop-blur-sm hover:shadow-neu-lg transition-all duration-400 hover:-translate-y-1 group">
+                      <div className="relative p-1.5 sm:p-2 md:p-4 rounded-lg sm:rounded-xl bg-gradient-to-br from-card/80 via-background/90 to-secondary/20 backdrop-blur-sm hover:shadow-neu-lg transition-all duration-400 hover:-translate-y-1 group">
                         <div className="space-y-1 sm:space-y-1.5 md:space-y-2">
                           {milestone.achievements.map((achievement, i) => (
                             <p 
@@ -211,7 +190,7 @@ const Founder = () => {
 
           {/* ================= BOOKS SECTION ================= */}
           <motion.div 
-            className="mt-12 relative"
+            className="mt-8 relative"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
@@ -255,11 +234,11 @@ const Founder = () => {
             </div>
           </motion.div>
 
-          {/* ================= ADVISORY BOARD SECTION ================= */}
-          <AdvisoryBoard />
-
           {/* ================= EXPERIENTIAL LEARNING EXPERTS ================= */}
           <ExperientialLearningExperts />
+
+          {/* ================= ADVISORY BOARD SECTION ================= */}
+          <AdvisoryBoard />
         </div>
       </SectionWrapper>
     </section>

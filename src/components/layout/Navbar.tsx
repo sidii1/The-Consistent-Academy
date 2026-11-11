@@ -19,7 +19,6 @@ const navLinks: NavItem[] = [
   { name: "LBFP", path: "/lbfp" },
   { name: "Webinars", path: "/webinars" },
   { name: "Tests", path: "/tests" },
-  { name: "Contact", path: "/contact" },
 ];
 
 export const Navbar = () => {
