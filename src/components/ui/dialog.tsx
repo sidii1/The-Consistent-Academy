@@ -66,6 +66,8 @@ const DialogContent = React.forwardRef<
         "data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
         className,
       )}
+      // Lenis (smooth scroll) hijacks wheel events; this lets the modal scroll natively.
+      data-lenis-prevent
       {...props}
     >
       {children}

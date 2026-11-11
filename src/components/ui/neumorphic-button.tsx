@@ -39,7 +39,7 @@ export const NeumorphicButton = ({
 
     secondary: cn(
       "neo-surface",
-      "text-neo-fg",
+      "text-[#42106F]",
       "rounded-neo-btn",
       "focus-visible:shadow-neo-focus",
     ),
@@ -83,7 +83,7 @@ export const NeumorphicButton = ({
       }
       onClick={onClick}
     >
-      <span className="relative z-10 flex items-center justify-center gap-2.5 text-white">
+      <span className={cn("relative z-10 flex items-center justify-center gap-2.5", variant === "primary" && "text-white")}>
         {children}
       </span>
     </motion.button>

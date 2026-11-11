@@ -4,6 +4,7 @@ import { auth } from "@/lib/firebase";
 import { getCCUser, type CCUser } from "@/lib/ccClub";
 import CCHero from "@/components/club/CCHero";
 import CCAuthForm from "@/components/club/CCAuthForm";
+import CCJourney from "@/components/club/CCJourney";
 import ClubDashboard from "./ClubDashboard";
 import { Loader2 } from "lucide-react";
 
@@ -83,6 +84,7 @@ const ClubPage: React.FC = () => {
   return (
     <div className="cc-club-scope">
       <CCHero onScrollToAuth={scrollToAuth} />
+      <CCJourney />
       <div ref={authSectionRef}>
         <CCAuthForm />
       </div>

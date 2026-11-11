@@ -15,7 +15,8 @@ const staticRoutes = [
   '/tests',
   '/blog',
   '/lbfp',
-  '/webinars'
+  '/webinars',
+  '/game'
 ];
 
 function generateSitemap() {

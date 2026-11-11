@@ -4,11 +4,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 type NavItem = {
   name: string;
   path?: string;
   sectionId?: string;
+  /** Shown on hover (desktop) / as a caption (mobile). */
+  tooltip?: string;
 };
 
 const navLinks: NavItem[] = [
@@ -18,6 +21,7 @@ const navLinks: NavItem[] = [
   { name: "Careers", path: "/careers" },
   { name: "LBFP", path: "/lbfp" },
   { name: "Webinars", path: "/webinars" },
+  { name: "Game", path: "/game", tooltip: "PADRE'S SLIVER SEARCH" },
   { name: "Tests", path: "/tests" },
 ];
 
@@ -145,22 +149,37 @@ export const Navbar = () => {
 
               {/* Desktop Navigation */}
               <div className="hidden lg:flex items-center gap-1">
-                {navLinks.map((item) => (
-                  <motion.button
-                    key={item.name}
-                    onClick={() => handleNavClick(item)}
-                    className={cn(
-                      "px-4 py-2.5 rounded-neo-btn text-sm font-medium transition-all duration-300 ease-out",
-                      isActive(item)
-                        ? "neo-inset text-neo-accent"
-                        : "text-neo-muted hover:text-neo-fg hover:neo-surface-sm active:neo-inset-sm"
-                    )}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    {item.name}
-                  </motion.button>
-                ))}
+                {navLinks.map((item) => {
+                  const button = (
+                    <motion.button
+                      key={item.name}
+                      onClick={() => handleNavClick(item)}
+                      className={cn(
+                        "px-4 py-2.5 rounded-neo-btn text-sm font-medium transition-all duration-300 ease-out",
+                        isActive(item)
+                          ? "neo-inset text-neo-accent"
+                          : "text-neo-muted hover:text-neo-fg hover:neo-surface-sm active:neo-inset-sm"
+                      )}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {item.name}
+                    </motion.button>
+                  );
+                  return item.tooltip ? (
+                    <Tooltip key={item.name}>
+                      <TooltipTrigger asChild>{button}</TooltipTrigger>
+                      <TooltipContent
+                        side="bottom"
+                        className="neo-surface-sm rounded-neo-btn border-0 bg-neo-base px-3 py-1.5 text-xs font-bold tracking-wide text-neo-accent"
+                      >
+                        {item.tooltip}
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    button
+                  );
+                })}
               </div>
 
               <div className="hidden lg:block">
@@ -224,6 +243,9 @@ export const Navbar = () => {
                       )}
                     >
                       {item.name}
+                      {item.tooltip && (
+                        <span className="block text-[11px] font-bold tracking-wide text-neo-accent">{item.tooltip}</span>
+                      )}
                     </button>
                   </motion.div>
                 ))}

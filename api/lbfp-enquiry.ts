@@ -12,7 +12,7 @@ export default async function handler(
   }
 
   try {
-    const { name, email, phone, city, background, offering, message } = req.body || {};
+    const { name, email, phone, city, background, offering, message, mode, date } = req.body || {};
 
     // Server-side validation
     if (!name || !email || !phone || !city || !offering) {
@@ -28,6 +28,8 @@ export default async function handler(
       html: `
         <h2>New Leadership Bento Forward Program Interest Submission</h2>
         <p><strong>Programme Offering:</strong> ${offering}</p>
+        <p><strong>Mode:</strong> ${mode || "Not specified"}</p>
+        <p><strong>Preferred Dates:</strong> ${date || "Not specified"}</p>
         <hr />
         <p><strong>Full Name:</strong> ${name}</p>
         <p><strong>Email Address:</strong> ${email}</p>

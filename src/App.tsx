@@ -25,6 +25,7 @@ import AdminRoute from "@/components/AdminRoute";
 import ClubPage from "./pages/club/ClubPage";
 import LeadershipBentoForwardProgram from "./pages/LeadershipBentoForwardProgram";
 import Webinars from "./pages/Webinars";
+import Game from "./pages/Game";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,7 @@ const AnimatedRoutes = () => {
         <Route path="/club" element={<ClubPage />} />
         <Route path="/lbfp" element={<LeadershipBentoForwardProgram />} />
         <Route path="/webinars" element={<Webinars />} />
+        <Route path="/game" element={<Game />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>

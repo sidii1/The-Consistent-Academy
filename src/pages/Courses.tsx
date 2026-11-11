@@ -1,5 +1,6 @@
-import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle, Clock } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState } from "react";
+import { ArrowRight, CheckCircle, ChevronDown, Clock, Wifi } from "lucide-react";
 import { Link } from "react-router-dom";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
@@ -9,6 +10,8 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import ExpandableCourseCard, { Course } from "@/components/ui/expandable-course-card";
 import { SEO } from "@/components/SEO";
+import { PaymentModal } from "@/components/payments/PaymentModal";
+import { KIDS_COURSE_PRICE, formatINR } from "../../shared/pricing";
 
 const courses: Course[] = [
   {
@@ -619,26 +622,79 @@ const courses: Course[] = [
   }
 ];
 
+/**
+ * Kids courses. Price comes from shared/pricing.ts (KIDS_COURSE_PRICE) so the
+ * amount shown here and the amount charged by the server can never differ.
+ * `id` must match an entry in KIDS_COURSES in shared/pricing.ts.
+ */
 const kidsCourses = [
   {
-    title: "Elocution Course",
-    description: "Helps children speak clearly, confidently, and expressively.",
-    duration: "4 Weeks",
-    price:"3000/-",
-    image: "/courses/img8.png",
+    id: "kid-mun",
+    title: "Model United Nations (MUN) Course",
+    description: "Learn diplomacy, debate and global affairs the way real delegates do.",
+    duration: "7 Days",
+    image: "/courses/2SMS08520.jpg",
+    rich: true,
     features: [
-      "Clarity in speech & pronunciation",
-      "Expressive reading & storytelling",
-      "Vocabulary & grammar improvement",
-      "Confidence in public speaking",
-      "Listening & comprehension skills",
+      "Understanding MUN & Global Affairs: Learn about UN structures, committees, international relations, and current global issues.",
+      "Research & Country Representation: Master country research and foreign policy analysis.",
+      "Public Speaking & Diplomacy: Develop confident speeches, persuasive communication, and diplomatic language.",
+      "Debating & Negotiation: Practise moderated caucuses, POIs, lobbying, alliances, and conflict resolution.",
+      "Resolution Drafting & Conference Strategy: Learn to draft resolutions, propose solutions, follow MUN ROPs, and participate effectively in committees.",
+    ],
+  },
+    {
+    id: "kid-story",
+    title: "Craft Your Own Story",
+    description: "21-Day Creative Writing Workshop. One Child. One Original Story. One Published Book. One Proud Young Author!",
+    // The brief names this a "21-Day" workshop while also asking for 7 days on all courses;
+    // the explicit workshop name wins here. Change to "7 Days" if 7 was intended.
+    duration: "21 Days",
+    image: "/courses/img12.png",
+    rich: true,
+    features: [
+      "Imagine & Create: Discover story ideas, develop imagination, and turn everyday experiences into exciting narratives.",
+      "Build Characters & Plots: Learn character development, story structure, settings, conflicts, and engaging endings.",
+      "Master Creative Writing: Develop vocabulary, descriptive writing, dialogue, grammar, and storytelling techniques.",
+      "Write & Refine Your Story: Work with mentors through guided writing, editing, feedback, and illustrations.",
+      "Publish Your Own Book: Complete an original story or book authored by the child, with TCA guiding the publishing process and helping bring the young author's work to life.",
     ],
   },
   {
+    id: "kid-case-study",
+    title: "Case Study & Critical Thinking Workshop",
+    description: "Learn to analyse real-world problems and defend well-reasoned solutions.",
+    duration: "7 Days",
+    image: "/courses/img10.png",
+    rich: true,
+    features: [
+      "Problem Identification: Learn to identify real-world problems, understand their context, and distinguish symptoms from root causes.",
+      "Research & Information Analysis: Gather relevant information, evaluate evidence, and interpret facts to understand complex situations.",
+      "Critical & Analytical Thinking: Apply logical reasoning, question assumptions, and examine challenges from multiple perspectives.",
+      "Solution Development & Decision-Making: Generate practical solutions, evaluate alternatives, and justify decisions using evidence.",
+      "Presentation & Reflection: Present case analyses, defend recommendations, participate in discussions, and develop confidence in problem-solving.",
+    ],
+  },
+  {
+    id: "kid-essay",
+    title: "International Essay Writing Competition Preparation",
+    description: "Prepare original, well-argued essays for national and international competitions.",
+    duration: "7 Days",
+    image: "/courses/img11.png",
+    rich: true,
+    features: [
+      "Understanding Competition Themes: Learn to interpret essay prompts, understand themes, and develop original perspectives aligned with international competition standards.",
+      "Research & Idea Development: Strengthen research skills, gather credible information, and build well-supported arguments.",
+      "Advanced Writing Techniques: Master essay structure, impactful introductions, coherent paragraphs, persuasive arguments, and memorable conclusions.",
+      "Language & Editorial Excellence: Enhance vocabulary, grammar, sentence variety, originality, coherence, and writing style.",
+      "Competition Readiness & Mentorship: Practise timed writing, receive expert feedback, refine submissions, and prepare essays for national and international competitions.",
+    ],
+  },
+  {
+    id: "kid-tedx",
     title: "TedX & Toastmaster Training ",
     description: "Builds confidence and stage presence in young learners.",
-    duration: "4 Weeks",
-    price:"3000/-",
+    duration: "7 Days",
     image: "/courses/img9.png",
     features: [
       "Reduced stage fear",
@@ -650,11 +706,11 @@ const kidsCourses = [
     ],
   },
   {
+    id: "kid-grammar",
     title: "Grammar Foundations",
     description: "Strong grammar basics for clear and correct communication.",
-    duration: "4 Weeks",
-    price:"3000/-",
-    image: "/courses/img10.png",
+    duration: "7 Days",
+    image: "/courses/grammar.jpg",
     features: [
       "Sentence construction",
       "Correct punctuation",
@@ -664,38 +720,25 @@ const kidsCourses = [
       "Effective communication",
     ],
   },
-  {
-    title: "Creative Writing",
-    description: "Encourages imagination and expressive writing skills.",
-    duration: "4 Weeks",
-    price:"3000/-",
-    image: "/courses/img11.png",
-    features: [
-      "Idea generation & imagination",
-      "Story structure (Beginning–Middle–End)",
-      "Character creation",
-      "Descriptive writing",
-      "Emotional expression",
-    ],
-  },
-  {
-    title: "Reading Club",
-    description: "Develops love for reading and critical thinking.",
-    duration: "Online",
-    price:"500/per month",
-    image: "/courses/img12.png",
-    features: [
-      "Reading for pleasure",
-      "Vocabulary in context",
-      "Comprehension & critical thinking",
-      "Listening & speaking skills",
-      "Empathy & life values through stories",
-    ],
-  },
+  // {
+  //   id: "kid-creative",
+  //   title: "Creative Writing",
+  //   description: "Encourages imagination and expressive writing skills.",
+  //   duration: "7 Days",
+  //   image: "/courses/img11.png",
+  //   features: [
+  //     "Idea generation & imagination",
+  //     "Story structure (Beginning–Middle–End)",
+  //     "Character creation",
+  //     "Descriptive writing",
+  //     "Emotional expression",
+  //   ],
+  // },
 ];
 
-
 const Courses = () => {
+  const [payCourse, setPayCourse] = useState<string | null>(null);
+  const [expandedKids, setExpandedKids] = useState<Record<number, boolean>>({});
   const schema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -788,60 +831,109 @@ const Courses = () => {
       </AnimatedText>
     </div>
 
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {kidsCourses.map((course, index) => (
-        <NeumorphicCard
-          key={index}
-          delay={0.05 * index}
-          className="p-6"
-        >
-          {course.image && (
-            <div className="mb-4 rounded-lg overflow-hidden">
-              <img 
-                src={course.image} 
-                alt={course.title}
-                className="w-full h-32 object-cover"
-              />
-            </div>
-          )}
-          
-          <div className="flex items-center justify-between gap-3 mb-2">
-  <h3 className="text-xl font-semibold text-foreground">
-    {course.title}
-  </h3>
-
-  <span className="text-primary font-semibold text-sm whitespace-nowrap">
-    ₹ {course.price}
-  </span>
-</div>
-
-
-          <p className="text-sm text-muted-foreground mb-4">
-            {course.description}
-          </p>
-
-          <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-            <Clock size={14} />
-            {course.duration}
-          </div>
-
-          <div className="space-y-2 mb-6">
-            {course.features.map((feature, i) => (
-              <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                <CheckCircle size={14} className="text-primary mt-0.5" />
-                <span>{feature}</span>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+      {kidsCourses.map((course, index) => {
+        const expanded = expandedKids[index] ?? false;
+        return (
+          <NeumorphicCard
+            key={index}
+            delay={0.05 * index}
+            className="p-6 flex flex-col"
+          >
+            {/* Image */}
+            {course.image && (
+              <div className="mb-4 rounded-lg overflow-hidden shrink-0">
+                <img
+                  src={course.image}
+                  alt={course.title}
+                  className="w-full h-40 object-cover"
+                />
               </div>
-            ))}
-          </div>
+            )}
 
-          <Link to="/contact">
-            <NeumorphicButton variant="secondary" className="w-full">
-              Enroll Now
-              <ArrowRight size={16} />
-            </NeumorphicButton>
-          </Link>
-        </NeumorphicCard>
-      ))}
+            {/* Title + price */}
+            <div className="flex items-start justify-between gap-3 mb-2 shrink-0">
+              <h3 className="text-lg font-semibold text-foreground leading-snug">
+                {course.title}
+              </h3>
+              <span className="text-primary font-semibold text-sm whitespace-nowrap mt-0.5">
+                {formatINR(KIDS_COURSE_PRICE)}
+              </span>
+            </div>
+
+            {/* Description */}
+            <p className="text-sm text-muted-foreground mb-3 shrink-0">
+              {course.description}
+            </p>
+
+            {/* Meta pills */}
+            <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground mb-3 shrink-0">
+              <span className="inline-flex items-center gap-1.5">
+                <Clock size={14} />
+                {course.duration}
+              </span>
+              <span className="inline-flex items-center gap-1.5 neo-inset rounded-full px-2.5 py-0.5 text-xs font-semibold text-neo-accent">
+                <Wifi size={12} />
+                Online
+              </span>
+            </div>
+
+            {/* Expand toggle */}
+            <button
+              type="button"
+              onClick={() => setExpandedKids((prev) => ({ ...prev, [index]: !expanded }))}
+              className="inline-flex items-center gap-1 text-s font-semibold text-neo-accent mb-3 hover:opacity-75 transition-opacity"
+            >
+              <motion.span
+                animate={{ rotate: expanded ? 180 : 0 }}
+                transition={{ duration: 0.25 }}
+                className="flex"
+              >
+                <ChevronDown size={23} />
+              </motion.span>
+              {expanded ? "Show less" : "View details"}
+            </button>
+
+            {/* Expandable features */}
+            <AnimatePresence initial={false}>
+              {expanded && (
+                <motion.div
+                  key="features"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden"
+                >
+                  <div className="space-y-2 mb-4">
+                    {course.features.map((feature, i) => (
+                      <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                        <CheckCircle size={14} className="text-primary mt-0.5 shrink-0" />
+                        {course.rich && feature.includes(": ") ? (
+                          <span>
+                            <strong className="text-foreground">{feature.split(": ")[0]}:</strong>{" "}
+                            {feature.slice(feature.indexOf(": ") + 2)}
+                          </span>
+                        ) : (
+                          <span>{feature}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Enroll button always visible at the bottom */}
+            <div className="mt-auto pt-1">
+              <NeumorphicButton variant="secondary" className="w-full" onClick={() => setPayCourse(course.id)}>
+                Enroll Now · {formatINR(KIDS_COURSE_PRICE)}
+                <ArrowRight size={16} />
+              </NeumorphicButton>
+            </div>
+          </NeumorphicCard>
+        );
+      })}
     </div>
   </div>
 </SectionWrapper>
@@ -877,6 +969,12 @@ const Courses = () => {
       </SectionWrapper>
 
       <Footer />
+
+      <PaymentModal
+        open={payCourse !== null}
+        onOpenChange={(o) => !o && setPayCourse(null)}
+        productId={payCourse ?? "kid-mun"}
+      />
     </div>
   );
 };
