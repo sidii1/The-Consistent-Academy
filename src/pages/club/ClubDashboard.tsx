@@ -3,7 +3,7 @@ import CCNavbar from "@/components/club/CCNavbar";
 import CCStudentDashboard from "@/components/club/CCStudentDashboard";
 import CCPresidentDashboard from "@/components/club/CCPresidentDashboard";
 import CCTrainerDashboard from "@/components/club/CCTrainerDashboard";
-import type { CCUser } from "@/lib/ccClub";
+import { APPROVAL_REQUIRED_ROLES, type CCUser } from "@/lib/ccClub";
 import { Clock } from "lucide-react";
 
 interface ClubDashboardProps {
@@ -14,8 +14,14 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ user }) => {
   const isPresident = user.club_role === "President";
   const isTrainer = user.club_role === "Trainer";
 
-  // Trainer approval gate — block unapproved trainers with a friendly waiting screen
-  if (isTrainer && user.approvalStatus !== "approved") {
+  // Approval gate. Trainers must be explicitly approved; other privileged roles
+  // (President) are blocked while they are flagged "pending". Legacy accounts
+  // created before the gate existed have no flag and keep working.
+  const awaitingApproval =
+    user.approvalStatus === "pending" ||
+    (isTrainer && user.approvalStatus !== "approved");
+
+  if (APPROVAL_REQUIRED_ROLES.includes(user.club_role) && awaitingApproval) {
     return (
       <div className="cc-club-scope">
         <CCNavbar user={user} />
@@ -32,39 +38,33 @@ const ClubDashboard: React.FC<ClubDashboardProps> = ({ user }) => {
           }}
         >
           <div
+            className="cc-animate-glow-amber"
             style={{
-              width: "64px",
-              height: "64px",
+              width: "72px",
+              height: "72px",
               borderRadius: "50%",
-              background: "var(--cc-surface-inset)",
+              background: "var(--cc-bg)",
               boxShadow: "var(--cc-neu-md)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <Clock size={28} color="hsl(38 80% 55%)" />
+            <Clock size={30} color="var(--cc-amber)" />
           </div>
-          <h2
-            style={{
-              fontSize: "1.4rem",
-              fontWeight: 800,
-              color: "var(--cc-text)",
-            }}
-          >
+          <h2 style={{ fontSize: "1.4rem", fontWeight: 800, color: "var(--cc-text)" }}>
             Approval Pending
           </h2>
           <p
             style={{
               fontSize: "0.88rem",
               color: "var(--cc-text-muted)",
-              maxWidth: "380px",
+              maxWidth: "400px",
               lineHeight: 1.6,
             }}
           >
-            Your Trainer account is awaiting admin approval. You will be able to
-            access the Trainer Dashboard once an administrator approves your
-            account.
+            Your {user.club_role} account is awaiting admin approval. You'll be able to open the{" "}
+            {user.club_role} Dashboard once an administrator approves it — check back soon.
           </p>
         </div>
       </div>

@@ -4,7 +4,7 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { createCCUser, getCCUser, type CCRole } from "@/lib/ccClub";
+import { createCCUser, getCCUser, APPROVAL_REQUIRED_ROLES, type CCRole } from "@/lib/ccClub";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { reveal } from "@/lib/device";
@@ -62,7 +62,12 @@ const inputStyle: React.CSSProperties = {
   fontFamily: "inherit",
 };
 
-const CCAuthForm: React.FC = () => {
+interface CCAuthFormProps {
+  /** Called once a brand-new profile has been written, so the page can move on without a reload. */
+  onSignedUp?: () => void;
+}
+
+const CCAuthForm: React.FC<CCAuthFormProps> = ({ onSignedUp }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -102,23 +107,31 @@ const CCAuthForm: React.FC = () => {
         // onAuthStateChanged in ClubPage will handle the redirect
       } else {
         // Signup flow
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-        await createCCUser(cred.user.uid, {
-          name: name.trim(),
-          email: email.toLowerCase(),
-          college: college,
-          club_role: role,
-          current_level: 1,
-          total_points: 0,
-          badges: role !== "Student" ? [`${role} Badge`] : [],
-          ...(role === "Trainer" ? { approvalStatus: "pending" as const } : {}),
-        });
-        if (role === "Trainer") {
-          toast.success(`Trainer account created! ⏳ Awaiting admin approval.`);
+        const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
+        try {
+          await createCCUser(cred.user.uid, {
+            name: name.trim(),
+            email: email.trim().toLowerCase(),
+            college: college,
+            club_role: role,
+            current_level: 1,
+            total_points: 0,
+            badges: role !== "Student" ? [`${role} Badge`] : [],
+            // Roles with review powers can't be self-assigned — an admin has to approve them.
+            ...(APPROVAL_REQUIRED_ROLES.includes(role) ? { approvalStatus: "pending" as const } : {}),
+          });
+        } catch (profileErr) {
+          // Don't leave an orphaned login with no profile (it would block both sign-in and sign-up).
+          await cred.user.delete().catch(() => undefined);
+          throw profileErr;
+        }
+        if (APPROVAL_REQUIRED_ROLES.includes(role)) {
+          toast.success(`${role} account created! ⏳ Awaiting admin approval.`);
         } else {
           toast.success(`Welcome to CC Club, ${name.trim()}! 🎉`);
         }
-        // onAuthStateChanged in ClubPage will handle the redirect
+        // onAuthStateChanged fires before the profile exists, so tell the page to re-read it.
+        onSignedUp?.();
       }
     } catch (err: unknown) {
       const msg =

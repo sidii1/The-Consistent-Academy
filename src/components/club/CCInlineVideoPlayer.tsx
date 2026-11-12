@@ -27,6 +27,16 @@ const getLoomVideoId = (parsedUrl: URL) => {
   return shareMatch?.[1] || embedMatch?.[1] || "";
 };
 
+/** Only ever hand http(s) URLs to iframes / <a href> — blocks `javascript:` and `data:` payloads. */
+const isSafeHttpUrl = (raw: string) => {
+  try {
+    const { protocol } = new URL(raw.trim());
+    return protocol === "https:" || protocol === "http:";
+  } catch {
+    return false;
+  }
+};
+
 const getPlayerSource = (rawUrl: string): PlayerSource => {
   const trimmedUrl = rawUrl.trim();
 
@@ -39,7 +49,7 @@ const getPlayerSource = (rawUrl: string): PlayerSource => {
       if (fileId) {
         return {
           kind: "iframe",
-          src: `https://drive.google.com/file/d/${fileId}/preview`,
+          src: `https://drive.google.com/file/d/${encodeURIComponent(fileId)}/preview`,
         };
       }
     }
@@ -49,7 +59,7 @@ const getPlayerSource = (rawUrl: string): PlayerSource => {
       if (videoId) {
         return {
           kind: "iframe",
-          src: `https://www.loom.com/embed/${videoId}`,
+          src: `https://www.loom.com/embed/${encodeURIComponent(videoId)}`,
         };
       }
     }
@@ -67,6 +77,7 @@ const getPlayerSource = (rawUrl: string): PlayerSource => {
 const CCInlineVideoPlayer: React.FC<CCInlineVideoPlayerProps> = ({ url }) => {
   const [expanded, setExpanded] = useState(false);
   const [hasPlaybackError, setHasPlaybackError] = useState(false);
+  const urlIsSafe = useMemo(() => isSafeHttpUrl(url), [url]);
   const playerSource = useMemo(() => getPlayerSource(url), [url]);
 
   useEffect(() => {
@@ -99,14 +110,30 @@ const CCInlineVideoPlayer: React.FC<CCInlineVideoPlayerProps> = ({ url }) => {
         aspectRatio: "16 / 9",
         borderRadius: "8px",
         overflow: "hidden",
-        boxShadow: "var(--cc-neu-sm)",
+        boxShadow: "var(--cc-neu-inset-sm)",
         transition: "max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         marginBottom: "8px",
         marginTop: "4px",
-        background: "#000",
+        background: "var(--cc-surface-deep)",
       }}
     >
-      {hasPlaybackError ? (
+      {!urlIsSafe ? (
+        <div
+          style={{
+            ...mediaStyle,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "12px",
+            textAlign: "center",
+            color: "var(--cc-danger)",
+            fontSize: "0.72rem",
+            background: "var(--cc-surface-deep)",
+          }}
+        >
+          Invalid video link
+        </div>
+      ) : hasPlaybackError ? (
         <div
           style={{
             ...mediaStyle,

@@ -1,22 +1,24 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import {
+  getCCUser,
   getMeetingReports,
   getStudentMeetingVideos,
-  getStudentAttendanceStats,
+  computeAttendanceStats,
   submitMeetingVideo,
   getCCSpeeches,
-  resubmitSpeech,
-  updateCCUser,
+  getEffectiveWorkflowState,
+  getSpeechDisplayStatus,
+  isValidVideoUrl,
   type CCUser,
   type CCMeetingReport,
   type CCMeetingVideoSubmission,
   type CCSpeech,
 } from "@/lib/ccClub";
-import { uploadToCloudinary } from "@/lib/utils";
 import CCProgressTimeline from "./CCProgressTimeline";
 import CCGamificationPanel from "./CCGamificationPanel";
 import CCSpeechTracker from "./CCSpeechTracker";
 import CCInlineVideoPlayer from "./CCInlineVideoPlayer";
+import CCAvatarUpload from "./CCAvatarUpload";
 import {
   Loader2,
   CalendarCheck,
@@ -28,7 +30,7 @@ import {
   Send,
   Link2,
   TrendingUp,
-  Camera,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -62,11 +64,8 @@ const AttendanceCard: React.FC<{
 
   return (
     <div
+      className="cc-card"
       style={{
-        borderRadius: "20px",
-        padding: "1.5rem 1.75rem",
-        background: "var(--cc-bg)",
-        boxShadow: "var(--cc-neu-md)",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -76,12 +75,12 @@ const AttendanceCard: React.FC<{
     >
       <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
         <div
+          className="cc-well-deep"
           style={{
             width: "48px",
             height: "48px",
+            padding: 0,
             borderRadius: "14px",
-            background: "var(--cc-surface-inset)",
-            boxShadow: "var(--cc-neu-inset-sm)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -90,52 +89,26 @@ const AttendanceCard: React.FC<{
           <CalendarCheck size={22} color={color} />
         </div>
         <div>
-          <div
-            style={{
-              fontSize: "0.72rem",
-              fontWeight: 700,
-              color: "var(--cc-text-faint)",
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-              marginBottom: "2px",
-            }}
-          >
-            My Attendance
-          </div>
-          <div
-            style={{
-              fontSize: "1.4rem",
-              fontWeight: 900,
-              color,
-              lineHeight: 1,
-            }}
-          >
+          <div className="cc-eyebrow" style={{ marginBottom: "2px" }}>My Attendance</div>
+          <div style={{ fontSize: "1.4rem", fontWeight: 900, color, lineHeight: 1 }}>
             {percentage}%{" "}
-            <span
-              style={{
-                fontSize: "0.78rem",
-                fontWeight: 500,
-                color: "var(--cc-text-muted)",
-              }}
-            >
+            <span style={{ fontSize: "0.78rem", fontWeight: 500, color: "var(--cc-text-muted)" }}>
               ({present}/{total} meetings)
             </span>
           </div>
-          <div style={{ fontSize: "0.75rem", color: "var(--cc-text-muted)", marginTop: "4px" }}>
-            {label}
-          </div>
+          <div style={{ fontSize: "0.75rem", color: "var(--cc-text-muted)", marginTop: "4px" }}>{label}</div>
         </div>
       </div>
 
-      {/* Mini progress bar */}
       <div style={{ minWidth: "120px", flex: "0 0 120px" }}>
         <div
           className="cc-inset-sm"
-          style={{
-            height: "8px",
-            borderRadius: "999px",
-            overflow: "hidden",
-          }}
+          style={{ height: "8px", borderRadius: "999px", overflow: "hidden" }}
+          role="progressbar"
+          aria-valuenow={percentage}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Attendance"
         >
           <div
             style={{
@@ -166,60 +139,40 @@ const AttendanceCard: React.FC<{
 };
 
 // ── Notification Banner ───────────────────────────────────────
+type NotificationType = "absent" | "redo" | "welldone" | "pending";
+
+const NOTIFICATION_CONFIG: Record<NotificationType, { icon: React.ReactNode; color: string }> = {
+  absent: { icon: <AlertTriangle size={16} />, color: "var(--cc-danger)" },
+  redo: { icon: <XCircle size={16} />, color: "var(--cc-danger)" },
+  welldone: { icon: <CheckCircle2 size={16} />, color: "var(--cc-success)" },
+  pending: { icon: <Clock size={16} />, color: "var(--cc-amber)" },
+};
+
 const NotificationBanner: React.FC<{
-  type: "absent" | "redo" | "welldone" | "pending";
+  type: NotificationType;
   message: string;
   sub?: string;
 }> = ({ type, message, sub }) => {
-  const config = {
-    absent: {
-      icon: <AlertTriangle size={16} />,
-      color: "var(--cc-danger)",
-    },
-    redo: {
-      icon: <XCircle size={16} />,
-      color: "var(--cc-danger)",
-    },
-    welldone: {
-      icon: <CheckCircle2 size={16} />,
-      color: "var(--cc-success)",
-    },
-    pending: {
-      icon: <Clock size={16} />,
-      color: "var(--cc-amber)",
-    },
-  }[type];
-
+  const config = NOTIFICATION_CONFIG[type];
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "flex-start",
-        gap: "10px",
-        padding: "12px 14px",
-        borderRadius: "12px",
-        background: "var(--cc-surface-inset)",
-        boxShadow: "var(--cc-neu-inset-xs)",
-      }}
-    >
-      <span style={{ color: config.color, marginTop: "1px", flexShrink: 0 }}>
-        {config.icon}
-      </span>
+    <div className="cc-well" style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "12px 14px", borderRadius: "12px" }}>
+      <span style={{ color: config.color, marginTop: "1px", flexShrink: 0 }}>{config.icon}</span>
       <div>
-        <p style={{ fontSize: "0.82rem", fontWeight: 600, color: config.color }}>
-          {message}
-        </p>
-        {sub && (
-          <p style={{ fontSize: "0.74rem", color: "var(--cc-text-muted)", marginTop: "2px" }}>
-            {sub}
-          </p>
-        )}
+        <p style={{ fontSize: "0.82rem", fontWeight: 600, color: config.color }}>{message}</p>
+        {sub && <p style={{ fontSize: "0.74rem", color: "var(--cc-text-muted)", marginTop: "2px" }}>{sub}</p>}
       </div>
     </div>
   );
 };
 
 // ── Meeting Video Panel ───────────────────────────────────────
+const MEETING_STATE_LABELS: Record<string, string> = {
+  submitted_to_president: "Awaiting President",
+  validated: "With Trainer",
+  evaluated: "Evaluated ✅",
+  needs_redo: "Needs Redo",
+};
+
 const MeetingVideoPanel: React.FC<{
   user: CCUser;
   reports: CCMeetingReport[];
@@ -229,45 +182,32 @@ const MeetingVideoPanel: React.FC<{
   const [urls, setUrls] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState<Record<string, boolean>>({});
 
-  const videoMap = Object.fromEntries(videos.map((v) => [v.report_id, v]));
+  const videoMap = useMemo(() => Object.fromEntries(videos.map((v) => [v.report_id, v])), [videos]);
 
   const handleSubmit = async (report: CCMeetingReport) => {
-    const url = urls[report.id!]?.trim();
+    const id = report.id!;
+    const url = urls[id]?.trim();
     if (!url) return;
-    try { new URL(url); } catch {
+    if (!isValidVideoUrl(url)) {
+      toast.error("Enter a valid link starting with https:// (YouTube, Drive, Loom…)");
       return;
     }
-    setSubmitting((p) => ({ ...p, [report.id!]: true }));
+    setSubmitting((p) => ({ ...p, [id]: true }));
     try {
-      await submitMeetingVideo(
-        user.uid,
-        user.name,
-        report.id!,
-        report.week_number,
-        url
-      );
-      setUrls((p) => ({ ...p, [report.id!]: "" }));
+      await submitMeetingVideo(user.uid, user.name, id, report.week_number, url);
+      toast.success(`Week ${report.week_number} video submitted!`);
+      setUrls((p) => ({ ...p, [id]: "" }));
       onSubmitted();
-    } catch {
-      // silent — parent handles error display
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't submit your video. Please try again.");
     } finally {
-      setSubmitting((p) => ({ ...p, [report.id!]: false }));
+      setSubmitting((p) => ({ ...p, [id]: false }));
     }
   };
 
   if (reports.length === 0) {
     return (
-      <div
-        style={{
-          borderRadius: "20px",
-          padding: "1.75rem",
-          background: "var(--cc-bg)",
-          boxShadow: "var(--cc-neu-md)",
-          textAlign: "center",
-          color: "var(--cc-text-faint)",
-          fontSize: "0.82rem",
-        }}
-      >
+      <div className="cc-card" style={{ textAlign: "center", color: "var(--cc-text-faint)", fontSize: "0.82rem" }}>
         <Video size={28} style={{ margin: "0 auto 8px", opacity: 0.3 }} />
         No meetings uploaded by your president yet.
       </div>
@@ -275,25 +215,8 @@ const MeetingVideoPanel: React.FC<{
   }
 
   return (
-    <div
-      style={{
-        borderRadius: "20px",
-        padding: "1.75rem",
-        background: "var(--cc-bg)",
-        boxShadow: "var(--cc-neu-md)",
-      }}
-    >
-      <h3
-        style={{
-          fontSize: "1rem",
-          fontWeight: 700,
-          color: "var(--cc-text)",
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          marginBottom: "4px",
-        }}
-      >
+    <div className="cc-card">
+      <h3 className="cc-card-title" style={{ marginBottom: "4px" }}>
         <Video size={16} color="var(--cc-accent-bright)" />
         Meeting Video Submissions
       </h3>
@@ -303,58 +226,36 @@ const MeetingVideoPanel: React.FC<{
 
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         {reports.map((report) => {
-          const submission = videoMap[report.id!];
+          const id = report.id!;
+          const submission = videoMap[id];
+          const state = submission ? getEffectiveWorkflowState(submission) : undefined;
           const wasPresent = report.attendance?.find((a) => a.uid === user.uid)?.present ?? false;
+          const needsRedo = state === "needs_redo";
+          const canSubmit = !submission || needsRedo;
+          const feedback = submission?.trainerRemarks || submission?.evaluator_notes;
 
-          const statusColor =
-            !submission
-              ? wasPresent
-                ? "var(--cc-amber)"
-                : "var(--cc-danger)"
-              : submission.workflowState === "needs_redo" || submission.status === "Redo"
-              ? "var(--cc-danger)"
-              : submission.workflowState === "evaluated" || submission.status === "Well Done"
-              ? "var(--cc-success)"
-              : submission.workflowState === "validated"
-              ? "var(--cc-accent-bright)"
-              : "var(--cc-amber)";
+          const statusColor = !submission
+            ? wasPresent
+              ? "var(--cc-amber)"
+              : "var(--cc-danger)"
+            : needsRedo
+            ? "var(--cc-danger)"
+            : state === "evaluated"
+            ? "var(--cc-success)"
+            : state === "validated"
+            ? "var(--cc-accent-bright)"
+            : "var(--cc-amber)";
 
-          const stateLabels: Record<string, string> = {
-            submitted_to_president: "Awaiting Validation",
-            validated: "Forwarded to Trainer",
-            evaluated: "Evaluated ✅",
-            needs_redo: "Needs Redo",
-          };
+          const statusLabel = !submission
+            ? wasPresent
+              ? "Video Pending"
+              : "Absent — Submit Video"
+            : (state && MEETING_STATE_LABELS[state]) || submission.status;
 
-          const statusLabel =
-            !submission
-              ? wasPresent
-                ? "Video Pending"
-                : "Absent — Submit Video"
-              : submission.workflowState 
-              ? stateLabels[submission.workflowState] 
-              : submission.status;
-
-          const statusIcon =
-            submission?.status === "Well Done" ? (
-              <CheckCircle2 size={13} />
-            ) : submission?.status === "Redo" ? (
-              <XCircle size={13} />
-            ) : (
-              <Clock size={13} />
-            );
+          const statusIcon = state === "evaluated" ? <CheckCircle2 size={13} /> : needsRedo ? <XCircle size={13} /> : <Clock size={13} />;
 
           return (
-            <div
-              key={report.id}
-              style={{
-                borderRadius: "14px",
-                padding: "14px 16px",
-                background: "var(--cc-surface-inset)",
-                boxShadow: "var(--cc-neu-inset-xs)",
-              }}
-            >
-              {/* Row header */}
+            <div key={id} className="cc-well">
               <div
                 style={{
                   display: "flex",
@@ -362,144 +263,87 @@ const MeetingVideoPanel: React.FC<{
                   justifyContent: "space-between",
                   gap: "8px",
                   flexWrap: "wrap",
-                  marginBottom: submission && submission.status !== "Redo" ? 0 : "10px",
                 }}
               >
                 <div>
-                  <span
-                    style={{
-                      fontSize: "0.85rem",
-                      fontWeight: 700,
-                      color: "var(--cc-text)",
-                    }}
-                  >
+                  <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--cc-text)" }}>
                     Week {report.week_number}
                   </span>
-                  <span
-                    style={{
-                      fontSize: "0.72rem",
-                      color: "var(--cc-text-faint)",
-                      marginLeft: "8px",
-                    }}
-                  >
+                  <span style={{ fontSize: "0.72rem", color: "var(--cc-text-faint)", marginLeft: "8px" }}>
                     {report.meeting_date?.seconds
-                      ? new Date(report.meeting_date.seconds * 1000).toLocaleDateString(
-                          "en-IN",
-                          { day: "numeric", month: "short", year: "numeric" }
-                        )
+                      ? new Date(report.meeting_date.seconds * 1000).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })
                       : ""}
                   </span>
                 </div>
-                <span
-                  className="cc-chip"
-                  style={{
-                    color: statusColor,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
-                >
+                <span className="cc-chip" style={{ color: statusColor }}>
                   {statusIcon} {statusLabel}
                 </span>
               </div>
 
-              {/* Inline video player */}
               {submission?.video_url && (
-                <div style={{ marginTop: "10px", marginBottom: "14px" }}>
+                <div style={{ marginTop: "10px" }}>
                   <CCInlineVideoPlayer url={submission.video_url} />
                 </div>
               )}
 
-              {/* Redo feedback */}
-              {(submission?.workflowState === "needs_redo" || submission?.status === "Redo") && (submission.trainerRemarks || submission.evaluator_notes) && (
-                <div
-                  style={{
-                    padding: "8px 12px",
-                    borderRadius: "10px",
-                    background: "var(--cc-surface-deep)",
-                    boxShadow: "var(--cc-neu-inset-xs)",
-                    marginBottom: "10px",
-                  }}
-                >
-                  <p style={{ fontSize: "0.72rem", color: "var(--cc-danger)" }}>
-                    <strong>Feedback:</strong> {submission.trainerRemarks || submission.evaluator_notes}
+              {needsRedo && feedback && (
+                <div className="cc-well-deep" style={{ marginTop: "10px" }}>
+                  <p style={{ fontSize: "0.74rem", color: "var(--cc-danger)", lineHeight: 1.6 }}>
+                    <strong>{submission?.sentBackBy === "president" ? "President feedback:" : "Trainer feedback:"}</strong>{" "}
+                    {feedback}
                   </p>
                 </div>
               )}
 
-              {/* Well Done praise */}
-              {(submission?.workflowState === "evaluated" || submission?.status === "Well Done") && (
-                <div
-                  style={{
-                    marginTop: "8px",
-                    fontSize: "0.75rem",
-                    color: "var(--cc-success)",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
+              {state === "evaluated" && (
+                <div style={{ marginTop: "8px", fontSize: "0.75rem", color: "var(--cc-success)", display: "flex", alignItems: "center", gap: "6px" }}>
                   <CheckCircle2 size={13} />
-                  {submission.trainerRemarks || submission.evaluator_notes || "Excellent work! Your video was approved."}
+                  {feedback || "Excellent work! Your video was approved."}
                 </div>
               )}
 
-              {/* Submit input — show if no submission or Redo */}
-              {(!submission || submission.workflowState === "needs_redo" || submission.status === "Redo") && (
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <div
-                    style={{
-                      flex: 1,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      padding: "9px 12px",
-                      borderRadius: "10px",
-                      background: "var(--cc-surface-deep)",
-                      boxShadow: "var(--cc-neu-inset-sm)",
-                    }}
-                  >
+              {canSubmit && (
+                <div className="cc-input-row" style={{ marginTop: "10px" }}>
+                  <div className="cc-input-wrap">
                     <Link2 size={13} color="var(--cc-text-faint)" />
                     <input
+                      className="cc-input"
                       type="url"
+                      inputMode="url"
+                      aria-label={`Video link for week ${report.week_number}`}
                       placeholder={
-                        !wasPresent
+                        needsRedo
+                          ? "Paste your new video link"
+                          : !wasPresent
                           ? "Submit video even if absent — paste link"
                           : "Paste YouTube / Drive / Loom link"
                       }
-                      value={urls[report.id!] || ""}
-                      onChange={(e) =>
-                        setUrls((p) => ({ ...p, [report.id!]: e.target.value }))
-                      }
-                      style={{
-                        flex: 1,
-                        background: "none",
-                        border: "none",
-                        outline: "none",
-                        color: "var(--cc-text)",
-                        fontSize: "0.8rem",
-                        fontFamily: "inherit",
-                      }}
+                      value={urls[id] || ""}
+                      onChange={(e) => setUrls((p) => ({ ...p, [id]: e.target.value }))}
+                      onKeyDown={(e) => e.key === "Enter" && handleSubmit(report)}
                     />
                   </div>
                   <button
                     type="button"
                     onClick={() => handleSubmit(report)}
-                    disabled={submitting[report.id!] || !urls[report.id!]?.trim()}
+                    disabled={submitting[id] || !urls[id]?.trim()}
                     className="cc-btn-primary"
                     style={{
                       padding: "9px 14px",
-                      borderRadius: "10px",
+                      borderRadius: "12px",
                       fontSize: "0.8rem",
                       display: "flex",
                       alignItems: "center",
                       gap: "5px",
                       whiteSpace: "nowrap",
-                      opacity: !urls[report.id!]?.trim() ? 0.5 : 1,
                     }}
                   >
-                    <Send size={12} />
-                    {submitting[report.id!] ? "..." : "Submit"}
+                    {submitting[id] ? <Loader2 size={12} className="cc-spin" /> : <Send size={12} />}
+                    {needsRedo ? "Resubmit" : "Submit"}
                   </button>
                 </div>
               )}
@@ -511,23 +355,39 @@ const MeetingVideoPanel: React.FC<{
   );
 };
 
-// ── Notifications Panel ───────────────────────────────────────
+// ── Notifications ─────────────────────────────────────────────
 const buildNotifications = (
   reports: CCMeetingReport[],
   videos: CCMeetingVideoSubmission[],
+  speeches: CCSpeech[],
   uid: string
 ) => {
-  const notifications: Array<{
-    type: "absent" | "redo" | "welldone" | "pending";
-    message: string;
-    sub?: string;
-  }> = [];
-
+  const notifications: Array<{ type: NotificationType; message: string; sub?: string }> = [];
   const videoMap = Object.fromEntries(videos.map((v) => [v.report_id, v]));
+
+  // Speeches first — they gate level progression.
+  speeches.forEach((s) => {
+    const state = getEffectiveWorkflowState(s);
+    if (!state) return;
+    if (state === "needs_redo") {
+      notifications.push({
+        type: "redo",
+        message: `"${s.title}" needs a redo.`,
+        sub: s.trainerRemarks || s.evaluator_notes || "Check the feedback and resubmit from the speech tracker.",
+      });
+    } else if (state === "evaluated") {
+      notifications.push({
+        type: "welldone",
+        message: `"${s.title}" was evaluated${s.studentPointsAwarded !== undefined ? ` — ${s.studentPointsAwarded}/10` : ""}! 🎉`,
+        sub: s.trainerRemarks || undefined,
+      });
+    }
+  });
 
   reports.forEach((r) => {
     const wasPresent = r.attendance?.find((a) => a.uid === uid)?.present ?? false;
     const video = videoMap[r.id!];
+    const state = video ? getEffectiveWorkflowState(video) : undefined;
 
     if (!wasPresent && !video) {
       notifications.push({
@@ -536,28 +396,28 @@ const buildNotifications = (
         sub: "Submitting a video even when absent shows commitment.",
       });
     }
-    if (video?.workflowState === "needs_redo" || video?.status === "Redo") {
+    if (state === "needs_redo") {
       notifications.push({
         type: "redo",
         message: `Week ${r.week_number} video needs to be redone.`,
         sub: video.trainerRemarks || video.evaluator_notes || "Check the feedback and resubmit.",
       });
     }
-    if (video?.workflowState === "evaluated" || video?.status === "Well Done") {
+    if (state === "evaluated") {
       notifications.push({
         type: "welldone",
         message: `Week ${r.week_number} video evaluated! 🎉`,
         sub: video.trainerRemarks || video.evaluator_notes || "Excellent work — keep it up!",
       });
     }
-    if (video?.workflowState === "submitted_to_president" || video?.status === "Pending Review") {
+    if (state === "submitted_to_president") {
       notifications.push({
         type: "pending",
         message: `Week ${r.week_number} video is awaiting validation.`,
-        sub: "Your president will approve it soon.",
+        sub: "Your president will review it soon.",
       });
     }
-    if (video?.workflowState === "validated") {
+    if (state === "validated") {
       notifications.push({
         type: "pending",
         message: `Week ${r.week_number} video forwarded to trainer.`,
@@ -569,94 +429,148 @@ const buildNotifications = (
   return notifications;
 };
 
+// ── Speech evaluation history ─────────────────────────────────
+const SPEECH_STATE_CONFIG: Record<string, { label: string; color: string }> = {
+  submitted_to_president: { label: "Awaiting President", color: "var(--cc-amber)" },
+  validated: { label: "With Trainer", color: "var(--cc-accent-bright)" },
+  evaluated: { label: "Evaluated ✅", color: "var(--cc-success)" },
+  needs_redo: { label: "Needs Redo", color: "var(--cc-danger)" },
+};
+
+const SpeechStatusList: React.FC<{ speeches: CCSpeech[] }> = ({ speeches }) => {
+  const submitted = speeches.filter((s) => getEffectiveWorkflowState(s));
+  if (submitted.length === 0) return null;
+
+  return (
+    <div className="cc-card">
+      <h3 className="cc-card-title" style={{ marginBottom: "12px" }}>
+        <TrendingUp size={15} color="var(--cc-accent-bright)" /> Speech Evaluation Status
+      </h3>
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        {submitted.map((speech) => {
+          const state = getEffectiveWorkflowState(speech)!;
+          const cfg = SPEECH_STATE_CONFIG[state];
+          const feedback = speech.trainerRemarks || speech.evaluator_notes;
+          return (
+            <div key={speech.speech_id} className="cc-well">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                <div>
+                  <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--cc-text)" }}>{speech.title}</span>
+                  <span style={{ fontSize: "0.68rem", marginLeft: "8px", color: "var(--cc-text-faint)" }}>
+                    L{speech.level}
+                    {(speech.version ?? 1) > 1 ? ` · v${speech.version}` : ""}
+                  </span>
+                </div>
+                <span style={{ fontSize: "0.74rem", fontWeight: 600, color: cfg.color }}>{cfg.label}</span>
+              </div>
+
+              {state === "evaluated" && speech.studentPointsAwarded !== undefined && (
+                <div style={{ fontSize: "0.78rem", color: "var(--cc-success)", marginTop: "6px" }}>
+                  ⭐ Score: {speech.studentPointsAwarded}/10
+                  {feedback && <span style={{ color: "var(--cc-text-muted)", marginLeft: "12px" }}>— {feedback}</span>}
+                </div>
+              )}
+
+              {state === "needs_redo" && feedback && (
+                <div className="cc-well-deep" style={{ marginTop: "10px" }}>
+                  <p style={{ fontSize: "0.75rem", color: "var(--cc-danger)", lineHeight: 1.6 }}>
+                    <strong>{speech.sentBackBy === "president" ? "President feedback:" : "Trainer feedback:"}</strong>{" "}
+                    {feedback}
+                  </p>
+                  <p style={{ fontSize: "0.7rem", color: "var(--cc-text-faint)", marginTop: "4px" }}>
+                    Re-record and resubmit from the Level {speech.level} tracker above.
+                  </p>
+                </div>
+              )}
+
+              {speech.youtubeUrl && (
+                <div style={{ marginTop: "12px" }}>
+                  <CCInlineVideoPlayer url={speech.youtubeUrl} />
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 // ── Main Dashboard ────────────────────────────────────────────
-const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
+const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user: initialUser }) => {
+  // `initialUser` is a snapshot from sign-in; keep a live copy so points / level update after reviews.
+  const [user, setUser] = useState<CCUser>(initialUser);
   const [reports, setReports] = useState<CCMeetingReport[]>([]);
   const [videos, setVideos] = useState<CCMeetingVideoSubmission[]>([]);
-  const [attendance, setAttendance] = useState({ present: 0, total: 0, percentage: 0 });
-  const [loading, setLoading] = useState(true);
   const [speeches, setSpeeches] = useState<CCSpeech[]>([]);
-  const [profilePic, setProfilePic] = useState(user.profilePictureUrl || "");
-  const [uploadingPfp, setUploadingPfp] = useState(false);
-  const pfpInputRef = useRef<HTMLInputElement>(null);
-  const [redoUrls, setRedoUrls] = useState<Record<string, string>>({});
-  const [resubmitting, setResubmitting] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
-  const loadAll = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [reportData, videoData, attStats, speechData] = await Promise.all([
-        getMeetingReports(user.college),
-        getStudentMeetingVideos(user.uid),
-        getStudentAttendanceStats(user.uid, user.college),
-        getCCSpeeches(user.uid),
-      ]);
-      setReports(reportData);
-      setVideos(videoData);
-      setAttendance(attStats);
-      setSpeeches(speechData);
-    } finally {
-      setLoading(false);
-    }
-  }, [user.uid, user.college]);
+  const loadAll = useCallback(
+    async (silent = false) => {
+      if (silent) setRefreshing(true);
+      else setLoading(true);
+      setLoadError(false);
+      try {
+        const [fresh, reportData, videoData, speechData] = await Promise.all([
+          getCCUser(initialUser.uid),
+          getMeetingReports(initialUser.college),
+          getStudentMeetingVideos(initialUser.uid),
+          getCCSpeeches(initialUser.uid),
+        ]);
+        if (fresh) setUser(fresh);
+        setReports(reportData);
+        setVideos(videoData);
+        setSpeeches(speechData);
+      } catch (err) {
+        console.error("Student dashboard load failed:", err);
+        setLoadError(true);
+        toast.error("Couldn't load your dashboard. Please try again.");
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    [initialUser.uid, initialUser.college]
+  );
 
-  // Handle avatar upload
-  const handlePfpUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadingPfp(true);
-    try {
-      const url = await uploadToCloudinary(file, "cc_pfp");
-      await updateCCUser(user.uid, { profilePictureUrl: url });
-      setProfilePic(url);
-      toast.success("Profile picture updated!");
-    } catch {
-      toast.error("Failed to upload profile picture.");
-    } finally {
-      setUploadingPfp(false);
-    }
-  };
+  useEffect(() => {
+    loadAll();
+  }, [loadAll]);
 
-  // Handle speech redo resubmission
-  const handleResubmit = async (speech: CCSpeech) => {
-    const url = redoUrls[speech.speech_id]?.trim();
-    if (!url) return toast.error("Please paste a YouTube URL.");
-    try { new URL(url); } catch { return toast.error("Invalid URL."); }
-    setResubmitting(speech.speech_id);
-    try {
-      await resubmitSpeech(user.uid, speech.speech_id, url, speech.version || 1);
-      toast.success("Speech resubmitted for review!");
-      setRedoUrls((p) => ({ ...p, [speech.speech_id]: "" }));
-      loadAll();
-    } catch {
-      toast.error("Resubmission failed.");
-    } finally {
-      setResubmitting(null);
-    }
-  };
-
-  useEffect(() => { loadAll(); }, [loadAll]);
-
-  const notifications = buildNotifications(reports, videos, user.uid);
+  const attendance = useMemo(
+    () => computeAttendanceStats(reports)[user.uid] ?? { present: 0, total: 0, percentage: 0 },
+    [reports, user.uid]
+  );
+  const notifications = useMemo(
+    () => buildNotifications(reports, videos, speeches, user.uid),
+    [reports, videos, speeches, user.uid]
+  );
 
   if (loading) {
     return (
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "60vh",
-          gap: "12px",
-          color: "var(--cc-text-muted)",
-        }}
-      >
-        <Loader2 size={22} style={{ animation: "spin 1s linear infinite" }} />
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh", gap: "12px", color: "var(--cc-text-muted)" }}>
+        <Loader2 size={22} className="cc-spin" />
         Loading your dashboard...
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
+
+  if (loadError && reports.length === 0 && speeches.length === 0) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", gap: "14px", color: "var(--cc-text-muted)" }}>
+        <AlertTriangle size={26} color="var(--cc-danger)" />
+        <p style={{ fontSize: "0.9rem" }}>We couldn't load your dashboard.</p>
+        <button type="button" className="cc-btn-primary" style={{ padding: "10px 20px", borderRadius: "12px" }} onClick={() => loadAll()}>
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  const currentLevel = (user.current_level ?? 1) as 1 | 2 | 3 | 4;
+  const pendingSpeechCount = speeches.filter((s) => getSpeechDisplayStatus(s) === "Pending Review").length;
 
   return (
     <div
@@ -666,258 +580,85 @@ const CCStudentDashboard: React.FC<CCStudentDashboardProps> = ({ user }) => {
         margin: "0 auto",
         padding: "2rem 160px 2rem 1.5rem",
         display: "grid",
-        gridTemplateColumns: "1fr",
+        gridTemplateColumns: "minmax(0, 1fr)",
         gap: "1.5rem",
         position: "relative",
       }}
     >
-      {/* Colorful Ambient Orbs behind content */}
-      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: -1, borderRadius: "30px" }}>
-        <div className="cc-animate-shimmer" style={{ position: "absolute", top: "5%", left: "0%", width: "45vw", height: "45vw", background: "radial-gradient(circle, rgba(139,127,255,0.08) 0%, transparent 65%)", filter: "blur(60px)" }} />
-        <div className="cc-animate-shimmer" style={{ position: "absolute", top: "35%", right: "0%", width: "40vw", height: "40vw", background: "radial-gradient(circle, rgba(255,185,85,0.06) 0%, transparent 65%)", filter: "blur(60px)", animationDelay: "2s" }} />
-        <div className="cc-animate-shimmer" style={{ position: "absolute", bottom: "10%", left: "15%", width: "50vw", height: "50vw", background: "radial-gradient(circle, rgba(74,222,128,0.05) 0%, transparent 65%)", filter: "blur(60px)", animationDelay: "4s" }} />
+      {/* Ambient orbs behind content */}
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: -1, borderRadius: "30px" }} aria-hidden="true">
+        <div className="cc-animate-shimmer" style={{ position: "absolute", top: "5%", left: "0%", width: "45vw", height: "45vw", background: "var(--cc-orb-purple)", filter: "blur(60px)" }} />
+        <div className="cc-animate-shimmer" style={{ position: "absolute", top: "35%", right: "0%", width: "40vw", height: "40vw", background: "var(--cc-orb-amber)", filter: "blur(60px)", animationDelay: "2s" }} />
+        <div className="cc-animate-shimmer" style={{ position: "absolute", bottom: "10%", left: "15%", width: "50vw", height: "50vw", background: "var(--cc-orb-teal)", filter: "blur(60px)", animationDelay: "4s" }} />
       </div>
+
       {/* Welcome banner */}
       <div
-        style={{
-          borderRadius: "20px",
-          padding: "1.5rem 1.75rem",
-          background: "var(--cc-bg)",
-          boxShadow: "var(--cc-neu-lg)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          flexWrap: "wrap",
-          gap: "12px",
-        }}
+        className="cc-card-hero"
+        style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          {/* Avatar with upload */}
-          <div
-            onClick={() => pfpInputRef.current?.click()}
-            title="Click to change profile picture"
-            style={{
-              width: "52px",
-              height: "52px",
-              borderRadius: "50%",
-              background: profilePic ? `url(${profilePic}) center/cover` : "var(--cc-surface-inset)",
-              boxShadow: "var(--cc-neu-sm)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              flexShrink: 0,
-              overflow: "hidden",
-              position: "relative",
-              transition: "box-shadow 200ms",
-            }}
-          >
-            {!profilePic && (
-              <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "var(--cc-accent-bright)" }}>
-                {user.name.charAt(0).toUpperCase()}
-              </span>
-            )}
-            {uploadingPfp && (
-              <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Loader2 size={16} color="#fff" style={{ animation: "spin 1s linear infinite" }} />
-              </div>
-            )}
-            <div style={{ position: "absolute", bottom: 0, right: 0, width: "18px", height: "18px", borderRadius: "50%", background: "var(--cc-accent)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Camera size={10} color="#fff" />
-            </div>
-          </div>
-          <input ref={pfpInputRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handlePfpUpload} />
-
-          <div>
-            <h1
-              style={{
-                fontSize: "clamp(1.2rem, 3vw, 1.6rem)",
-                fontWeight: 800,
-                color: "var(--cc-text)",
-                marginBottom: "4px",
-              }}
-            >
+        <div style={{ display: "flex", alignItems: "center", gap: "16px", minWidth: 0 }}>
+          <CCAvatarUpload uid={user.uid} name={user.name} initialUrl={user.profilePictureUrl} />
+          <div style={{ minWidth: 0 }}>
+            <h1 style={{ fontSize: "clamp(1.2rem, 3vw, 1.6rem)", fontWeight: 800, color: "var(--cc-text)", marginBottom: "4px" }}>
               Welcome back, <span className="cc-text-gradient">{user.name}</span> 👋
             </h1>
             <p style={{ fontSize: "0.82rem", color: "var(--cc-text-muted)" }}>
-              {user.college} · Level {user.current_level} Student
+              {user.college} · Level {currentLevel} {user.club_role}
+              {pendingSpeechCount > 0 && ` · ${pendingSpeechCount} speech${pendingSpeechCount > 1 ? "es" : ""} in review`}
             </p>
           </div>
         </div>
-        <div
-          style={{
-            padding: "12px 20px",
-            borderRadius: "14px",
-            background: "var(--cc-surface-inset)",
-            boxShadow: "var(--cc-neu-inset-sm), var(--cc-glow-purple-sm)",
-            textAlign: "center",
-          }}
-        >
-          <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--cc-accent-bright)", lineHeight: 1 }}>
-            {user.total_points}
-          </div>
-          <div style={{ fontSize: "0.68rem", color: "var(--cc-text-muted)", marginTop: "2px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.04em" }}>
-            Points
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          <button
+            type="button"
+            className="cc-btn-action"
+            onClick={() => loadAll(true)}
+            disabled={refreshing}
+            title="Refresh points and review status"
+          >
+            <RefreshCw size={14} className={refreshing ? "cc-spin" : undefined} /> Refresh
+          </button>
+          <div className="cc-well-deep" style={{ padding: "12px 20px", borderRadius: "14px", textAlign: "center", boxShadow: "var(--cc-neu-inset-sm), var(--cc-glow-purple-sm)" }}>
+            <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "var(--cc-accent-bright)", lineHeight: 1 }}>
+              {user.total_points ?? 0}
+            </div>
+            <div className="cc-eyebrow" style={{ marginTop: "2px" }}>Points</div>
           </div>
         </div>
       </div>
 
-      {/* Attendance card */}
       <AttendanceCard {...attendance} />
 
-      {/* Notifications */}
       {notifications.length > 0 && (
-        <div
-          style={{
-            borderRadius: "20px",
-            padding: "1.5rem",
-            background: "var(--cc-bg)",
-            boxShadow: "var(--cc-neu-md)",
-          }}
-        >
-          <h3
-            style={{
-              fontSize: "0.9rem",
-              fontWeight: 700,
-              color: "var(--cc-text)",
-              marginBottom: "12px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
-          >
+        <div className="cc-card" style={{ padding: "1.5rem" }}>
+          <h3 className="cc-card-title" style={{ fontSize: "0.9rem", marginBottom: "12px" }}>
             <TrendingUp size={15} color="var(--cc-accent-bright)" />
             Activity Alerts ({notifications.length})
           </h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px", maxHeight: "320px", overflowY: "auto", padding: "4px" }}>
             {notifications.map((n, i) => (
-              <NotificationBanner key={i} {...n} />
+              <NotificationBanner key={`${n.type}-${i}`} {...n} />
             ))}
           </div>
         </div>
       )}
 
-
-      {/* Speech Workflow Status */}
-      {speeches.filter(s => s.workflowState).length > 0 && (
-        <div
-          style={{
-            borderRadius: "20px",
-            padding: "1.75rem",
-            background: "var(--cc-bg)",
-            boxShadow: "var(--cc-neu-md)",
-          }}
-        >
-          <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--cc-text)", marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
-            <TrendingUp size={15} color="var(--cc-accent-bright)" /> Speech Evaluation Status
-          </h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            {speeches.filter(s => s.workflowState).map((speech) => {
-              const stateLabels: Record<string, { label: string; color: string }> = {
-                submitted_to_president: { label: "Awaiting President Validation", color: "var(--cc-amber)" },
-                validated: { label: "Forwarded to Trainer", color: "var(--cc-accent-bright)" },
-                evaluated: { label: "Evaluated ✅", color: "var(--cc-success)" },
-                needs_redo: { label: "Needs Redo", color: "var(--cc-danger)" },
-              };
-              const stateCfg = stateLabels[speech.workflowState!] || { label: speech.workflowState, color: "var(--cc-text-muted)" };
-
-              return (
-                <div
-                  key={speech.speech_id}
-                  style={{
-                    borderRadius: "14px",
-                    padding: "14px 16px",
-                    background: "var(--cc-surface-inset)",
-                    boxShadow: "var(--cc-neu-inset-xs)",
-                  }}
-                >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: speech.workflowState === "needs_redo" ? "10px" : 0 }}>
-                    <div>
-                      <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--cc-text)" }}>
-                        {speech.title}
-                      </span>
-                      {(speech.version || 1) > 1 && (
-                        <span style={{ fontSize: "0.68rem", marginLeft: "8px", color: "var(--cc-text-faint)" }}>
-                          v{speech.version}
-                        </span>
-                      )}
-                    </div>
-                    <span style={{ fontSize: "0.74rem", fontWeight: 500, color: stateCfg.color }}>
-                      {stateCfg.label}
-                    </span>
-                  </div>
-
-                  {/* Points display for evaluated speeches */}
-                  {speech.workflowState === "evaluated" && speech.studentPointsAwarded !== undefined && (
-                    <div style={{ fontSize: "0.78rem", color: "var(--cc-success)", marginTop: "6px" }}>
-                      ⭐ Score: {speech.studentPointsAwarded}/10
-                      {speech.trainerRemarks && <span style={{ color: "var(--cc-text-muted)", marginLeft: "12px" }}>&mdash; {speech.trainerRemarks}</span>}
-                    </div>
-                  )}
-
-                  {/* Inline video player for speech */}
-                  {speech.youtubeUrl && (
-                    <div style={{ marginTop: "14px", marginBottom: "14px" }}>
-                      <CCInlineVideoPlayer url={speech.youtubeUrl} />
-                    </div>
-                  )}
-
-                  {/* Redo section */}
-                  {speech.workflowState === "needs_redo" && (
-                    <>
-                      {speech.trainerRemarks && (
-                        <div style={{ padding: "8px 12px", borderRadius: "10px", background: "var(--cc-surface-deep)", boxShadow: "var(--cc-neu-inset-xs)", marginBottom: "10px" }}>
-                          <p style={{ fontSize: "0.75rem", color: "var(--cc-danger)" }}>
-                            <strong>Feedback:</strong> {speech.trainerRemarks}
-                          </p>
-                        </div>
-                      )}
-                      <div style={{ display: "flex", gap: "8px" }}>
-                        <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "8px", padding: "9px 12px", borderRadius: "10px", background: "var(--cc-surface-deep)", boxShadow: "var(--cc-neu-inset-sm)" }}>
-                          <Link2 size={13} color="var(--cc-text-faint)" />
-                          <input
-                            type="url"
-                            placeholder="Paste updated YouTube URL"
-                            value={redoUrls[speech.speech_id] || ""}
-                            onChange={(e) => setRedoUrls((p) => ({ ...p, [speech.speech_id]: e.target.value }))}
-                            style={{ flex: 1, background: "none", border: "none", outline: "none", color: "var(--cc-text)", fontSize: "0.8rem", fontFamily: "inherit" }}
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => handleResubmit(speech)}
-                          disabled={resubmitting === speech.speech_id || !redoUrls[speech.speech_id]?.trim()}
-                          className="cc-btn-primary"
-                          style={{ padding: "9px 14px", borderRadius: "10px", fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "5px", whiteSpace: "nowrap", opacity: !redoUrls[speech.speech_id]?.trim() ? 0.5 : 1 }}
-                        >
-                          <Send size={12} />
-                          {resubmitting === speech.speech_id ? "..." : "Resubmit"}
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Meeting video submissions */}
-      <MeetingVideoPanel
-        user={user}
-        reports={reports}
-        videos={videos}
-        onSubmitted={loadAll}
+      {/* Speech tracker — where students submit and redo speeches */}
+      <CCSpeechTracker
+        uid={user.uid}
+        currentLevel={currentLevel}
+        speeches={speeches}
+        onSpeechSubmitted={() => loadAll(true)}
       />
 
-      {/* Progress Timeline */}
-      <CCProgressTimeline currentLevel={user.current_level} />
+      <SpeechStatusList speeches={speeches} />
 
-      {/* Gamification */}
+      <MeetingVideoPanel user={user} reports={reports} videos={videos} onSubmitted={() => loadAll(true)} />
+
+      <CCProgressTimeline currentLevel={currentLevel} />
+
       <CCGamificationPanel user={user} />
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 };

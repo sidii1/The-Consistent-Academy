@@ -92,7 +92,7 @@ const CCJourney: React.FC = () => (
       <img
         src="/consistent%20communicator's%20path.png"
         alt="Consistent Communicator's Path: Base Camp, The Ascent, High Camp, The Summit and Beyond the Summit"
-        style={{ width: "100%", maxWidth: 760, display: "block", margin: "0 auto", height: "auto" }}
+        style={{ width: "80%", maxWidth: 800, display: "block", margin: "0 auto", height: "auto" }}
         loading="lazy"
       />
     </motion.div>
@@ -144,7 +144,7 @@ const CCJourney: React.FC = () => (
             viewport: { once: true, margin: "-40px" },
             transition: { duration: 0.5, delay: (i % 3) * 0.08 },
           })}
-          style={{ background: "var(--cc-surface-raised)", borderRadius: 22, padding: "22px 22px 20px", boxShadow: "var(--cc-neu-md)", borderTop: `3px solid ${l.color}` }}
+          style={{ background: "var(--cc-surface-raised)", borderRadius: 22, padding: "22px 22px 20px", boxShadow: `var(--cc-neu-md), 0 -6px 18px -8px ${l.color}` }}
         >
           <div style={{ color: l.color, fontSize: "0.7rem", fontWeight: 800, letterSpacing: "0.16em", textTransform: "uppercase" }}>
             Level {l.n}

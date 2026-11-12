@@ -1,6 +1,7 @@
 ﻿# The Consistent Academy — Design System Reference
 
 > **Last Audited**: July 2026 — Full sweep of every file in /src, index.html, tailwind.config.ts, and index.css.
+> **Last Updated**: November 2026 — Added the Blog page pattern (Part I) and **CC Club Dark Neumorphism v2.1** (Part II: shared card/well/input/action-button primitives, status-colour rules, focus + reduced-motion rules). The CC Club dashboards, tracker, meeting panel and Blog page were migrated onto these primitives.
 > **Status**: Authoritative source of truth. All values are directly pulled from the live codebase.
 
 ---
@@ -362,7 +363,33 @@ blob         -> 10s ∞ — border-radius morph between two organic shapes
 
 ---
 
+### Community Blog (`pages/Blog.tsx`)
+
+The reference implementation of a **content page** in the light system. Everything is molded from `bg-neo-base`; no `bg-card`, `bg-white`, borders or legacy `shadow-neu-*`.
+
+| Element | Recipe |
+|---|---|
+| Page root | `min-h-screen bg-neo-base overflow-x-hidden`; `<main className="pt-28 pb-16 px-4 sm:px-6">` |
+| Header | Section label (`text-neo-accent text-sm uppercase tracking-widest font-semibold`) + `text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-neo-fg`, key word in `text-neo-accent` |
+| Actions | `NeumorphicButton` — `primary` for the main CTA ("Write a Blog"), `secondary` for Login, `ghost` for Logout. Link-styled actions use `rounded-neo-btn neo-surface … hover:shadow-neo-lifted active:neo-inset focus-visible:shadow-neo-focus` |
+| Form shell | `neo-surface rounded-neo-card p-8 max-sm:p-5 space-y-6` |
+| Text fields | `rounded-neo-btn bg-neo-base neo-inset text-neo-fg placeholder:text-neo-placeholder outline-none focus-visible:shadow-neo-focus` (carved in; focus = accent ring, **never** a border) |
+| Search field | Same as text fields + `rounded-full pl-12` with a leading `Search` icon |
+| Image dropzone | `neo-inset rounded-neo-card`, icon in `text-neo-accent-mid`; preview sits in a `neo-inset` frame with an `neo-surface-sm` round remove button |
+| Post card | `neo-surface rounded-neo-card p-6`, hover `shadow-neo-lifted -translate-y-0.5`; cover image framed by `neo-inset rounded-neo-inner p-1.5` |
+| Meta chips (author / date / read time) | `neo-inset-sm rounded-full px-3 py-1.5 text-xs text-neo-muted` |
+| Card link | `text-neo-accent font-semibold`, focus ring `focus-visible:shadow-neo-focus` |
+| Loading | Skeleton cards built from `neo-surface` + `neo-inset` blocks, `motion-safe:animate-pulse` |
+| Empty / error | `neo-surface` (or `neo-inset` for "no matches") card with a `neo-inset` round icon well and a `NeumorphicButton` retry |
+| Character / progress feedback | `text-xs text-neo-muted`, turns `text-neo-success` (teal) when a minimum is met |
+
+Entrance motion goes through `reveal()` from `lib/device.ts` (scroll-reveal, auto-simplified on touch / reduced-motion).
+
+---
+
 ## Part II — CC Club Dark Neumorphic System
+
+> **v2.1 summary** — every CC Club surface is now built from a small set of shared classes (see *CC Club Primitives*). Components must not hand-roll `box-shadow` stacks, `hsl(…)` colours or `border`s; use the primitives and the `--cc-*` tokens. This is what keeps the three role dashboards visually identical.
 
 Scoped entirely to `.cc-club-scope`. The CCButton applies the transition: clicking it overlays `#252436` via a `clip-path` iris animation, then navigates to `/club`.
 
@@ -554,6 +581,64 @@ Background (all variants): --cc-surface-inset (#1C1A2B)
 .cc-chip-amber   -> color: --cc-amber    (gold)
 ```
 
+Also available: `.cc-chip-teal` (Trainer / info) and `.cc-chip-accent` (neutral highlight / topic tags). Counts such as "3 pending" use `.cc-chip.cc-chip-amber` — **never** a custom amber chip with a border.
+
+### CC Club Primitives (v2.1)
+
+Defined in `index.css` under `.cc-club-scope`. Build every dashboard section from these.
+
+| Class | What it is | Notes |
+|---|---|---|
+| `.cc-card` | Extruded panel — `--cc-bg` + `--cc-neu-md`, `radius 20px`, `padding 1.75rem` | Default section container. Replaces repeated `background/boxShadow/borderRadius` inline blocks |
+| `.cc-card-hero` | Same shell with `--cc-neu-lg`, `padding 1.5rem 1.75rem` | Welcome banners only (one per page) |
+| `.cc-well` | Carved list-row — `--cc-surface-inset` + `--cc-neu-inset-xs`, `radius 14px` | Items inside a card (a submission, a notification) |
+| `.cc-well-deep` | Deeper carve — `--cc-surface-deep` + `--cc-neu-inset-sm`, `radius 12px` | Nested inside a `.cc-well`, stat tiles, feedback quotes, evaluation forms |
+| `.cc-input` | Field for `<input>`, `<textarea>`, `<select>` — `--cc-surface-deep` + `--cc-neu-inset-sm`, no border | **Focus** = `--cc-neu-inset-md` + `--cc-glow-purple-sm`. Placeholder `--cc-text-faint`. `.cc-input-num` for a 64px score box |
+| `.cc-input-wrap` | Inset container for an icon + `.cc-input` (link fields) | Shows the focus glow via `:focus-within` |
+| `.cc-input-row` | Flex row: field(s) + trailing submit button; wraps on narrow screens | |
+| `.cc-btn-primary` | Gradient CTA (see *Buttons*) | One per card at most |
+| `.cc-btn-action` | Small extruded action button — `--cc-bg` + `--cc-neu-sm`; hover lifts + glow; **press = inset** | Colour lives in the **text/icon only**: `--success`, `--danger`, `--accent`, `--teal` modifiers. Used for Approve / Reject / Refresh / level tabs / attendance rows |
+| `.cc-avatar` | 52px circular well + `--cc-neu-sm` | Contents supplied by `CCAvatarUpload` |
+| `.cc-card-title` | `1rem / 700 / --cc-text` flex row with icon gap | Section heading inside a card |
+| `.cc-eyebrow` | `0.68rem / 700 / uppercase / 0.06em / --cc-text-faint` | Tiny labels above big numbers |
+| `.cc-spin` | `cc-spin` 1s linear keyframe | Replaces per-component `<style>@keyframes spin…` |
+
+**Selected / pressed convention.** A selected toggle (level tab, attendance row) is rendered *pressed in*: `--cc-surface-inset` + `--cc-neu-inset-xs` (or `inset-sm`) with its text colour shifted to the semantic colour. Unselected is the raised `--cc-neu-sm`. Never indicate selection with a coloured fill or border.
+
+**Focus.** All buttons/links in the scope get `box-shadow: var(--cc-neu-xs), var(--cc-glow-purple)` on `:focus-visible` (a 2px deep gap + 4px accent ring). Inputs use the glow described above. Never `outline: none` without a replacement ring.
+
+**Reduced motion.** `prefers-reduced-motion: reduce` disables `cc-animate-shimmer`, `-shimmer-amber`, `-pulse-ring`, `-glow-amber` and the floating gamification badges. Decorative orbs already freeze on touch/phone viewports.
+
+#### Status → colour map (text / icon only, never fills)
+
+| Meaning | Token | Used for |
+|---|---|---|
+| Awaiting President | `--cc-amber` | `submitted_to_president`, pending counts, "Video Pending" |
+| With Trainer / forwarded | `--cc-accent-bright` | `validated` |
+| Approved / evaluated / present ≥ 75 % | `--cc-success` | `evaluated`, attendance ≥ 75 % |
+| Needs redo / rejected / absent | `--cc-danger` | `needs_redo`, attendance < 50 %, validation errors |
+| In review (neutral info) | `--cc-pending` | Speech tracker "In Review" chip |
+| Trainer role / class analytics | `--cc-teal` | Trainer header, trainer chips, analytics highlight |
+| President role / points | `--cc-amber` | Crown, points well glow (`--cc-glow-amber-sm`) |
+
+#### Recipe: review card (President & Trainer)
+
+```
+.cc-card
+  └─ .cc-card-title  (+ .cc-chip.cc-chip-amber  "N pending")
+  └─ .cc-well-deep   (one submission)
+       ├─ name · title · version      (--cc-text / --cc-text-faint)
+       ├─ CCInlineVideoPlayer         (inset-framed, 16:9)
+       └─ ReviewActions
+            ├─ .cc-input              feedback (required for Reject / Needs-redo)
+            └─ .cc-btn-action--success  [Approve & Forward]   .cc-btn-action--danger [Reject]
+```
+
+Rejections and redo requests **require** written feedback; the student sees it verbatim under "President feedback" / "Trainer feedback".
+
+#### Recipe: stat tile
+`.cc-well-deep` + `.cc-eyebrow` label + `2rem / 900` number in a semantic text colour + `0.68rem --cc-text-faint` caption.
+
 ### CC Club Divider (.cc-divider)
 
 ```css
@@ -659,6 +744,8 @@ These are print-context styles only — never used in the UI.
 | `--cc-text-muted` (#9B97AD) on `--cc-bg` (#252436) | ~5.2:1 | **AA** |
 
 - Touch targets: 48px minimum
+- Every icon-only button has an `aria-label`; toggles use `aria-expanded` / `role="checkbox"` + `aria-checked`; progress bars use `role="progressbar"`
+- Form fields have a visible or `sr-only` label (`htmlFor`) or an `aria-label`; live counters use `aria-live="polite"`
 - Focus: `shadow-neo-focus` (main site), `--cc-glow-purple` (CC Club)
 - Use `motion-safe:` for ambient animations
 
@@ -672,6 +759,9 @@ These are print-context styles only — never used in the UI.
 - NO: Using `font-display` or `font-sans` for the hero brand name — it must be Erica One
 - NO: Borders to define structure — shadows only
 - NO: Using `bg-background` (#EFEFF7) for neumorphic element surfaces — use `bg-neo-base` (#E0E5EC)
+- NO: `bg-card`, `bg-gradient-to-br from-background …` page shells or the legacy `shadow-neu-*` tokens on **new** pages — use `bg-neo-base` + `neo-surface` / `neo-inset` / `shadow-neo-*`
+- NO: `focus:border-primary` / ring-colour borders on inputs — carve the field with `neo-inset` and focus with `focus-visible:shadow-neo-focus`
+- NO: Setting `innerHTML` on a detached element to extract text from user content (it still loads images / fires handlers) — use `DOMParser` (`Blog.tsx` `htmlToText`)
 
 ### CC Club
 - NO: `--cc-accent` as card/panel background fill
@@ -679,6 +769,13 @@ These are print-context styles only — never used in the UI.
 - NO: `--cc-glow-purple-lg` for button hover — use `--cc-glow-btn-hover`
 - NO: Borders on neumorphic CC elements
 - NO: `.neu-*` classes inside `.cc-club-scope` — CC scope uses only `.cc-*` tokens
+- NO: `border: 1px solid …` on **any** CC element (cards, chips, inputs, badges, count pills) — depth comes from shadows; use `.cc-chip` for badges and `.cc-input` for fields
+- NO: Hard-coded colours (`hsl(210 18% 10%)`, `hsl(38 40% 14%)`, `hsl(160 60% 50%)`, `#000`/`#fff` fills…) — use `--cc-surface-*`, `--cc-amber`, `--cc-teal` etc. The only literals allowed are `#fff` on a dark scrim over an avatar and the printable report HTML
+- NO: Coloured **fills** for status (green/red/amber buttons or banners) — status is conveyed by text/icon colour on an extruded or carved neutral surface
+- NO: Selection shown by colour fill or border — selected = pressed-in (`--cc-neu-inset-*`)
+- NO: Re-declaring `@keyframes spin` inside components — use `.cc-spin`
+- NO: Inline `box-shadow` stacks that duplicate a primitive — use `.cc-card`, `.cc-well`, `.cc-well-deep`, `.cc-input`, `.cc-btn-action`
+- NO: Reviewer actions (reject / redo) without a required feedback field
 
 ---
 
@@ -698,4 +795,8 @@ These are print-context styles only — never used in the UI.
 | `src/components/PageLoader.tsx` | GSAP 4-phase iris page loader |
 | `src/components/layout/Navbar.tsx` | Scroll-aware neumorphic navbar |
 | `src/components/layout/Footer.tsx` | Gradient footer with blob accents |
+| `src/pages/Blog.tsx` | Community blog — reference light-neumorphic content page (search, validated form, draft autosave) |
 | `src/components/club/CC*.tsx` | All CC Club components — always under .cc-club-scope |
+| `src/components/club/CCAvatarUpload.tsx` | Shared avatar well + validated Cloudinary upload (all three dashboards) |
+| `src/components/club/CCSpeechTracker.tsx` | Student speech submit / redo UI with level tabs (rendered by `CCStudentDashboard`) |
+| `src/lib/ccClub.ts` | All CC Club Firestore logic: guarded workflow transitions, points, level progression, approvals |

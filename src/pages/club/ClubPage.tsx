@@ -44,6 +44,22 @@ const ClubPage: React.FC = () => {
     return () => unsub();
   }, []);
 
+  // Sign-up fires onAuthStateChanged *before* the profile document is written, which
+  // would leave the user stranded on the form — re-read the profile once it exists.
+  const handleSignedUp = async () => {
+    const current = auth.currentUser;
+    if (!current) return;
+    try {
+      const profile = await getCCUser(current.uid);
+      if (profile) {
+        setCcUser(profile);
+        setAppState("authenticated");
+      }
+    } catch {
+      /* the next auth-state change will retry */
+    }
+  };
+
   const scrollToAuth = () => {
     authSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -64,13 +80,8 @@ const ClubPage: React.FC = () => {
           flexDirection: "column",
         }}
       >
-        <Loader2
-          size={28}
-          color="var(--cc-accent)"
-          style={{ animation: "spin 1s linear infinite" }}
-        />
+        <Loader2 size={28} color="var(--cc-accent)" className="cc-spin" />
         <span>Loading CC Club…</span>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -86,7 +97,7 @@ const ClubPage: React.FC = () => {
       <CCHero onScrollToAuth={scrollToAuth} />
       <CCJourney />
       <div ref={authSectionRef}>
-        <CCAuthForm />
+        <CCAuthForm onSignedUp={handleSignedUp} />
       </div>
     </div>
   );

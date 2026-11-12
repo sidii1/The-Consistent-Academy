@@ -40,8 +40,9 @@ import {
   evaluateCCSpeech,
   updateCCUser,
   deleteCCUser,
-  getPendingTrainers,
-  approveTrainer,
+  getPendingApprovals,
+  approveMember,
+  APPROVAL_REQUIRED_ROLES,
   type CCUser,
   type CCSpeech,
   type CCRole,
@@ -168,9 +169,12 @@ const CCClubAdminPanel: React.FC = () => {
         }
       }
 
+      // An admin assigning a privileged role is itself the approval — otherwise the
+      // promoted user would be stuck on the "Approval Pending" screen.
       await updateCCUser(u.uid, {
         club_role: newRole,
         badges: updatedBadges,
+        ...(APPROVAL_REQUIRED_ROLES.includes(newRole) ? { approvalStatus: "approved" as const } : {}),
       });
 
       setUsers((prev) =>
@@ -222,19 +226,26 @@ const CCClubAdminPanel: React.FC = () => {
       .catch(() => { toast.error("Failed to load CC Club members"); setLoadingUsers(false); });
 
     // Load pending trainers for the approval subsection
-    getPendingTrainers()
-      .then((trainers) => setPendingTrainers(trainers))
+    getPendingApprovals()
+      .then((pending) => setPendingTrainers(pending))
       .catch(() => { /* silently fail — non-critical */ });
   }, []);
 
   const handleApproveTrainer = async (uid: string) => {
     setApprovingTrainer(uid);
     try {
-      await approveTrainer(uid);
+      const approved = pendingTrainers.find((t) => t.uid === uid);
+      await approveMember(uid);
       setPendingTrainers((prev) => prev.filter((t) => t.uid !== uid));
-      toast.success("Trainer approved successfully!");
+      // Approving a President demotes the previous one — reload so the member list stays accurate.
+      if (approved?.club_role === "President") {
+        getAllCCUsers().then(setUsers).catch(() => {});
+      } else {
+        setUsers((prev) => prev.map((m) => (m.uid === uid ? { ...m, approvalStatus: "approved" } : m)));
+      }
+      toast.success(`${approved?.club_role ?? "Member"} approved successfully!`);
     } catch {
-      toast.error("Failed to approve trainer.");
+      toast.error("Failed to approve member.");
     } finally {
       setApprovingTrainer(null);
     }
@@ -329,7 +340,7 @@ const CCClubAdminPanel: React.FC = () => {
               gap: "6px",
             }}
           >
-            <Shield size={14} /> Pending Trainer Approvals ({pendingTrainers.length})
+            <Shield size={14} /> Pending Role Approvals ({pendingTrainers.length})
           </h4>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             {pendingTrainers.map((t) => (
@@ -358,7 +369,7 @@ const CCClubAdminPanel: React.FC = () => {
                       marginTop: "1px",
                     }}
                   >
-                    {t.email} · {t.college}
+                    {t.club_role} · {t.email} · {t.college}
                   </span>
                 </div>
                 <button
