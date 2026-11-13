@@ -98,20 +98,25 @@ export const PACKAGES: Product[] = [
 
 export const KIDS_COURSE_PRICE = 1999;
 
+/** Kids courses that differ from the default KIDS_COURSE_PRICE. */
+export const KIDS_COURSE_PRICE_OVERRIDES: Record<string, number> = {
+  "kid-story": 14999,
+};
+
 export const KIDS_COURSES: Product[] = [
   ["kid-mun", "Model United Nations (MUN) Course"],
   ["kid-tedx", "TedX & Toastmaster Training"],
   ["kid-grammar", "Grammar Foundations"],
   ["kid-creative", "Creative Writing"],
-  ["kid-story", "TCA – Craft Your Own Story"],
-  ["kid-case-study", "TCA – Case Study & Critical Thinking Workshop"],
-  ["kid-essay", "TCA – International Essay Writing Competition Preparation"],
+  ["kid-story", "Craft Your Own Story"],
+  ["kid-case-study", "Case Study & Critical Thinking Workshop"],
+  ["kid-essay", "International Essay Writing Competition Preparation"],
 ].map(([id, name]) => ({
   id,
   kind: "kids_course" as const,
   name,
   tagline: "Online course for kids",
-  price: KIDS_COURSE_PRICE,
+  price: KIDS_COURSE_PRICE_OVERRIDES[id] ?? KIDS_COURSE_PRICE,
   discounts: [],
 }));
 

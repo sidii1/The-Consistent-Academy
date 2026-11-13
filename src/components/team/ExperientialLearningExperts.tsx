@@ -40,12 +40,34 @@ const eleTeamMembers: TeamMember[] = [
   },
   {
     id: "ele4",
-    name: "Sakshi Masalkar",
+    name: "Harsha Chinchore",
     designation: "Experiential Learning Expert",
-    role: "Outdoor & Action Learning",
+    role: "Communication & Opportunity Exploration",
     description:
-      "I'm a happy-go-lucky, cheerful, sweet, and extroverted person. I love travelling and exploring new places. I've travelled to Rajasthan, Bangalore, Mysore, and explored various beautiful forts across Maharashtra.Apart from travelling, I love canvas painting. I'm also passionate about art, creativity, and handmade crafts. I enjoy making artistic things with my own hands and trying something new whenever I get the opportunity.I believe in enjoying little moments, exploring new experiences, and keeping my creative side alive.",
-    photo: "",
+      "A passionate Bharatanatyam dancer who wants to live life to the fullest and enjoy every moment of it. I'm growing a family business with all my energy and skills. I'm keen to communicate as much as I can, to understand new and upcoming opportunities across various fields, and I'm always excited to learn about new innovations. I believe we should learn from experiences that help us grow, both inside and out.",
+    photo: "/team/experiential-learning-experts/Harsha Chinchore.jpg",
+    expertiseLink: null,
+    isSample: true,
+  },
+  {
+    id: "ele5",
+    name: "Shweta Chinchore",
+    designation: "Experiential Learning Expert",
+    role: "Observation & Interpersonal Understanding",
+    description:
+      "I'm a lazy brat, which helps me do things in the simplest way. I love listening to music of every genre. I remember things in great detail, which helps me relive moments, and I'm good at expressing them with minute details. I'm a keen observer, and a lot of things catch my eye. I love talking to people and understanding them and their experiences as a whole.",
+    photo: "/team/experiential-learning-experts/Shweta Chinchore.jpg",
+    expertiseLink: null,
+    isSample: true,
+  },
+  {
+    id: "ele6",
+    name: "Sanjyoti Raut",
+    designation: "Experiential Learning Expert",
+    role: "Creative Teaching & Learning Facilitation",
+    description:
+      "I'm a curious soul with a big imagination and a never-ending bucket list! A big fan of teaching, I love making people go from \"I don't get it\" to \"That was easy!\". I love exploring new places, finding cute cafés, experimenting with art, and collecting memories along the way. I'm always up for spontaneous plans, creative adventures, and coffee with good conversation. Life's too short for boring routines, so here's to living, learning, and a little bit of madness!",
+    photo: "/team/experiential-learning-experts/Sanjyoti Raut.jpg",
     expertiseLink: null,
     isSample: true,
   },

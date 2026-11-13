@@ -13,7 +13,7 @@ import { Footer } from "@/components/layout/Footer";
 import ExpandableCourseCard, { Course } from "@/components/ui/expandable-course-card";
 import { SEO } from "@/components/SEO";
 import { PaymentModal } from "@/components/payments/PaymentModal";
-import { KIDS_COURSE_PRICE, formatINR } from "../../shared/pricing";
+import { KIDS_COURSE_PRICE, KIDS_COURSE_PRICE_OVERRIDES, formatINR } from "../../shared/pricing";
 
 const courses: Course[] = [
   {
@@ -888,6 +888,7 @@ const Courses = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
       {kidsCourses.map((course, index) => {
         const expanded = expandedKids[index] ?? false;
+        const coursePrice = KIDS_COURSE_PRICE_OVERRIDES[course.id] ?? KIDS_COURSE_PRICE;
         return (
           <NeumorphicCard
             key={index}
@@ -911,7 +912,7 @@ const Courses = () => {
                 {course.title}
               </h3>
               <span className="text-primary font-semibold text-sm whitespace-nowrap mt-0.5">
-                {formatINR(KIDS_COURSE_PRICE)}
+                {formatINR(coursePrice)}
               </span>
             </div>
 
@@ -981,7 +982,7 @@ const Courses = () => {
             {/* Enroll button always visible at the bottom */}
             <div className="mt-auto pt-1">
               <NeumorphicButton variant="secondary" className="w-full" onClick={() => setPayCourse(course.id)}>
-                Enroll Now · {formatINR(KIDS_COURSE_PRICE)}
+                Enroll Now · {formatINR(coursePrice)}
                 <ArrowRight size={16} />
               </NeumorphicButton>
             </div>
