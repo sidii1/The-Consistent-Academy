@@ -7,7 +7,7 @@ import { TeamMemberCard, TeamMember } from "./TeamMemberCard";
 const advisoryBoardMembers: TeamMember[] = [
   {
     id: "ab1",
-    name: "Dr. Anjali Mehta",
+    name: "Meenakshi Tyagi",
     designation: "Senior Educationist & Curriculum Expert",
     expertise: "Curriculum Design, Language Pedagogy",
     bio: "With over 25 years in education, Dr. Mehta has led curriculum development initiatives across leading universities in India and abroad. Her work in English Language Teaching has shaped thousands of learners worldwide.",
@@ -17,7 +17,7 @@ const advisoryBoardMembers: TeamMember[] = [
   },
   {
     id: "ab2",
-    name: "Mr. Suresh Krishnamurthy",
+    name: "Shilpa Shukla",
     designation: "Executive Coach & Leadership Consultant",
     expertise: "Leadership Development, Corporate Training",
     bio: "A certified executive coach with a track record of transforming leadership capability in Fortune 500 companies, Mr. Krishnamurthy brings his expertise in experiential learning to The Consistent Academy's advisory panel.",
@@ -27,7 +27,7 @@ const advisoryBoardMembers: TeamMember[] = [
   },
   {
     id: "ab3",
-    name: "Dr. Priya Nair",
+    name: "Syed Jafri",
     designation: "Applied Linguistics Researcher",
     expertise: "Second Language Acquisition, Assessment",
     bio: "Dr. Nair's research in applied linguistics and second language acquisition frameworks has been published in respected peer-reviewed journals. She advises on modern evidence-based teaching methodologies.",
@@ -37,7 +37,17 @@ const advisoryBoardMembers: TeamMember[] = [
   },
   {
     id: "ab4",
-    name: "Ms. Rekha Sharma",
+    name: "Col. Nalwade",
+    designation: "Soft Skills & Corporate Communication Expert",
+    expertise: "Soft Skills Training, NLP, Behavioural Coaching",
+    bio: "A practitioner of NLP and behavioural coaching with 18 years in corporate training, Ms. Sharma has designed transformative soft-skills programmes for leading MNCs and high-growth startups across India.",
+    photo: "/team/advisory-board/placeholder-4.jpg",
+    linkedin: "https://www.linkedin.com",
+    isSample: true,
+  },
+  {
+    id: "ab5",
+    name: "Sonia Govardhan",
     designation: "Soft Skills & Corporate Communication Expert",
     expertise: "Soft Skills Training, NLP, Behavioural Coaching",
     bio: "A practitioner of NLP and behavioural coaching with 18 years in corporate training, Ms. Sharma has designed transformative soft-skills programmes for leading MNCs and high-growth startups across India.",

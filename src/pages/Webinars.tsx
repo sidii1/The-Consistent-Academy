@@ -716,15 +716,6 @@ const WebinarCard = ({
         })}
         onClick={onSelect}
       >
-        {/* Accent strip — gradient top bar */}
-        <div
-          className="h-1.5 w-full"
-          style={{
-            background: isCompleted
-              ? "linear-gradient(90deg, #A0AEC0, #CBD5E0)"
-              : "linear-gradient(90deg, #9C37FC, #B06FE0)",
-          }}
-        />
 
         <div className="p-6">
           {/* Header row */}
