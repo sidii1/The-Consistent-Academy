@@ -125,7 +125,7 @@ export const COURSES: Product[] = (
   [
     ["course-english-proficiency", "IELTS | TOEFL | PTE | CELPIP Preparation Course", 12000],
     ["course-corporate-survival", "Corporate Survival & Success Program", 6000],
-    ["course-crack-interview", "Crack Your Interview", 3000],
+    ["course-crack-interview", "Interview Preparation Course", 2100],
     ["course-dining-etiquette", "Corporate Dining & Social Etiquette Masterclass", 3000],
     ["course-manager-leadership", "Advanced English & Leadership Presence for Managers", 6000],
     ["course-communication-skill", "Communication Skill Training", 5000],

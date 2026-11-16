@@ -166,68 +166,50 @@ const courses: Course[] = [
   },
   {
     productId: "course-crack-interview",
-    title: "Crack Your Interview",
-    subtitle: "Fresher-Focused",
-    description: "Transform from nervous fresher to confident, clear, and convincing interviewee.",
+    title: "Interview Preparation Course",
+    subtitle: "21 Days | Build Confidence. Showcase Your Story. Get Hired!",
+    description: "A focused, practical and consistent program to help you crack interviews with confidence.",
     image: "/courses/img3.png",
-    hours: "6 Hours",
-    price:"3000/-",
-    modules: 6,
-    targetAudience: "Final-year students, fresh graduates, job seekers (0–1 year).",
-    promise: "To transform nervous freshers into confident, clear, and convincing interviewees.",
+    hours: "21 Days",
+    price:"2100/-",
+    modules: 4,
+    targetAudience: "Final-year students, fresh graduates and job seekers preparing for interviews.",
+    promise: "Step into your next interview with confidence: present yourself with clarity, share your work with evidence, and tell a compelling professional story.",
+    highlights: [
+      "Fees: ₹2,100",
+      "Batch 1: 9:00 – 10:00 pm",
+      "Batch 2: 10:00 – 11:00 pm",
+      "Practice daily, stay consistent, build clarity, be interview ready"
+    ],
     moduleDetails: [
       {
-        title: "Module 1: Interview Mindset & Recruiter Psychology",
+        title: "Preparation of a Winning CV",
         topics: [
-          "What interviewers look for",
-          "Common rejection reasons",
-          "Confidence over perfection",
-          "Overcoming fear & hesitation"
+          "Structuring a CV that stands out",
+          "Presenting skills, projects and achievements"
         ]
       },
       {
-        title: "Module 2: Self-Introduction & Personal Branding",
+        title: "Answering the Key Questions",
         topics: [
-          '"Tell me about yourself"',
-          "Presenting education & projects",
-          "Turning weaknesses into strengths",
-          '"Why should we hire you?"'
+          '"Tell me something about yourself"',
+          '"Walk me through your CV"'
         ]
       },
       {
-        title: "Module 3: Answer Structuring & HR Questions",
+        title: "Creating an Evidence Box",
         topics: [
-          "STAR & PREP frameworks",
-          "Strengths & weaknesses",
-          "Failure & challenges",
-          "Salary & availability"
+          "Achievements",
+          "Skills",
+          "Projects & impact"
         ]
       },
       {
-        title: "Module 4: Communication & Body Language",
+        title: "Perfect Interview Preparation with Storytelling",
         topics: [
-          "Eye contact & posture",
-          "Voice modulation",
-          "Handling nervousness",
-          "Listening skills"
-        ]
-      },
-      {
-        title: "Module 5: Domain & Situational Questions",
-        topics: [
-          "Basic technical answers",
-          "Behavioral questions",
-          "Thinking on the spot",
-          'Saying "I don\'t know" professionally'
-        ]
-      },
-      {
-        title: "Module 6: Mock Interviews & Final Polishing",
-        topics: [
-          "Full mock interviews",
-          "Individual feedback",
-          "Last-round mistakes",
-          "Follow-up etiquette"
+          "Structure",
+          "Examples",
+          "Practice"
         ]
       }
     ]
