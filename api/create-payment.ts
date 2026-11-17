@@ -4,7 +4,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "./_lib/firebaseAdmin.js";
 import { createUpiQr, isConfigured, razorpayMode, RazorpayError } from "./_lib/razorpay.js";
 import { PAYMENTS, type PaymentDoc } from "./_lib/payments.js";
-import { getProduct, quotePrice, WORKSHOP_DATES, type DiscountType } from "../shared/pricing.js";
+import { BATCHES, getProduct, quotePrice, WORKSHOP_DATES, type DiscountType } from "../shared/pricing.js";
 
 /** QR validity. Razorpay allows 2 min – 2 h for single-use QR codes. */
 const QR_TTL_MINUTES = 15;
@@ -47,6 +47,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       details.push({ label: "Mode", value: mode });
       const date = WORKSHOP_DATES.find((d) => d.value === meta.date);
       if (date) details.push({ label: "Preferred dates", value: date.label });
+    }
+    const batches = BATCHES[product.id];
+    if (batches) {
+      const batch = batches.find((b) => b.value === meta.batch);
+      if (!batch) return res.status(400).json({ error: "Please select a batch." });
+      details.push({ label: "Batch", value: `${batch.label} (${batch.time})` });
     }
     if (discountType === "sibling") {
       if (!clean(meta.siblingName)) return res.status(400).json({ error: "Please enter your sibling's name." });

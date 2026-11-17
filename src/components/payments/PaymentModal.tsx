@@ -14,6 +14,7 @@ import {
   isEarlyBirdOpen,
   SCHOOL_GROUP_MIN_STUDENTS,
   WORKSHOP_DATES,
+  BATCHES,
   type DiscountType,
   type DeliveryMode,
 } from "../../../shared/pricing";
@@ -90,6 +91,7 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
   const [phone, setPhone] = useState("");
   const [mode, setMode] = useState<DeliveryMode>(defaultMode ?? "Online");
   const [date, setDate] = useState(defaultDate ?? "");
+  const [batch, setBatch] = useState("");
   const [discount, setDiscount] = useState<DiscountType>(defaultDiscount ?? "none");
   const [siblingName, setSiblingName] = useState("");
   const [schoolName, setSchoolName] = useState("");
@@ -123,6 +125,7 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
       setMode(defaultMode ?? "Online");
       setDate(defaultDate ?? "");
       setDiscount(defaultDiscount ?? "none");
+      setBatch("");
     } else {
       stopPolling();
     }
@@ -182,7 +185,7 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
           productId: product.id,
           discountType: discount,
           customer: { name, email, phone },
-          meta: { studentName: product.kind === "kids_course" || product.id === "pkg-llf" ? studentName : "", mode, date, siblingName, schoolName, groupSize: Number(groupSize) || 0 },
+          meta: { studentName: product.kind === "kids_course" || product.id === "pkg-llf" ? studentName : "", mode, date, batch, siblingName, schoolName, groupSize: Number(groupSize) || 0 },
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -237,7 +240,9 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
   const needsParent = product.kind === "kids_course" || product.id === "pkg-llf";
 
   const heroImage = image || FALLBACK_IMAGE[product.kind];
-  const included = (highlights || [])
+  const batches = BATCHES[product.id];
+  // Courses with a batch choice show the batch picker instead of the generic highlights.
+  const included = (batches ? [] : highlights || [])
     .map((h) => h.split(":")[0].trim())
     .filter((h) => h && !h.includes("₹"))
     .slice(0, 4);
@@ -247,7 +252,7 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[94vh] overflow-y-auto overscroll-contain p-0 gap-0 shadow-[0_20px_50px_rgba(26,31,46,0.35)]">
+      <DialogContent className="max-w-2xl max-h-[94vh] overflow-y-auto overscroll-contain p-0 gap-0 !shadow-[0_24px_60px_rgba(26,31,46,0.45)] [&>button]:!shadow-[0_2px_8px_rgba(26,31,46,0.3)] [&>button:hover]:!shadow-[0_3px_10px_rgba(26,31,46,0.4)] [&>button:active]:!shadow-[0_1px_4px_rgba(26,31,46,0.3)]">
         {/* ───────────── HERO ───────────── */}
         <div className="relative h-40 sm:h-48 shrink-0 overflow-hidden rounded-t-neo-card bg-gradient-to-br from-[#3C096C] via-[#5A189A] to-[#9C37FC]">
           {heroImage && (
@@ -299,19 +304,7 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
           {/* ───────────── FORM ───────────── */}
           {(step === "form" || step === "starting") && (
             <motion.form key="form" onSubmit={start} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
-              {included.length > 0 && (
-                <div className="neo-inset rounded-neo-btn px-4 py-3">
-                  <p className="text-[10px] font-bold uppercase tracking-wider text-neo-muted mb-2">What's included</p>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
-                    {included.map((h) => (
-                      <li key={h} className="flex items-start gap-2 text-xs text-neo-fg">
-                        <CheckCircle2 size={14} className="text-neo-success shrink-0 mt-px" />
-                        <span>{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Field label={needsParent ? "Parent / Guardian name" : "Your name"}>
@@ -329,6 +322,37 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
                   <input required type="tel" className={inputClass} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210" />
                 </Field>
               </div>
+
+              {batches && (
+                <div>
+                  <span className="block text-neo-fg text-xs font-semibold mb-1.5">
+                    Choose your batch <span className="text-neo-accent">*</span>
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {batches.map((b) => (
+                      <button
+                        key={b.value}
+                        type="button"
+                        role="radio"
+                        aria-checked={batch === b.value}
+                        onClick={() => setBatch(b.value)}
+                        className={cn(
+                          "flex items-center gap-3 text-left px-4 py-3 rounded-neo-btn transition-all",
+                          batch === b.value ? "neo-inset" : "neo-surface-sm"
+                        )}
+                      >
+                        <span className={cn("w-9 h-9 shrink-0 rounded-full flex items-center justify-center", batch === b.value ? "bg-neo-accent text-white" : "neo-surface-sm text-neo-accent")}>
+                          {batch === b.value ? <Check size={16} strokeWidth={3} /> : <Clock size={16} />}
+                        </span>
+                        <span>
+                          <span className={cn("block text-sm font-bold", batch === b.value ? "text-neo-accent" : "text-neo-fg")}>{b.label}</span>
+                          <span className="block text-xs text-neo-muted">{b.time} · daily</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {product.needsSchedule && (
                 <div className="space-y-3">
@@ -430,12 +454,16 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
                 <p className="text-[11px] text-neo-muted">Taxes, if applicable, are communicated separately.</p>
               </div>
 
+              {batches && !batch && (
+                <p className="text-[11px] text-neo-muted -mt-1">Select a batch to continue.</p>
+              )}
+
               {(error || (quote && !quote.ok)) && (
                 <div className="neo-inset rounded-neo-btn px-4 py-2.5 text-sm text-red-500">{error || (quote && !quote.ok && quote.error)}</div>
               )}
 
               <div className="text-center pt-1">
-                <NeumorphicButton type="submit" size="lg" disabled={step === "starting" || !quote?.ok} className="w-full sm:w-auto">
+                <NeumorphicButton type="submit" size="lg" disabled={step === "starting" || !quote?.ok || (Boolean(batches) && !batch)} className="w-full sm:w-auto">
                   {step === "starting" ? (
                     <span className="inline-flex items-center gap-2"><Loader2 className="animate-spin" size={16} /> Generating QR…</span>
                   ) : (

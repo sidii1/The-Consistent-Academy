@@ -101,8 +101,6 @@ export const KIDS_COURSE_PRICE = 1999;
 /** Kids courses that differ from the default KIDS_COURSE_PRICE. */
 export const KIDS_COURSE_PRICE_OVERRIDES: Record<string, number> = {
   "kid-story": 14999,
-  // TEMP ₹1 TEST PRICE: delete this line before pushing (MUN goes back to KIDS_COURSE_PRICE = ₹1,999).
-  "kid-mun": 1,
 };
 
 export const KIDS_COURSES: Product[] = [
@@ -125,14 +123,14 @@ export const KIDS_COURSES: Product[] = [
 /** Adult / general programmes listed on the Courses page. */
 export const COURSES: Product[] = (
   [
-    ["course-english-proficiency", "IELTS | TOEFL | PTE | CELPIP Preparation Course", 12000],
-    ["course-corporate-survival", "Corporate Survival & Success Program", 6000],
+    ["course-english-proficiency", "IELTS | TOEFL | PTE | CELPIP Preparation Course", 11999],
+    ["course-corporate-survival", "Corporate Survival & Success Program", 5999],
     ["course-crack-interview", "Interview Preparation Course", 2100],
-    ["course-dining-etiquette", "Corporate Dining & Social Etiquette Masterclass", 3000],
-    ["course-manager-leadership", "Advanced English & Leadership Presence for Managers", 6000],
-    ["course-communication-skill", "Communication Skill Training", 5000],
-    ["course-personality-development", "Personality Development Training", 6000],
-    ["course-eelta", "EELTA - Experiential English Language Teaching Approach", 15000],
+    ["course-dining-etiquette", "Corporate Dining & Social Etiquette Masterclass", 2999],
+    ["course-manager-leadership", "Advanced English & Leadership Presence for Managers", 5999],
+    ["course-communication-skill", "Communication Skill Training", 4999],
+    ["course-personality-development", "Personality Development Training", 5999],
+    ["course-eelta", "EELTA - Experiential English Language Teaching Approach", 14999],
   ] as [string, string, number][]
 ).map(([id, name, price]) => ({
   id,
@@ -240,6 +238,24 @@ export const WORKSHOP_DATES: { value: string; label: string }[] = [
   { value: "2027-01-23/24", label: "23 – 24 January 2027" },
   { value: "2027-02-13/14", label: "13 – 14 February 2027" },
 ];
+
+/* ------------------------------------------------------------------ */
+/* Batches (programmes where the buyer picks a daily time slot)        */
+/* ------------------------------------------------------------------ */
+
+export interface Batch {
+  value: string;
+  label: string;
+  time: string;
+}
+
+/** Keyed by product id. A product listed here makes the batch choice mandatory at checkout. */
+export const BATCHES: Record<string, Batch[]> = {
+  "course-crack-interview": [
+    { value: "batch-1", label: "Batch 1", time: "9:00 – 10:00 pm" },
+    { value: "batch-2", label: "Batch 2", time: "10:00 – 11:00 pm" },
+  ],
+};
 
 /* ------------------------------------------------------------------ */
 /* Instalments (annual package) — NOT YET ACTIVE                       */
