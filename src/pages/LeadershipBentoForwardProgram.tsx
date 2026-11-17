@@ -1315,6 +1315,9 @@ const LeadershipBentoForwardProgram = () => {
         productId={payProduct ?? PACKAGES[0].id}
         defaultMode={form.mode}
         defaultDate={form.date}
+        image="/leadership/llf-hero2.jpg"
+        duration={payProduct === "pkg-llf" ? "2 Days" : payProduct === "pkg-annual" ? "1 Year" : undefined}
+        highlights={payProduct ? packageIncludes[payProduct] : undefined}
       />
     </div>
   );

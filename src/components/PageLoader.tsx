@@ -86,28 +86,29 @@ export const PageLoader = ({ onComplete }: PageLoaderProps) => {
     );
 
     // ---------------------------------------------------------
-    // PHASE 4: Infinite Expansion & Reveal (03:00 - 04:00)
+    // PHASE 4: Soft Fade-Out (02:90 - 03:60)
     // ---------------------------------------------------------
-    // The circular logo expands exponentially to function as a viewport wipe.
+    // Once the rings have tucked behind it, the logo simply dissolves in place.
+    // (No scale-up: enlarging the raster logo made it pixelate.)
     tl.to(
       logoRef.current,
       {
-        scale: 60, // Scales aggressively to ensure corner coverage on all monitor sizes
-        duration: 1.0,
-        ease: "power4.inOut",
+        opacity: 0,
+        duration: 0.7,
+        ease: "power2.inOut",
       },
-      3.0
+      2.9
     );
 
-    // Cleanly dissolve the master container to hand control over to the landing page.
+    // Dissolve the master container to hand control over to the landing page.
     tl.to(
       containerRef.current,
       {
         opacity: 0,
         duration: 0.3,
-        ease: "power2.inOut",
+        ease: "power2.out",
       },
-      3.7
+      3.4
     );
 
     return () => {

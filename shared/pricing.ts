@@ -101,6 +101,8 @@ export const KIDS_COURSE_PRICE = 1999;
 /** Kids courses that differ from the default KIDS_COURSE_PRICE. */
 export const KIDS_COURSE_PRICE_OVERRIDES: Record<string, number> = {
   "kid-story": 14999,
+  // TEMP ₹1 TEST PRICE: delete this line before pushing (MUN goes back to KIDS_COURSE_PRICE = ₹1,999).
+  "kid-mun": 1,
 };
 
 export const KIDS_COURSES: Product[] = [

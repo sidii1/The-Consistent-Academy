@@ -1016,6 +1016,9 @@ const Courses = () => {
         open={payCourse !== null}
         onOpenChange={(o) => !o && setPayCourse(null)}
         productId={payCourse ?? "kid-mun"}
+        image={kidsCourses.find((c) => c.id === payCourse)?.image}
+        duration={kidsCourses.find((c) => c.id === payCourse)?.duration}
+        highlights={kidsCourses.find((c) => c.id === payCourse)?.features}
       />
     </div>
   );

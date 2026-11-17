@@ -466,7 +466,14 @@ export default function ExpandableCourseCard({ courses, initialVisible = 6 }: Ex
         </div>
       )}
 
-      <PaymentModal open={payOpen} onOpenChange={setPayOpen} productId={payId} />
+      <PaymentModal
+        open={payOpen}
+        onOpenChange={setPayOpen}
+        productId={payId}
+        image={courses.find((c) => c.productId === payId)?.image}
+        duration={courses.find((c) => c.productId === payId)?.hours}
+        highlights={courses.find((c) => c.productId === payId)?.highlights}
+      />
     </>
   );
 }

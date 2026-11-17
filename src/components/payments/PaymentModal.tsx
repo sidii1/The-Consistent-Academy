@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle2, XCircle, Loader2, Download, Printer, ShieldCheck, FlaskConical, QrCode } from "lucide-react";
+import {
+  CheckCircle2, XCircle, Loader2, Download, Printer, ShieldCheck, FlaskConical, QrCode,
+  Clock, Zap, Mail, Smartphone, ScanLine, KeyRound, Check, Sparkles,
+} from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { cn } from "@/lib/utils";
@@ -28,7 +31,37 @@ interface Props {
   defaultMode?: DeliveryMode;
   defaultDate?: string;
   defaultDiscount?: DiscountType;
+  /** Optional presentation extras shown in the header / "What's included". */
+  image?: string;
+  duration?: string;
+  highlights?: string[];
 }
+
+/** Header image used when the caller doesn't pass one. */
+const FALLBACK_IMAGE: Record<string, string> = {
+  package: "/leadership/llf-hero2.jpg",
+  kids_course: "/courses/2SMS08520.jpg",
+  course: "/courses/img1.png",
+};
+
+const KIND_LABEL: Record<string, string> = {
+  package: "Leadership Programme",
+  kids_course: "Kids Course · Online",
+  course: "Professional Course",
+};
+
+/**
+ * Razorpay's QR image is a 674×1644 "ticket" whose top ~16% is blank.
+ * We crop only that blank band so the QR, UPI logos and account name all show.
+ */
+const QR_W = 674;
+const QR_H = 1644;
+const QR_TOP_CROP = 270;
+
+/** Must match QR_TTL_MINUTES in api/create-payment.ts (drives the progress bar only). */
+const QR_TTL_SECONDS = 15 * 60;
+
+const STEPS = ["Details", "Scan & Pay", "Receipt"] as const;
 
 const inputClass =
   "w-full px-4 py-2.5 rounded-neo-btn bg-neo-base shadow-neo-inset text-neo-fg text-sm placeholder:text-neo-placeholder focus:outline-none focus:shadow-neo-focus transition-shadow duration-200";
@@ -44,7 +77,7 @@ const Field = ({ label, children, optional }: { label: string; children: React.R
 
 const POLL_MS = 3000;
 
-export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defaultDate, defaultDiscount }: Props) => {
+export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defaultDate, defaultDiscount, image, duration, highlights }: Props) => {
   const product = getProduct(productId);
 
   const [step, setStep] = useState<Step>("form");
@@ -203,23 +236,90 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
   // Only kids' courses and Leadership Lab Forward are bought by a parent for a child.
   const needsParent = product.kind === "kids_course" || product.id === "pkg-llf";
 
+  const heroImage = image || FALLBACK_IMAGE[product.kind];
+  const included = (highlights || [])
+    .map((h) => h.split(":")[0].trim())
+    .filter((h) => h && !h.includes("₹"))
+    .slice(0, 4);
+  const stepIndex = step === "paid" ? 2 : step === "qr" ? 1 : 0;
+  const timeLeftPct = Math.min(100, (secondsLeft / QR_TTL_SECONDS) * 100);
+  const payable = quote?.ok ? quote.quote.payable : product.price;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[92vh] overflow-y-auto overscroll-contain p-6 sm:p-8 shadow-[0_20px_50px_rgba(26,31,46,0.35)]">
-        <DialogTitle className="text-neo-fg font-bold text-xl pr-8">{product.name}</DialogTitle>
-        <DialogDescription className="text-neo-muted text-sm -mt-1">{product.tagline}</DialogDescription>
+      <DialogContent className="max-w-2xl max-h-[94vh] overflow-y-auto overscroll-contain p-0 gap-0 shadow-[0_20px_50px_rgba(26,31,46,0.35)]">
+        {/* ───────────── HERO ───────────── */}
+        <div className="relative h-40 sm:h-48 shrink-0 overflow-hidden rounded-t-neo-card bg-gradient-to-br from-[#3C096C] via-[#5A189A] to-[#9C37FC]">
+          {heroImage && (
+            <img src={heroImage} alt="" className="absolute inset-0 w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1a1033]/95 via-[#1a1033]/55 to-[#1a1033]/10" />
+          <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-2.5 py-0.5">
+                <Sparkles size={10} /> {KIND_LABEL[product.kind]}
+              </span>
+              {duration && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-white bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-2.5 py-0.5">
+                  <Clock size={10} /> {duration}
+                </span>
+              )}
+            </div>
+            <DialogTitle className="text-white font-bold text-xl sm:text-2xl leading-tight pr-10 drop-shadow">{product.name}</DialogTitle>
+            <DialogDescription className="text-white/80 text-sm mt-0.5">{product.tagline}</DialogDescription>
+          </div>
+        </div>
+
+        <div className="p-5 sm:p-7">
+        {/* ───────────── STEPPER ───────────── */}
+        {step !== "failed" && (
+          <ol className="flex items-center gap-2 mb-5">
+            {STEPS.map((label, i) => {
+              const done = i < stepIndex || step === "paid";
+              const active = i === stepIndex && step !== "paid";
+              return (
+                <li key={label} className="flex items-center gap-2 flex-1 last:flex-none">
+                  <span
+                    className={cn(
+                      "w-6 h-6 shrink-0 rounded-full flex items-center justify-center text-[11px] font-bold transition-all",
+                      done ? "bg-neo-success text-white" : active ? "neo-inset text-neo-accent" : "neo-surface-sm text-neo-muted"
+                    )}
+                  >
+                    {done ? <Check size={12} strokeWidth={3} /> : i + 1}
+                  </span>
+                  <span className={cn("text-xs font-semibold whitespace-nowrap", active || done ? "text-neo-fg" : "text-neo-muted")}>{label}</span>
+                  {i < STEPS.length - 1 && <span className={cn("h-px flex-1 min-w-3", done ? "bg-neo-success/60" : "bg-neo-muted/25")} />}
+                </li>
+              );
+            })}
+          </ol>
+        )}
 
         <AnimatePresence mode="wait">
           {/* ───────────── FORM ───────────── */}
           {(step === "form" || step === "starting") && (
-            <motion.form key="form" onSubmit={start} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4 mt-2">
+            <motion.form key="form" onSubmit={start} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+              {included.length > 0 && (
+                <div className="neo-inset rounded-neo-btn px-4 py-3">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-neo-muted mb-2">What's included</p>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
+                    {included.map((h) => (
+                      <li key={h} className="flex items-start gap-2 text-xs text-neo-fg">
+                        <CheckCircle2 size={14} className="text-neo-success shrink-0 mt-px" />
+                        <span>{h}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Field label={needsParent ? "Parent / Guardian name" : "Your name"}>
                   <input required className={inputClass} value={name} onChange={(e) => setName(e.target.value)} placeholder="Full name" />
                 </Field>
                 {needsParent && (
-                  <Field label="Student name" optional>
-                    <input className={inputClass} value={studentName} onChange={(e) => setStudentName(e.target.value)} placeholder="If different" />
+                  <Field label="Student name">
+                    <input required className={inputClass} value={studentName} onChange={(e) => setStudentName(e.target.value)} placeholder="Child's full name" />
                   </Field>
                 )}
                 <Field label="Email">
@@ -342,34 +442,92 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
                     <span className="inline-flex items-center gap-2"><QrCode size={16} /> Pay {quote?.ok ? formatINR(quote.quote.payable) : ""} via UPI QR</span>
                   )}
                 </NeumorphicButton>
-                <p className="text-[11px] text-neo-muted mt-3 inline-flex items-center gap-1"><ShieldCheck size={12} /> Secure payment powered by Razorpay</p>
+                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 mt-3 text-[11px] text-neo-muted">
+                  <span className="inline-flex items-center gap-1"><ShieldCheck size={12} className="text-neo-success" /> Secured by Razorpay</span>
+                  <span className="inline-flex items-center gap-1"><Zap size={12} className="text-neo-accent" /> Instant confirmation</span>
+                  <span className="inline-flex items-center gap-1"><Mail size={12} className="text-neo-accent" /> Receipt on email</span>
+                </div>
               </div>
             </motion.form>
           )}
 
           {/* ───────────── QR ───────────── */}
           {step === "qr" && (
-            <motion.div key="qr" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }} className="text-center mt-2">
+            <motion.div key="qr" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }}>
               {testMode && (
-                <div className="inline-flex items-center gap-1.5 neo-inset rounded-full px-3 py-1 text-xs font-semibold text-amber-600 mb-3">
-                  <FlaskConical size={12} /> TEST MODE — no real money is charged
+                <div className="flex justify-center mb-3">
+                  <span className="inline-flex items-center gap-1.5 neo-inset rounded-full px-3 py-1 text-xs font-semibold text-amber-600">
+                    <FlaskConical size={12} /> TEST MODE — no real money is charged
+                  </span>
                 </div>
               )}
-              <p className="text-neo-muted text-sm mb-3">Scan with any UPI app to pay</p>
-              <div className="neo-inset rounded-neo-card p-4 inline-block">
-                {qrImgFailed ? (
-                  <a href={qrUrl} target="_blank" rel="noreferrer" className="block w-56 h-56 flex items-center justify-center text-neo-accent text-sm underline">
-                    Open QR code
-                  </a>
-                ) : (
-                  <img src={qrUrl} alt="UPI payment QR code" className="w-56 h-56 object-contain rounded-neo-inner bg-white" onError={() => setQrImgFailed(true)} />
-                )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-[minmax(0,260px)_1fr] gap-5 sm:gap-6 items-start">
+                {/* Razorpay ticket at its natural shape (only the blank top band is cropped) */}
+                <div className="neo-inset rounded-neo-card p-2.5 mx-auto w-full max-w-[260px]">
+                  {qrImgFailed ? (
+                    <a href={qrUrl} target="_blank" rel="noreferrer" className="flex items-center justify-center aspect-square text-neo-accent text-sm underline">
+                      Open QR code
+                    </a>
+                  ) : (
+                    <div className="overflow-hidden rounded-neo-inner bg-white" style={{ aspectRatio: `${QR_W} / ${QR_H - QR_TOP_CROP}` }}>
+                      <img
+                        src={qrUrl}
+                        alt="UPI payment QR code"
+                        className="block w-full h-auto max-w-none"
+                        style={{ marginTop: `-${(QR_TOP_CROP / QR_W) * 100}%` }}
+                        onError={() => setQrImgFailed(true)}
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Details */}
+                <div className="space-y-4">
+                  <div className="neo-inset rounded-neo-btn px-4 py-3">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-neo-muted">Amount to pay</p>
+                    <p className="text-neo-accent font-bold text-3xl leading-tight">{formatINR(payable)}</p>
+                    <p className="text-xs text-neo-muted mt-0.5 truncate">{product.name}</p>
+                    {quote?.ok && quote.quote.discountLabel && (
+                      <p className="text-[11px] text-neo-success mt-0.5">{quote.quote.discountLabel} applied · you save {formatINR(quote.quote.discountAmount)}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between text-xs mb-1.5">
+                      <span className="inline-flex items-center gap-1.5 text-neo-muted">
+                        <Loader2 size={13} className="animate-spin text-neo-accent" /> Waiting for payment…
+                      </span>
+                      <span className={cn("font-mono font-bold", secondsLeft < 120 ? "text-red-500" : "text-neo-fg")}>{mmss}</span>
+                    </div>
+                    <div className="h-1.5 rounded-full neo-inset overflow-hidden">
+                      <div
+                        className={cn("h-full rounded-full transition-[width] duration-1000 ease-linear", secondsLeft < 120 ? "bg-red-500" : "bg-neo-accent")}
+                        style={{ width: `${timeLeftPct}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  <ol className="space-y-2.5">
+                    {[
+                      { icon: Smartphone, text: "Open GPay, PhonePe, Paytm or any UPI app" },
+                      { icon: ScanLine, text: "Scan the QR code. The amount fills in automatically" },
+                      { icon: KeyRound, text: "Enter your UPI PIN to confirm" },
+                    ].map(({ icon: Icon, text }) => (
+                      <li key={text} className="flex items-center gap-3">
+                        <span className="neo-surface-sm rounded-full w-8 h-8 shrink-0 flex items-center justify-center">
+                          <Icon size={15} className="text-neo-accent" />
+                        </span>
+                        <span className="text-sm text-neo-fg">{text}</span>
+                      </li>
+                    ))}
+                  </ol>
+
+                  <p className="text-[11px] text-neo-muted leading-relaxed">
+                    Keep this window open. It updates by itself once your payment is confirmed, and your receipt appears here and in your inbox.
+                  </p>
+                </div>
               </div>
-              <p className="text-neo-fg font-bold text-2xl mt-3">{quote?.ok ? formatINR(quote.quote.payable) : ""}</p>
-              <p className="text-neo-muted text-sm mt-1 inline-flex items-center gap-2">
-                <Loader2 size={14} className="animate-spin" /> Waiting for payment… expires in {mmss}
-              </p>
-              <p className="text-[11px] text-neo-muted mt-1">Keep this window open. It updates automatically once your payment is confirmed.</p>
 
               {canSimulate && (
                 <div className="neo-inset rounded-neo-btn p-3 mt-4 text-left">
@@ -385,7 +543,7 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
 
           {/* ───────────── SUCCESS ───────────── */}
           {step === "paid" && receipt && (
-            <motion.div key="paid" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center mt-2">
+            <motion.div key="paid" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
               <div className="neo-inset rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
                 <CheckCircle2 size={34} className="text-neo-success" />
               </div>
@@ -393,8 +551,21 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
               <p className="text-neo-muted text-sm mt-2">
                 {formatINR(receipt.amountPaid)} paid for <strong className="text-neo-fg">{receipt.productName}</strong>.
               </p>
-              <p className="text-neo-muted text-xs mt-1">Receipt no. {receipt.receiptNo}</p>
-              <p className="text-neo-muted text-xs mt-1">
+              <div className="neo-inset rounded-neo-btn px-4 py-3 mt-4 text-left max-w-sm mx-auto space-y-1.5">
+                {[
+                  ["Receipt no.", receipt.receiptNo],
+                  ["Programme", receipt.productName],
+                  ["Amount paid", formatINR(receipt.amountPaid)],
+                  ["Paid on", new Date(receipt.paidAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })],
+                  ...(receipt.paymentId ? [["Payment ID", receipt.paymentId]] : []),
+                ].map(([k, v]) => (
+                  <div key={k} className="flex justify-between gap-3 text-xs">
+                    <span className="text-neo-muted">{k}</span>
+                    <span className="text-neo-fg font-semibold text-right break-all">{v}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-neo-muted text-xs mt-3">
                 {emailStatus === "failed" ? "We couldn't email your confirmation — please download your receipt below." : `A confirmation email is on its way to ${receipt.customerEmail}.`}
               </p>
               <div className="flex flex-wrap gap-3 justify-center mt-5">
@@ -409,7 +580,7 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
 
           {/* ───────────── FAILED ───────────── */}
           {step === "failed" && (
-            <motion.div key="failed" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center mt-2">
+            <motion.div key="failed" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
               <div className="neo-inset rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
                 <XCircle size={34} className="text-red-500" />
               </div>
@@ -422,6 +593,7 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
             </motion.div>
           )}
         </AnimatePresence>
+        </div>
       </DialogContent>
     </Dialog>
   );
