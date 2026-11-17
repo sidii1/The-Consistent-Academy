@@ -47,13 +47,14 @@ import {
   type CCSpeech,
   type CCRole,
 } from "@/lib/ccClub";
+import { AdminPaymentsPanel } from "@/components/admin/AdminPaymentsPanel";
 
 // ─────────────────────────────────────────────────────────────
 // TYPES
 // ─────────────────────────────────────────────────────────────
 
 type RegularTab = "contactRequests" | "careerApplications" | "leadershipTestResults" | "testResults";
-type CollectionName = RegularTab | "cc_club";
+type CollectionName = RegularTab | "payments" | "cc_club";
 
 interface FirestoreRecord {
   id: string;
@@ -61,6 +62,7 @@ interface FirestoreRecord {
 }
 
 const TABS: { id: CollectionName; label: string }[] = [
+  { id: "payments", label: "💳 Payments" },
   { id: "contactRequests", label: "Contact Requests" },
   { id: "careerApplications", label: "Career Applications" },
   { id: "leadershipTestResults", label: "Leadership Test" },
@@ -1077,7 +1079,7 @@ export const AdminDashboard: React.FC = () => {
   const currentData =
     activeTab === "testResults"
       ? filteredTestResults
-      : activeTab === "cc_club"
+      : activeTab === "cc_club" || activeTab === "payments"
       ? []
       : data[activeTab as RegularTab] || [];
 
@@ -1110,7 +1112,7 @@ export const AdminDashboard: React.FC = () => {
           <aside className="w-full lg:w-72 flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-hide">
             {TABS.map((tab) => {
               const isActive = activeTab === tab.id;
-              const count = tab.id === "cc_club" ? 0 : data[tab.id as RegularTab]?.length || 0;
+              const count = tab.id === "cc_club" || tab.id === "payments" ? 0 : data[tab.id as RegularTab]?.length || 0;
               return (
                 <button
                   key={tab.id}
@@ -1135,7 +1137,11 @@ export const AdminDashboard: React.FC = () => {
 
           {/* Main content */}
           <section className="flex-1 min-h-[600px]">
-            {activeTab === "cc_club" ? (
+            {activeTab === "payments" ? (
+              <div className="bg-card border border-border rounded-3xl p-6 max-sm:p-4 shadow-sm">
+                <AdminPaymentsPanel />
+              </div>
+            ) : activeTab === "cc_club" ? (
               <div className="bg-card border border-border rounded-3xl p-6 max-sm:p-4 shadow-sm">
                 <div className="flex items-center gap-3 mb-6">
                   <Mic2 size={20} className="text-primary" />
