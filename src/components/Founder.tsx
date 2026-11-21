@@ -199,7 +199,8 @@ const Founder = () => {
 
           {/* ================= BOOKS SECTION ================= */}
           <motion.div 
-            className="mt-8 relative"
+            id="books"
+            className="mt-8 relative scroll-mt-24"
             {...reveal({
               initial: { opacity: 0 },
               whileInView: { opacity: 1 },
@@ -247,11 +248,11 @@ const Founder = () => {
             </div>
           </motion.div>
 
+          {/* ================= BOARD OF VISIONARIES ================= */}
+          <AdvisoryBoard />
+
           {/* ================= EXPERIENTIAL LEARNING EXPERTS ================= */}
           <ExperientialLearningExperts />
-
-          {/* ================= ADVISORY BOARD SECTION ================= */}
-          <AdvisoryBoard />
         </div>
       </SectionWrapper>
     </section>

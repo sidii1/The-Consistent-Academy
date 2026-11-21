@@ -3,65 +3,49 @@ import { reveal } from "@/lib/device";
 import { AnimatedHeading, AnimatedText } from "@/components/ui/animated-text";
 import { TeamMemberCard, TeamMember } from "./TeamMemberCard";
 
-// SAMPLE — replace with client-approved profiles
 const advisoryBoardMembers: TeamMember[] = [
   {
     id: "ab1",
-    name: "Meenakshi Tyagi",
-    designation: "Senior Educationist & Curriculum Expert",
-    expertise: "Curriculum Design, Language Pedagogy",
-    bio: "With over 25 years in education, Dr. Mehta has led curriculum development initiatives across leading universities in India and abroad. Her work in English Language Teaching has shaped thousands of learners worldwide.",
-    photo: "/team/advisory-board/placeholder-1.jpg",
-    linkedin: "https://www.linkedin.com",
-    isSample: true,
+    name: "Dr. Meenakshi Tyagi",
+    designation: "Dean - Academics, PCET's Pune Business School",
+    bio: "I am someone who enjoys learning, exploring new things and having meaningful conversations. I love my work in the field of education, but equally enjoy discovering life beyond work. I am deeply interested in human behaviour, neuroscience, leadership and personal growth. Beyond my professional life, fitness and health are an important part of who I am. I enjoy staying active, exploring wellness, understanding the mind-body connection and constantly working towards becoming a healthier, stronger version of myself. I believe life is all about growing, enjoying the journey and staying curious.",
+    photo: "/team/advisory-board/meenakshi-tyagi.jpg",
   },
   {
     id: "ab2",
     name: "Shilpa Shukla",
-    designation: "Executive Coach & Leadership Consultant",
-    expertise: "Leadership Development, Corporate Training",
-    bio: "A certified executive coach with a track record of transforming leadership capability in Fortune 500 companies, Mr. Krishnamurthy brings his expertise in experiential learning to The Consistent Academy's advisory panel.",
-    photo: "/team/advisory-board/placeholder-2.jpg",
-    linkedin: "https://www.linkedin.com",
-    isSample: true,
+    designation: "Certified Abroad Career Counsellor",
+    bio: "Certified Abroad Career Counsellor and a proud Army wife and a mother of two. My elder son is studying at University of California, Berkeley while the younger daughter is a Guinness book record holder. I am a Sagittarius who believes life is meant to be lived colourfully. Art is my happy place, whether it's painting, crocheting or diving into a new creative adventure. Sitting idle is simply not my thing; I need to be doing, creating or discovering something new. I love interacting with parents and guiding them for their children's bright future.",
+    photo: "/team/advisory-board/shilpa-shukla.jpg",
   },
   {
     id: "ab3",
-    name: "Syed Jafri",
-    designation: "Applied Linguistics Researcher",
-    expertise: "Second Language Acquisition, Assessment",
-    bio: "Dr. Nair's research in applied linguistics and second language acquisition frameworks has been published in respected peer-reviewed journals. She advises on modern evidence-based teaching methodologies.",
-    photo: "/team/advisory-board/placeholder-3.jpg",
-    linkedin: "https://www.linkedin.com",
-    isSample: true,
+    name: "Dr. Sneha Damle",
+    designation: "Counsellor & Co-founder, SETU Parents' Support Group",
+    bio: "Co-founder of SETU, a parents' support group, since 2003. I have 17 years of experience in successfully running Amar Pre-School. I am a Nagpur-based counsellor with a PhD in Psychology and MSW in Labour Welfare. I work with children, teenagers, parents and couples on stress, anxiety, exam pressure, relationships and family conflict, drawing on my training in REBT. I run aptitude, personality and IQ assessments that guide students in classes 9 to 12 towards the right stream and career. I write on parenting and psychology for Loksatta and Maharashtra Times, and I love to interact with parents and students in Marathi, Hindi and English.",
+    photo: "/team/advisory-board/sneha-damle.jpg",
   },
   {
     id: "ab4",
-    name: "Col. Nalwade",
-    designation: "Soft Skills & Corporate Communication Expert",
-    expertise: "Soft Skills Training, NLP, Behavioural Coaching",
-    bio: "A practitioner of NLP and behavioural coaching with 18 years in corporate training, Ms. Sharma has designed transformative soft-skills programmes for leading MNCs and high-growth startups across India.",
-    photo: "/team/advisory-board/placeholder-4.jpg",
-    linkedin: "https://www.linkedin.com",
-    isSample: true,
+    name: "Sonia Govardhan",
+    designation: "Director, Beamish",
+    bio: "I am a happy and enthusiastic Leader who doesn't want to walk on a trodden path. I love to be amongst children as they are innocent and purest souls. I like my work and my team. Being a Cambridge author for Parent Handbook and Cambridge Professional Development Trainer gives me great pleasure. I am an Internationally Trained Phonics Trainer. Crafting beautiful experiences for children and paving their future path into wonderful journeys is my passion.",
+    photo: "/team/advisory-board/sonia-govardhan.jpg",
   },
   {
     id: "ab5",
-    name: "Sonia Govardhan",
-    designation: "Soft Skills & Corporate Communication Expert",
-    expertise: "Soft Skills Training, NLP, Behavioural Coaching",
-    bio: "A practitioner of NLP and behavioural coaching with 18 years in corporate training, Ms. Sharma has designed transformative soft-skills programmes for leading MNCs and high-growth startups across India.",
-    photo: "/team/advisory-board/placeholder-4.jpg",
-    linkedin: "https://www.linkedin.com",
-    isSample: true,
+    name: "Syed Ali Jafri",
+    designation: "Director, FPA Edutech",
+    bio: "I am a finance professional, educator and mentor passionate about making industry knowledge accessible and practical. My interests span financial services, investment banking, fund accounting, financial markets and the evolving role of technology in finance. Through my association with FPA Edutech, I actively engage in knowledge-sharing, professional development and mentoring aspiring professionals. I enjoy simplifying complex concepts, sharing industry insights and helping individuals strengthen their professional presence through LinkedIn optimisation and personal branding. I believe in continuous learning, meaningful networking and empowering the next generation with practical knowledge, industry exposure and the confidence to navigate an ever-changing professional world.",
+    photo: "/team/advisory-board/syed-ali-jafri.jpg",
   },
 ];
 
 export const AdvisoryBoard = () => {
   return (
-    <div className="mt-20 relative">
+    <div id="visionaries" className="mt-20 relative scroll-mt-24">
       {/* Background decorative glow */}
-      <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 -z-10 overflow-visible pointer-events-none">
         <div className="absolute top-1/3 -left-32 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
       </div>
@@ -76,34 +60,23 @@ export const AdvisoryBoard = () => {
             transition: { duration: 0.6 },
           }, "none")}
         >
-          <AnimatedText className="text-neo-accent text-sm uppercase tracking-widest font-semibold mb-3">
-            Strategic Guidance & Governance
-          </AnimatedText>
 
           <AnimatedHeading delay={0.1} className="mb-4">
-            Advisory <span className="text-gradient">Board</span>
+            Board of <span className="text-gradient">Visionaries</span>
           </AnimatedHeading>
 
           <AnimatedText
             className="text-neo-muted text-base max-w-2xl mx-auto leading-relaxed"
             delay={0.2}
           >
-            Distinguished academicians, corporate leaders, and pedagogy experts
-            guiding our curriculum standards, pedagogical innovation, and institutional direction.
+            A distinguished group of leaders, experts and mentors shaping the future of young achievers.
           </AnimatedText>
         </motion.div>
       </div>
 
-      {/* Grid of 3D Flip Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+      <div className="space-y-6 md:space-y-8 max-w-5xl mx-auto">
         {advisoryBoardMembers.map((member, index) => (
-          <TeamMemberCard
-            key={member.id}
-            member={member}
-            variant="flip"
-            index={index}
-            footerLabel="Advisory Board"
-          />
+          <TeamMemberCard key={member.id} member={member} variant="spread" index={index} />
         ))}
       </div>
     </div>

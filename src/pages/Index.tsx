@@ -28,6 +28,7 @@ import CCButton from "@/components/ui/CCButton";
 import Founder from "../components/Founder";
 import Testimonials from "../components/Testimonials";
 import { Developers } from "../components/Developers";
+import { HomeSectionNav } from "@/components/HomeSectionNav";
 import { PageLoader } from "@/components/PageLoader";
 import { SEO } from "@/components/SEO";
 
@@ -267,6 +268,7 @@ const Index = () => {
         <>
           <Navbar />
           <Developers />
+          <HomeSectionNav />
           <main>
             <HeroSection startAnim={true} />
 
@@ -323,7 +325,7 @@ const Index = () => {
           </div>
 
           {/* GALLERY */}
-          <SectionWrapper>
+          <SectionWrapper id="gallery">
             <div className="text-center mb-6">
               <AnimatedHeading>
                 Learning in{" "}
