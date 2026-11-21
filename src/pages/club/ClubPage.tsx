@@ -5,6 +5,7 @@ import { getCCUser, type CCUser } from "@/lib/ccClub";
 import CCHero from "@/components/club/CCHero";
 import CCAuthForm from "@/components/club/CCAuthForm";
 import CCJourney from "@/components/club/CCJourney";
+import SectionNav from "@/components/SectionNav";
 import ClubDashboard from "./ClubDashboard";
 import { Loader2 } from "lucide-react";
 
@@ -94,6 +95,17 @@ const ClubPage: React.FC = () => {
   // ── Unauthenticated: Hero + Auth Form ──
   return (
     <div className="cc-club-scope">
+      <SectionNav
+        sections={[
+          { id: "cc-hero", label: "Welcome" },
+          { id: "cc-journey", label: "Journey" },
+          { id: "cc-auth-section", label: "Join" },
+        ]}
+        accentColor="#A89CFF"
+        textColor="#9B97AD"
+        markerColor="#4A4660"
+        offset={0}
+      />
       <CCHero onScrollToAuth={scrollToAuth} />
       <CCJourney />
       <div ref={authSectionRef}>

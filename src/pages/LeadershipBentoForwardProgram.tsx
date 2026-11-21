@@ -38,6 +38,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import SectionNav from "@/components/SectionNav";
 import { SectionWrapper } from "@/components/ui/section-wrapper";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
@@ -453,12 +454,26 @@ const LeadershipBentoForwardProgram = () => {
         canonical="/lbfp"
       />
       <Navbar />
+      <SectionNav
+        sections={[
+          { id: "lbfp-hero", label: "Overview" },
+          { id: "workshop", label: "Workshop" },
+          { id: "leadership-lab-forward", label: "Leadership Lab" },
+          { id: "passion-projects", label: "Passion Projects" },
+          { id: "packages", label: "Packages" },
+          { id: "lbfp-enquiry-form", label: "Enquire" },
+        ]}
+        accentColor="#9C37FC"
+        textColor="#6B7280"
+        markerColor="#A3B1C6"
+        offset={90}
+      />
 
       <main>
         {/* ================================================================
             HERO
             ================================================================ */}
-        <div className="pt-32 pb-8 relative overflow-hidden">
+        <div id="lbfp-hero" className="pt-32 pb-8 relative overflow-hidden">
           {/* Ambient blobs */}
           <div
             aria-hidden

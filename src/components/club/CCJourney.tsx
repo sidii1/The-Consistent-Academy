@@ -59,7 +59,7 @@ const MEETING_PARTS = [
 ];
 
 const CCJourney: React.FC = () => (
-  <section style={{ padding: "72px 20px", maxWidth: 1100, margin: "0 auto" }}>
+  <section id="cc-journey" style={{ padding: "72px 20px", maxWidth: 1100, margin: "0 auto" }}>
     {/* Heading */}
     <div style={{ textAlign: "center", marginBottom: 40 }}>
       <span style={{ color: "var(--cc-accent-bright)", fontSize: "0.75rem", letterSpacing: "0.18em", textTransform: "uppercase", fontWeight: 700 }}>

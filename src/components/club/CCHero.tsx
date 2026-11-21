@@ -75,7 +75,7 @@ const CCHero: React.FC<CCHeroProps> = ({ onScrollToAuth }) => {
   }, []);
 
   return (
-    <section
+    <section id="cc-hero"
       style={{
         minHeight: "100vh",
         display: "flex",
