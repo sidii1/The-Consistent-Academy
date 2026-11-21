@@ -35,3 +35,10 @@ Role-based (`club_role` in `cc_users`: Student, President, Vice President, Team 
 
 - `.env` and `serviceAccountKey.json` are present locally and hold secrets; never commit or print them.
 - README mentions `VITE_RESEND_API_KEY`, but the actual code uses server-side `RESEND_API_KEY` in `api/`.
+
+## Frontend changes
+
+After a UI change, verify it in the browser (Claude in Chrome tools) instead of relying on `tsc`/eslint alone:
+make sure `npm run dev` is running (port 8080), open the affected route on `http://localhost:8080` in a new tab,
+and check it once at desktop width and once at mobile width. Prefer reading page text / console errors over
+screenshots where that answers the question, and take only the screenshots needed. If no browser tool is connected, say so rather than claiming the change was viewed.
