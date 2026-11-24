@@ -41,6 +41,7 @@ import { Footer } from "@/components/layout/Footer";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { SEO } from "@/components/SEO";
+import { routeSeo } from "@/seo/routes";
 
 interface BlogPost {
   id: string;
@@ -324,9 +325,7 @@ const Blog: React.FC = () => {
   return (
     <>
       <SEO
-        title="Community Blogs | The Consistent Academy"
-        description="Read insights, stories, and learning experiences from the community at The Consistent Academy."
-        canonical="/blog"
+        {...routeSeo("/blog")}
       />
       <Navbar />
       <div className="min-h-screen bg-neo-base overflow-x-hidden">

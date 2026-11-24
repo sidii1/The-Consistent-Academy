@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Resend } from "resend";
+import { esc } from "./_lib/html.js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -27,12 +28,12 @@ export default async function handler(
       subject: `New Webinar Registration: ${webinarTitle} – ${name}`,
       html: `
         <h2>New Webinar Registration</h2>
-        <p><strong>Webinar Title:</strong> ${webinarTitle}</p>
-        <p><strong>Webinar Identifier:</strong> ${webinarId || "N/A"}</p>
+        <p><strong>Webinar Title:</strong> ${esc(webinarTitle)}</p>
+        <p><strong>Webinar Identifier:</strong> ${esc(webinarId || "N/A")}</p>
         <hr />
-        <p><strong>Registrant Name:</strong> ${name}</p>
-        <p><strong>Email Address:</strong> ${email}</p>
-        <p><strong>Contact Number:</strong> ${phone}</p>
+        <p><strong>Registrant Name:</strong> ${esc(name)}</p>
+        <p><strong>Email Address:</strong> ${esc(email)}</p>
+        <p><strong>Contact Number:</strong> ${esc(phone)}</p>
         <hr />
         <p style="font-size: 12px; color: #666;">This registration has been stored in Firestore under collection 'webinarRegistrations'. Payment integration is deferred for this phase.</p>
       `,
@@ -45,8 +46,8 @@ export default async function handler(
         to: [email],
         subject: `Confirmed: Your registration for "${webinarTitle}"`,
         html: `
-          <h3>Hello ${name},</h3>
-          <p>Thank you for registering for our upcoming session: <strong>${webinarTitle}</strong>.</p>
+          <h3>Hello ${esc(name)},</h3>
+          <p>Thank you for registering for our upcoming session: <strong>${esc(webinarTitle)}</strong>.</p>
           <p>We have reserved your interest. The session link and reminders will be emailed to you prior to the event.</p>
           <p>Warm regards,<br /><strong>The Consistent Academy Team</strong><br />theconsistentacademy@gmail.com</p>
         `,

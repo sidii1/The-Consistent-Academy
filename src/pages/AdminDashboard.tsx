@@ -48,13 +48,14 @@ import {
   type CCRole,
 } from "@/lib/ccClub";
 import { AdminPaymentsPanel } from "@/components/admin/AdminPaymentsPanel";
+import { AdminWebinarsPanel } from "@/components/admin/AdminWebinarsPanel";
 
 // ─────────────────────────────────────────────────────────────
 // TYPES
 // ─────────────────────────────────────────────────────────────
 
 type RegularTab = "contactRequests" | "careerApplications" | "leadershipTestResults" | "testResults";
-type CollectionName = RegularTab | "payments" | "cc_club";
+type CollectionName = RegularTab | "payments" | "cc_club" | "webinars";
 
 interface FirestoreRecord {
   id: string;
@@ -63,6 +64,7 @@ interface FirestoreRecord {
 
 const TABS: { id: CollectionName; label: string }[] = [
   { id: "payments", label: "💳 Payments" },
+  { id: "webinars", label: "🎥 Webinars" },
   { id: "contactRequests", label: "Contact Requests" },
   { id: "careerApplications", label: "Career Applications" },
   { id: "leadershipTestResults", label: "Leadership Test" },
@@ -1079,7 +1081,7 @@ export const AdminDashboard: React.FC = () => {
   const currentData =
     activeTab === "testResults"
       ? filteredTestResults
-      : activeTab === "cc_club" || activeTab === "payments"
+      : activeTab === "cc_club" || activeTab === "payments" || activeTab === "webinars"
       ? []
       : data[activeTab as RegularTab] || [];
 
@@ -1112,7 +1114,7 @@ export const AdminDashboard: React.FC = () => {
           <aside className="w-full lg:w-72 flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 scrollbar-hide">
             {TABS.map((tab) => {
               const isActive = activeTab === tab.id;
-              const count = tab.id === "cc_club" || tab.id === "payments" ? 0 : data[tab.id as RegularTab]?.length || 0;
+              const count = tab.id === "cc_club" || tab.id === "payments" || tab.id === "webinars" ? 0 : data[tab.id as RegularTab]?.length || 0;
               return (
                 <button
                   key={tab.id}
@@ -1140,6 +1142,10 @@ export const AdminDashboard: React.FC = () => {
             {activeTab === "payments" ? (
               <div className="bg-card border border-border rounded-3xl p-6 max-sm:p-4 shadow-sm">
                 <AdminPaymentsPanel />
+              </div>
+            ) : activeTab === "webinars" ? (
+              <div className="bg-card border border-border rounded-3xl p-6 max-sm:p-4 shadow-sm">
+                <AdminWebinarsPanel />
               </div>
             ) : activeTab === "cc_club" ? (
               <div className="bg-card border border-border rounded-3xl p-6 max-sm:p-4 shadow-sm">

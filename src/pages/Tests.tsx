@@ -34,6 +34,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import TestInterface from "@/components/tests/TestInterface";
 import LeadershipTestInterface from "@/components/tests/LeadershipTestInterface";
 import { SEO } from "@/components/SEO";
+import { routeSeo } from "@/seo/routes";
 
 const Tests = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -161,9 +162,7 @@ const Tests = () => {
   return (
     <>
       <SEO 
-        title="English & Leadership Tests | The Consistent Academy"
-        description="Take our free English grammar proficiency tests for kids and adults, or assess your leadership style with our psychometric test."
-        canonical="/tests"
+        {...routeSeo("/tests")}
       />
       <Navbar />
       <main className="min-h-screen pt-24 px-4">

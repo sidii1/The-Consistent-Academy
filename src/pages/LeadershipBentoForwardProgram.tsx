@@ -44,6 +44,8 @@ import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { AnimatedHeading, AnimatedText } from "@/components/ui/animated-text";
 import { SEO } from "@/components/SEO";
+import { routeSeo } from "@/seo/routes";
+import { trackEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { PaymentModal } from "@/components/payments/PaymentModal";
 import {
@@ -252,7 +254,7 @@ const llfSkills = ["Communication", "Critical Thinking", "Leadership", "Passion 
    ============================================================ */
 
 /* ——— Leadership Lab Forward visual ———
-   Drop a licensed photo at public/leadership/llf-hero.jpg and it is used automatically;
+   Drop a licensed photo at public/leadership/llf-hero.webp and it is used automatically;
    until then a neumorphic skill-tile composition is shown. */
 const llfTiles = [
   { icon: <MessageCircle size={26} />, label: "Communication", tint: "text-violet-600" },
@@ -267,7 +269,7 @@ const LlfVisual = () => {
   if (!useFallback) {
     return (
       <img
-        src="/leadership/llf-hero2.jpg"
+        src="/leadership/llf-hero2.webp"
         alt="Students collaborating during a Leadership Lab Forward session"
         className="w-full h-64 md:h-80 object-cover rounded-neo-card"
         onError={() => setUseFallback(true)}
@@ -417,6 +419,7 @@ const LeadershipBentoForwardProgram = () => {
       // 3. Log email status (non-blocking)
       console.info("LBFP enquiry email status:", emailStatus);
 
+      trackEvent("generate_lead", { form: "lbfp_enquiry" });
       setFormStatus("success");
       setForm({ ...emptyForm, mode: form.mode, date: form.date });
     } catch (err) {
@@ -449,9 +452,7 @@ const LeadershipBentoForwardProgram = () => {
   return (
     <div className="min-h-screen bg-neo-base overflow-x-hidden">
       <SEO
-        title="Leadership Bento Forward Program | The Consistent Academy"
-        description="The Leadership Bento Forward Program (LBFP) by The Consistent Academy — a transformative two-day leadership workshop and passion project programme designed for the next generation of leaders."
-        canonical="/lbfp"
+        {...routeSeo("/lbfp")}
       />
       <Navbar />
       <SectionNav
@@ -1330,7 +1331,7 @@ const LeadershipBentoForwardProgram = () => {
         productId={payProduct ?? PACKAGES[0].id}
         defaultMode={form.mode}
         defaultDate={form.date}
-        image="/leadership/llf-hero2.jpg"
+        image="/leadership/llf-hero2.webp"
         duration={payProduct === "pkg-llf" ? "2 Days" : payProduct === "pkg-annual" ? "1 Year" : undefined}
         highlights={payProduct ? packageIncludes[payProduct] : undefined}
       />

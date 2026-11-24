@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Resend } from "resend";
+import { esc } from "./_lib/html.js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -21,12 +22,12 @@ export default async function handler(
       subject: `New Contact Form Submission – ${name}`,
       html: `
         <h3>New Contact Request</h3>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone || "N/A"}</p>
-        <p><strong>Course:</strong> ${course || "N/A"}</p>
+        <p><strong>Name:</strong> ${esc(name)}</p>
+        <p><strong>Email:</strong> ${esc(email)}</p>
+        <p><strong>Phone:</strong> ${esc(phone || "N/A")}</p>
+        <p><strong>Course:</strong> ${esc(course || "N/A")}</p>
         <hr />
-        <p>${message}</p>
+        <p>${esc(message)}</p>
       `,
     });
 

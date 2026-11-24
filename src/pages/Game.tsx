@@ -5,6 +5,7 @@ import { SectionWrapper } from "@/components/ui/section-wrapper";
 import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { AnimatedHeading, AnimatedText } from "@/components/ui/animated-text";
 import { SEO } from "@/components/SEO";
+import { routeSeo } from "@/seo/routes";
 
 /**
  * Placeholder for the upcoming TCA game. Monetisation (via the same Razorpay
@@ -13,13 +14,11 @@ import { SEO } from "@/components/SEO";
 const Game = () => (
   <div className="min-h-screen bg-neo-base overflow-x-hidden">
     <SEO
-      title="Padre's Sliver Search | The Consistent Academy"
-      description="Padre's Sliver Search — a new learning game from The Consistent Academy. Coming soon."
-      canonical="/game"
+      {...routeSeo("/game")}
     />
     <Navbar />
     <main>
-      <SectionWrapper className="pt-32">
+      <SectionWrapper className="pt-32 md:pt-36">
         <div className="max-w-2xl mx-auto text-center">
           <AnimatedHeading className="text-neo-fg mb-4">
             Padre's <span className="text-gradient">Sliver Search</span>

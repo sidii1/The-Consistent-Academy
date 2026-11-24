@@ -1,5 +1,8 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
+
+const SITE_URL = 'https://www.theconsistentacademy.in';
 
 interface SEOProps {
   title: string;
@@ -18,16 +21,19 @@ export const SEO: React.FC<SEOProps> = ({
   type = 'website',
   name = 'The Consistent Academy',
   schema,
-  image = 'https://www.theconsistentacademy.in/logo2.png'
+  image = 'https://www.theconsistentacademy.in/og-image.jpg'
 }) => {
-  const fullCanonical = canonical ? `https://www.theconsistentacademy.in${canonical}` : 'https://www.theconsistentacademy.in';
+  const { pathname } = useLocation();
+  // Fall back to the current route so every page gets a self-referencing canonical.
+  const path = canonical ?? pathname;
+  const fullCanonical = path === '/' ? `${SITE_URL}/` : `${SITE_URL}${path.replace(/\/$/, '')}`;
 
   return (
     <Helmet>
       {/* Standard metadata tags */}
       <title>{title}</title>
       <meta name="description" content={description} />
-      {canonical && <link rel="canonical" href={fullCanonical} />}
+      <link rel="canonical" href={fullCanonical} />
 
       {/* Open Graph tags */}
       <meta property="og:type" content={type} />

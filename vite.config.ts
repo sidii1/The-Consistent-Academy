@@ -51,13 +51,26 @@ const localApi = (): Plugin => ({
   },
 });
 
+/** Injects the Google Search Console verification tag when VITE_GSC_VERIFICATION is set,
+ *  so it is present in the raw HTML that Google fetches (no JS needed). */
+const searchConsoleTag = (): Plugin => {
+  const token = loadEnv(process.env.NODE_ENV ?? "production", process.cwd(), "VITE_").VITE_GSC_VERIFICATION;
+  return {
+    name: "gsc-verification-tag",
+    transformIndexHtml: () =>
+      token
+        ? [{ tag: "meta", attrs: { name: "google-site-verification", content: token }, injectTo: "head" as const }]
+        : [],
+  };
+};
+
 // https://vitejs.dev/config/
 export default defineConfig(() => ({
   server: {
     host: "::",
     port: 8080,
   },
-  plugins: [react(), localApi()],
+  plugins: [react(), localApi(), searchConsoleTag()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

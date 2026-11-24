@@ -46,8 +46,12 @@ export const Developers = () => {
         border border-white/40"
       >
         <img
-          src="/developers.png"
+          src="/developers.webp"
           alt="Siddhi & Nakul"
+          width={288}
+          height={216}
+          loading="lazy"
+          decoding="async"
           className="absolute inset-0 w-full h-full min-w-[76px] object-cover"
         />
 

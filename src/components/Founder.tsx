@@ -23,7 +23,7 @@ const books = [
     title: "Cakewalk IELTS",
     description:
       "A focused, student-friendly guide that simplifies IELTS preparation with practical strategies, clarity, and confidence-building techniques.",
-    imagePath: "/books/cakewalk-ielts.jpg",
+    imagePath: "/books/cakewalk-ielts.webp",
     links: [
       { label: "Evincepub", url: "https://evincepub.com/product/a-focal-easy-guide-cakewalk-ielts/" },
       { label: "Bspkart", url: "https://www.bspkart.com/product/a-focal-easy-guide-cakewalk-ielts/" },
@@ -35,7 +35,7 @@ const books = [
     title: "The Reading Detective",
     description:
       "A delightful book for kids that builds comprehension, critical thinking, and a love for reading through engaging stories and activities.",
-    imagePath: "/books/the-reading-detective.jpg",
+    imagePath: "/books/the-reading-detective.webp",
     links: [
       { label: "Evincepub", url: "https://evincepub.com/product/the-reading-detective-solving-comprehension-mysteries-for-kids/" },
       { label: "Amazon", url: "https://www.amazon.in/dp/9363559335" },
@@ -47,7 +47,7 @@ const books = [
     title: "101 Management Books You'll Never Read But Should",
     description:
       "A crisp, insightful compilation that distills powerful management lessons from the world's most influential business books.",
-    imagePath: "/books/101-management.jpg",
+    imagePath: "/books/101-management.webp",
     links: [
       { label: "Evincepub", url: "https://evincepub.com/product/101-management-books-youll-never-read-but-should/" },
       { label: "Amazon", url: "https://www.amazon.in/dp/9373352318" },
@@ -84,7 +84,7 @@ const Founder = () => {
               </AnimatedHeading>
 
               <AnimatedText className="text-muted-foreground text-lg mb-6" delay={0.2}>
-                Author, IELTS full course(speaking+reading+writing) & Interview Coach, and Founder of{" "}
+                Author, IELTS full course (speaking + reading + writing) & Interview Coach, and Founder of{" "}
                 <strong>The Consistent Academy</strong>. With over{" "}
                 <strong>19 years of experience</strong>, Vidya has helped students,
                 professionals, and aspiring leaders communicate with clarity,
@@ -122,8 +122,10 @@ const Founder = () => {
               <div className="relative w-full max-w-lg mx-auto lg:mx-0">
                 <div className="w-full aspect-square rounded-full shadow-neu-2xl bg-gradient-to-br from-card to-secondary/30 overflow-hidden">
                   <img
-                    src="/gallery/vidya.png"
+                    src="/gallery/vidya.webp"
                     alt="Vidya Wankhade"
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                   />
                 </div>

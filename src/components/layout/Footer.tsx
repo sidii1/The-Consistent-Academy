@@ -27,6 +27,7 @@ export const Footer = () => {
       { name: "Courses", path: "/courses" },
       { name: "Tests", path: "/tests" },
       { name: "Blog", path: "/blog" },
+      { name: "Contact", path: "/contact" },
       { name: "CC Club", path: "/club" },
       { name: "Testimonials", onClick: () => scrollToSection("testimonials") },
     ]
@@ -61,7 +62,7 @@ export const Footer = () => {
               </span>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              Empowering learners to achieve English fluency through consistent practice and expert guidance.
+              Building confident communicators and leaders through IELTS preparation, business communication, public speaking and consistent expert guidance.
             </p>
             <div className="flex gap-3">
               {[
@@ -132,15 +133,15 @@ export const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
                 <MapPin size={18} className="text-primary mt-0.5 flex-shrink-0" />
-                <span>Pune,Maharashtra</span>
+                <a href="https://www.google.com/maps/search/?api=1&query=Pune%2C+Maharashtra" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Pune, Maharashtra</a>
               </li>
               <li className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Phone size={18} className="text-primary flex-shrink-0" />
-                <span>+91 77091 09830</span>
+                <a href="tel:+917709109830" className="hover:text-primary transition-colors">+91 77091 09830</a>
               </li>
               <li className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Mail size={18} className="text-primary flex-shrink-0" />
-                <span className="[overflow-wrap:anywhere]">theconsistentacademy@gmail.com</span>
+                <a href="mailto:theconsistentacademy@gmail.com" className="hover:text-primary transition-colors [overflow-wrap:anywhere]">theconsistentacademy@gmail.com</a>
               </li>
             </ul>
           </motion.div>
@@ -166,12 +167,18 @@ export const Footer = () => {
             <Link to="/login?redirect=admin" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Admin Login
             </Link>
-            <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <Link to="/privacy-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Privacy Policy
-            </a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            </Link>
+            <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               Terms of Service
-            </a>
+            </Link>
+            <Link to="/refund-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              Refund Policy
+            </Link>
+            <Link to="/shipping-policy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              Service Delivery
+            </Link>
           </div>
         </motion.div>
       </div>

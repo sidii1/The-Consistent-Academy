@@ -23,6 +23,7 @@ const navLinks: NavItem[] = [
   { name: "Webinars", path: "/webinars" },
   { name: "Game", path: "/game", tooltip: "PADRE'S SLIVER SEARCH" },
   { name: "Tests", path: "/tests" },
+  { name: "Contact", path: "/contact" },
 ];
 
 export const Navbar = () => {
@@ -123,7 +124,7 @@ export const Navbar = () => {
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
-        <div className="container mx-auto px-4 pl-[15px] md:pl-[15px] lg:pl-4 lg:max-w-6xl">
+        <div className="container mx-auto px-4 pl-[15px] md:pl-[15px] lg:pl-4 lg:max-w-6xl xl:max-w-7xl">
           <motion.nav
             className={cn(
               "rounded-neo-card px-6 py-4 transition-all duration-500",
@@ -142,7 +143,7 @@ export const Navbar = () => {
                 >
                   <img src="/logo.png" alt="The Consistent Academy" className="w-full h-full object-cover" />
                 </motion.div>
-                <span className="font-display font-bold text-xl text-neo-fg hidden sm:block">
+                <span className="font-display font-bold text-xl text-neo-fg hidden sm:block lg:hidden xl:block whitespace-nowrap">
                   The Consistent Academy
                 </span>
               </Link>
@@ -155,7 +156,7 @@ export const Navbar = () => {
                       key={item.name}
                       onClick={() => handleNavClick(item)}
                       className={cn(
-                        "px-4 py-2.5 rounded-neo-btn text-sm font-medium transition-all duration-300 ease-out",
+                        "px-3 xl:px-4 py-2.5 rounded-neo-btn text-sm font-medium whitespace-nowrap transition-all duration-300 ease-out",
                         isActive(item)
                           ? "neo-inset text-neo-accent"
                           : "text-neo-muted hover:text-neo-fg hover:neo-surface-sm active:neo-inset-sm"
@@ -182,7 +183,7 @@ export const Navbar = () => {
                 })}
               </div>
 
-              <div className="hidden lg:block">
+              <div className="hidden lg:block whitespace-nowrap">
                 <Link to="/contact">
                   <NeumorphicButton variant="primary" size="sm">
                     Enroll Now

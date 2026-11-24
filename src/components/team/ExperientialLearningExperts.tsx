@@ -12,7 +12,7 @@ const eleTeamMembers: TeamMember[] = [
     role: "Leadership Facilitation & Group Dynamics",
     description:
       "Hi, I’m Aparna! I’m 100% powered by chai, coffee, and big ambitions. My height may be compact think cute, portable, and ridiculously adjustable but my mind and creative ideas are huge. I thrive when I’m managing events, hosting shows on stage, and putting my wildest ideas out there for the world to see. I’m built for the high-energy world of marketing, where my creativity gets to run the show. Dynamite really does come in small packages, and I’m ready to prove it! ",
-    photo: "/team/experiential-learning-experts/Aparna Jadhav.png",
+    photo: "/team/experiential-learning-experts/Aparna Jadhav.webp",
     expertiseLink: null,
   },
   {
@@ -22,7 +22,7 @@ const eleTeamMembers: TeamMember[] = [
     role: "Project-Based Learning & Innovation",
     description:
       "I’m a curious soul with big dreams, a creative streak, and about 20 tabs open in my brain at all times! I love dancing, getting lost in art and craft, playing indoor and outdoor games, traveling, and watching movies that make me laugh, think, or leave me emotional. My passion? Creating, expressing, exploring, and turning random ideas into something real. I love discovering new places, meeting interesting people, and saying yes to experiences that help me grow. I’m basically a mix of an artist, an explorer, a dreamer, a achiever and someone who wants to try a little bit of everything! ",
-    photo: "/team/experiential-learning-experts/Ishani Soundankar.jpg",
+    photo: "/team/experiential-learning-experts/Ishani Soundankar.webp",
     expertiseLink: null,
   },
   {
@@ -32,7 +32,7 @@ const eleTeamMembers: TeamMember[] = [
     role: "Communication Workshops & Reflective Practice",
     description:
       "Part engineer, part artist, and part person who will absolutely turn a random thought into a 5-minute speech. I’m into music, painting, crocheting, a little debate, and collecting experiences that make good stories later. From winning karate medals to surviving the chaos of college events, I like keeping life interesting. I love trying new things, exploring new places, and saying yes to adventures (after overthinking them for at least 20 minutes). Basically, I’m a curious human with too many hobbies and not enough hours!",
-    photo: "/team/experiential-learning-experts/NIDHI PILLIA.jpg",
+    photo: "/team/experiential-learning-experts/NIDHI PILLIA.webp",
     expertiseLink: null,
   },
   {
@@ -42,7 +42,7 @@ const eleTeamMembers: TeamMember[] = [
     role: "Communication & Opportunity Exploration",
     description:
       "A passionate Bharatanatyam dancer who wants to live life to the fullest and enjoy every moment of it. I'm growing a family business with all my energy and skills. I'm keen to communicate as much as I can, to understand new and upcoming opportunities across various fields, and I'm always excited to learn about new innovations. I believe we should learn from experiences that help us grow, both inside and out.",
-    photo: "/team/experiential-learning-experts/Harsha Chinchore.jpg",
+    photo: "/team/experiential-learning-experts/Harsha Chinchore.webp",
     expertiseLink: null,
   },
   {
@@ -52,7 +52,7 @@ const eleTeamMembers: TeamMember[] = [
     role: "Observation & Interpersonal Understanding",
     description:
       "I'm a lazy brat, which helps me do things in the simplest way. I love listening to music of every genre. I remember things in great detail, which helps me relive moments, and I'm good at expressing them with minute details. I'm a keen observer, and a lot of things catch my eye. I love talking to people and understanding them and their experiences as a whole.",
-    photo: "/team/experiential-learning-experts/Shweta Chinchore.jpg",
+    photo: "/team/experiential-learning-experts/Shweta Chinchore.webp",
     expertiseLink: null,
   },
   {
@@ -62,7 +62,7 @@ const eleTeamMembers: TeamMember[] = [
     role: "Creative Teaching & Learning Facilitation",
     description:
       "I'm a curious soul with a big imagination and a never-ending bucket list! A big fan of teaching, I love making people go from \"I don't get it\" to \"That was easy!\". I love exploring new places, finding cute cafés, experimenting with art, and collecting memories along the way. I'm always up for spontaneous plans, creative adventures, and coffee with good conversation. Life's too short for boring routines, so here's to living, learning, and a little bit of madness!",
-    photo: "/team/experiential-learning-experts/Sanjyoti Raut.jpg",
+    photo: "/team/experiential-learning-experts/Sanjyoti Raut.webp",
     expertiseLink: null,
   },
   {
@@ -71,7 +71,7 @@ const eleTeamMembers: TeamMember[] = [
     designation: "Experiential Learning Expert",
     description:
       "I am someone who loves experiencing life with curiosity and an open mind. I enjoy dancing, reading, travelling, discovering new places, and trying things that take me out of my comfort zone. I love meaningful conversations, meeting different people, and learning from their stories and perspectives. I am naturally curious and enjoy exploring everything from business and creativity to new cultures and experiences. I believe life is about continuously learning, staying grounded, having fun, and creating memories along the way.",
-    photo: "/team/experiential-learning-experts/Vaishnavi Patil.jpg",
+    photo: "/team/experiential-learning-experts/Vaishnavi Patil.webp",
     expertiseLink: null,
   },
   {
@@ -80,7 +80,7 @@ const eleTeamMembers: TeamMember[] = [
     designation: "Experiential Learning Expert",
     description:
       "I am a creative, curious and fun-loving individual with a passion for food, baking, coffee, art and exploring new interests. From anime and gaming to dancing and painting, I enjoy discovering new experiences. I value empathy, teamwork and meaningful connections, believe in the power of humour, and love stepping out of my comfort zone to keep learning and growing.",
-    photo: "/team/experiential-learning-experts/Gunjan Singh.jpg",
+    photo: "/team/experiential-learning-experts/Gunjan Singh.webp",
     expertiseLink: null,
   },
 ];

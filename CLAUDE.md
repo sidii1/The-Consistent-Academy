@@ -5,7 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 - `npm run dev` — Vite dev server on port 8080 (`vite.config.ts`)
-- `npm run build` — runs `node generate-sitemap.js` (writes the sitemap from a hardcoded `staticRoutes` list) then `vite build`. When adding a public route, add it to `staticRoutes` in `generate-sitemap.js` too.
+- `npm run build` — runs `node generate-sitemap.js` (writes `public/sitemap.xml` and `public/llms.txt`), `vite build`, then `node scripts/postbuild-seo.mjs` (writes a static `dist/<route>/index.html` per public URL with its own meta tags, JSON-LD and plain-HTML content for crawlers/AI). The route list is `STATIC_ROUTES` in `src/seo/routes.ts` plus one URL per course in `src/data/courses.ts`; add new public pages there (and in `src/App.tsx`).
+- Images: put new photos in `public/` as resized WebP (`node scripts/optimize-images.mjs` converts the known folders; originals go to the git-ignored `assets-src/`). Never add raw camera/PNG exports.
 - `npm run lint` — ESLint for the frontend
 - `npm run preview` — serve the production build
 - Cloud Functions (`functions/`, separate package, Node 24): `npm --prefix functions run build | lint | serve | deploy`

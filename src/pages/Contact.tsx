@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { reveal } from "@/lib/device";
-import { Send, Mail, Phone, MapPin } from "lucide-react";
+import { Send, Mail, Phone, MapPin, MessageCircle } from "lucide-react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
@@ -13,6 +13,15 @@ import { Footer } from "@/components/layout/Footer";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { SEO } from "@/components/SEO";
+import { routeSeo } from "@/seo/routes";
+import { trackEvent } from "@/lib/analytics";
+import { FAQ } from "@/components/FAQ";
+import { GENERAL_FAQS } from "@/data/faqs";
+import { courses, kidsCourses } from "@/data/courses";
+
+// TODO(owner): confirm this number is on WhatsApp.
+const WHATSAPP_URL =
+  "https://wa.me/917709109830?text=" + encodeURIComponent("Hi! I'd like to know more about your courses.");
 
 const contactInfo = [
   {
@@ -31,7 +40,7 @@ const contactInfo = [
     icon: MapPin,
     label: "Address",
     value: "Pune, Maharashtra",
-    href: "#",
+    href: "https://www.google.com/maps/search/?api=1&query=Pune%2C+Maharashtra",
   },
 ];
 
@@ -87,6 +96,8 @@ const Contact = () => {
       throw new Error("API request failed");
     }
 
+    trackEvent("generate_lead", { form: "contact", course: formData.course });
+
     // 5️⃣ Success toast
     toast({
       title: "Message Sent!",
@@ -131,9 +142,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO 
-        title="Contact Us | The Consistent Academy"
-        description="Get in touch with The Consistent Academy. We are here to answer your questions about our English language courses and test preparation programs."
-        canonical="/contact"
+        {...routeSeo("/contact")}
       />
       <Navbar />
       <main>
@@ -208,57 +217,25 @@ const Contact = () => {
                     />
 
                    <select
-  name="course"
-  value={formData.course}
-  onChange={handleChange}
-  className="w-full px-4 py-3 rounded-xl bg-background shadow-neu-inset-sm"
->
-  <option value="">Select a course</option>
-
-  {/* -------- ADULTS -------- */}
-  <optgroup label="Adults">
-    <option value="IELTS | TOEFL | PTE | CELPIP Preparation Course">
-      IELTS | TOEFL | PTE | CELPIP Preparation Course
-    </option>
-    <option value="Corporate Survival & Success Program">
-      Corporate Survival & Success Program
-    </option>
-    <option value="Crack Your Interview">
-      Crack Your Interview
-    </option>
-    <option value="Corporate Dining & Social Etiquette Masterclass">
-      Corporate Dining & Social Etiquette Masterclass
-    </option>
-    <option value="Advanced English & Leadership Presence for Managers">
-      Advanced English & Leadership Presence for Managers
-    </option>
-    <option value="Communication Skill Training">
-      Communication Skill Training
-    </option>
-    <option value="Personality Development Training">
-      Personality Development Training
-    </option>
-  </optgroup>
-
-  {/* -------- KIDS -------- */}
-  <optgroup label="Kids">
-    <option value="Elocution Course ">
-      Elocution Course 
-    </option>
-    <option value="Public Speaking ">
-      Public Speaking 
-    </option>
-    <option value="Grammar Foundations ">
-      Grammar Foundations 
-    </option>
-    <option value="Creative Writing ">
-      Creative Writing 
-    </option>
-    <option value="Reading Club ">
-      Reading Club 
-    </option>
-  </optgroup>
-</select>
+                    name="course"
+                    value={formData.course}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-xl bg-background shadow-neu-inset-sm"
+                  >
+                    <option value="">Select a course</option>
+                    <optgroup label="Adults &amp; professionals">
+                      {courses.map((c) => (
+                        <option key={c.slug} value={c.title}>{c.title}</option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="Kids">
+                      {kidsCourses.map((c) => (
+                        <option key={c.slug} value={c.title}>{c.title}</option>
+                      ))}
+                    </optgroup>
+                    <option value="Leadership Programme (LBFP)">Leadership Programme (LBFP)</option>
+                    <option value="Not sure yet">Not sure yet, please advise</option>
+                  </select>
 
                   </div>
 
@@ -298,18 +275,42 @@ const Contact = () => {
               className="space-y-6"
             >
               {contactInfo.map((info, index) => (
-                <NeumorphicCard key={index} className="flex gap-4 p-5">
-                  <info.icon className="w-5 h-5 text-primary shrink-0" />
+                <a
+                  key={index}
+                  href={info.href}
+                  {...(info.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  onClick={() => info.label === "Phone" && trackEvent("click_call")}
+                  className="block"
+                >
+                  <NeumorphicCard className="flex gap-4 p-5 hover:-translate-y-0.5 transition-transform">
+                    <info.icon className="w-5 h-5 text-primary shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-sm text-muted-foreground">{info.label}</p>
+                      <p className="font-medium [overflow-wrap:anywhere]">{info.value}</p>
+                    </div>
+                  </NeumorphicCard>
+                </a>
+              ))}
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent("click_whatsapp", { location: "contact_page" })}
+                className="block"
+              >
+                <NeumorphicCard className="flex gap-4 p-5 hover:-translate-y-0.5 transition-transform">
+                  <MessageCircle className="w-5 h-5 text-[#25D366] shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-sm text-muted-foreground">{info.label}</p>
-                    <p className="font-medium [overflow-wrap:anywhere]">{info.value}</p>
+                    <p className="text-sm text-muted-foreground">WhatsApp</p>
+                    <p className="font-medium">Chat with us directly</p>
                   </div>
                 </NeumorphicCard>
-              ))}
+              </a>
             </motion.div>
           </div>
         </div>
       </SectionWrapper>
+      <FAQ items={GENERAL_FAQS} />
       </main>
       <Footer />
     </div>

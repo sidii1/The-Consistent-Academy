@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { trackEvent } from "@/lib/analytics";
 import {
   CheckCircle2, XCircle, Loader2, Download, Printer, ShieldCheck, FlaskConical, QrCode,
   Clock, Zap, Mail, Smartphone, ScanLine, KeyRound, Check, Sparkles,
@@ -40,9 +41,9 @@ interface Props {
 
 /** Header image used when the caller doesn't pass one. */
 const FALLBACK_IMAGE: Record<string, string> = {
-  package: "/leadership/llf-hero2.jpg",
-  kids_course: "/courses/2SMS08520.jpg",
-  course: "/courses/img1.png",
+  package: "/leadership/llf-hero2.webp",
+  kids_course: "/courses/2SMS08520.webp",
+  course: "/courses/img1.webp",
 };
 
 const KIND_LABEL: Record<string, string> = {
@@ -145,6 +146,7 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
       const data = await res.json();
       if (data.status === "paid") {
         stopPolling();
+        trackEvent("purchase", { transaction_id: id, currency: "INR" });
         setReceipt(data.receipt);
         setEmailStatus(data.emailStatus);
         setStep("paid"); // QR is unmounted as soon as the step changes
@@ -197,6 +199,7 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
       setTestMode(data.mode === "test");
       setCanSimulate(Boolean(data.simulationEnabled));
       setNow(Date.now());
+      trackEvent("begin_checkout", { currency: "INR", value: quote.quote.payable, items: [{ item_id: product.id }] });
       setStep("qr");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not start the payment.");
@@ -475,6 +478,12 @@ export const PaymentModal = ({ open, onOpenChange, productId, defaultMode, defau
                   <span className="inline-flex items-center gap-1"><Zap size={12} className="text-neo-accent" /> Instant confirmation</span>
                   <span className="inline-flex items-center gap-1"><Mail size={12} className="text-neo-accent" /> Receipt on email</span>
                 </div>
+                <p className="mt-3 text-[11px] text-neo-muted">
+                  By paying you agree to our{" "}
+                  <a href="/terms" target="_blank" rel="noopener noreferrer" className="underline text-neo-accent">Terms</a>,{" "}
+                  <a href="/refund-policy" target="_blank" rel="noopener noreferrer" className="underline text-neo-accent">Refund Policy</a>{" "}and{" "}
+                  <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="underline text-neo-accent">Privacy Policy</a>.
+                </p>
               </div>
             </motion.form>
           )}

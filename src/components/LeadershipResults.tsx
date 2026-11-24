@@ -58,9 +58,9 @@ const LeadershipResults = ({
 
   const getStyleImage = (style: LeadershipStyle) => {
     if (style === "laissezFaire") {
-      return "/leadership/laissez.png";
+      return "/leadership/laissez.webp";
     }
-    return `/leadership/${style}.png`;
+    return `/leadership/${style}.webp`;
   };
 
   const getStyleIcon = (style: LeadershipStyle) => {

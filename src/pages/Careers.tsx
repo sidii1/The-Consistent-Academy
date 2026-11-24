@@ -10,6 +10,7 @@ import { NeumorphicCard } from "@/components/ui/neumorphic-card";
 import { AnimatedHeading, AnimatedText } from "@/components/ui/animated-text";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { SEO } from "@/components/SEO";
+import { routeSeo } from "@/seo/routes";
 
 /* ---------------- TYPES ---------------- */
 
@@ -167,9 +168,7 @@ const Careers = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEO 
-        title="Careers | Join The Consistent Academy"
-        description="Join The Consistent Academy as an IELTS Trainer, Spoken English Mentor, or Experiential Learning Expert (ELE). Build your career with us."
-        canonical="/careers"
+        {...routeSeo("/careers")}
       />
       <Navbar />
       <main>

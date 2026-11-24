@@ -1,5 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Resend } from "resend";
+import { esc } from "./_lib/html.js";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -27,16 +28,16 @@ export default async function handler(
       subject: `New LBFP Interest Submission: ${offering} – ${name}`,
       html: `
         <h2>New Leadership Bento Forward Program Interest Submission</h2>
-        <p><strong>Programme Offering:</strong> ${offering}</p>
-        <p><strong>Mode:</strong> ${mode || "Not specified"}</p>
-        <p><strong>Preferred Dates:</strong> ${date || "Not specified"}</p>
+        <p><strong>Programme Offering:</strong> ${esc(offering)}</p>
+        <p><strong>Mode:</strong> ${esc(mode || "Not specified")}</p>
+        <p><strong>Preferred Dates:</strong> ${esc(date || "Not specified")}</p>
         <hr />
-        <p><strong>Full Name:</strong> ${name}</p>
-        <p><strong>Email Address:</strong> ${email}</p>
-        <p><strong>Contact Number:</strong> ${phone}</p>
-        <p><strong>City / Location:</strong> ${city}</p>
-        <p><strong>Professional / Educational Background:</strong> ${background || "Not specified"}</p>
-        <p><strong>Message / Goals:</strong> ${message || "None provided"}</p>
+        <p><strong>Full Name:</strong> ${esc(name)}</p>
+        <p><strong>Email Address:</strong> ${esc(email)}</p>
+        <p><strong>Contact Number:</strong> ${esc(phone)}</p>
+        <p><strong>City / Location:</strong> ${esc(city)}</p>
+        <p><strong>Professional / Educational Background:</strong> ${esc(background || "Not specified")}</p>
+        <p><strong>Message / Goals:</strong> ${esc(message || "None provided")}</p>
         <hr />
         <p style="font-size: 12px; color: #666;">This inquiry has also been stored in Firestore under collection 'lbfpEnquiries'.</p>
       `,
@@ -49,8 +50,8 @@ export default async function handler(
         to: [email],
         subject: `Thank you for your interest in the Leadership Bento Forward Program!`,
         html: `
-          <h3>Hello ${name},</h3>
-          <p>Thank you for registering your interest in the <strong>Leadership Bento Forward Program (${offering})</strong> with The Consistent Academy.</p>
+          <h3>Hello ${esc(name)},</h3>
+          <p>Thank you for registering your interest in the <strong>Leadership Bento Forward Program (${esc(offering)})</strong> with The Consistent Academy.</p>
           <p>Our program coordinator will review your background and reach out to you shortly with detailed schedules, cohort availability, and orientation details.</p>
           <p>Warm regards,<br /><strong>The Consistent Academy Team</strong><br />Pune, Maharashtra</p>
         `,

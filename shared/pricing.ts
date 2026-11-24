@@ -105,7 +105,7 @@ export const KIDS_COURSE_PRICE_OVERRIDES: Record<string, number> = {
 
 export const KIDS_COURSES: Product[] = [
   ["kid-mun", "Model United Nations (MUN) Course"],
-  ["kid-tedx", "TedX & Toastmaster Training"],
+  ["kid-tedx", "TEDx & Toastmaster Training"],
   ["kid-grammar", "Grammar Foundations"],
   ["kid-creative", "Creative Writing"],
   ["kid-story", "Craft Your Own Story"],
@@ -124,7 +124,7 @@ export const KIDS_COURSES: Product[] = [
 export const COURSES: Product[] = (
   [
     ["course-english-proficiency", "IELTS | TOEFL | PTE | CELPIP Preparation Course", 11999],
-    ["course-corporate-survival", "Corporate Survival & Success Program", 5999],
+    ["course-corporate-survival", "Corporate Survival & Success Programme", 5999],
     ["course-crack-interview", "Interview Preparation Course", 2100],
     ["course-dining-etiquette", "Corporate Dining & Social Etiquette Masterclass", 2999],
     ["course-manager-leadership", "Advanced English & Leadership Presence for Managers", 5999],

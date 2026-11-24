@@ -90,7 +90,7 @@ const CCJourney: React.FC = () => (
       }}
     >
       <img
-        src="/consistent%20communicator's%20path.png"
+        src="/consistent%20communicator's%20path.webp"
         alt="Consistent Communicator's Path: Base Camp, The Ascent, High Camp, The Summit and Beyond the Summit"
         style={{ width: "80%", maxWidth: 800, display: "block", margin: "0 auto", height: "auto" }}
         loading="lazy"

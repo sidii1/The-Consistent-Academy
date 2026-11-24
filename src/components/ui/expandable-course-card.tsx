@@ -4,6 +4,7 @@ import React, { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { Clock, BookOpen, X, ArrowRight, Users, Target, Star, ChevronRight, ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { LITE_MOTION } from "@/lib/device";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
@@ -19,6 +20,8 @@ interface CourseModule {
 export interface Course {
   /** Must match an entry in shared/pricing.ts so the server charges the right amount. */
   productId?: string;
+  /** URL slug for /courses/:slug. */
+  slug?: string;
   title: string;
   subtitle?: string;
   description: string;
@@ -392,6 +395,8 @@ export default function ExpandableCourseCard({ courses, initialVisible = 6 }: Ex
                   <img
                     src={course.image}
                     alt={course.title}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
@@ -422,7 +427,16 @@ export default function ExpandableCourseCard({ courses, initialVisible = 6 }: Ex
                   </span>
                 </div>
 
-                <p className="text-sm text-neo-muted line-clamp-2 mb-4">{course.description}</p>
+                <p className="text-sm text-neo-muted line-clamp-2 mb-2">{course.description}</p>
+                {course.slug && (
+                  <Link
+                    to={`/courses/${course.slug}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="self-start mb-4 text-xs font-semibold text-neo-accent hover:underline"
+                  >
+                    Full course page →
+                  </Link>
+                )}
 
                 {/* Actions */}
                 <div className="mt-auto flex items-center gap-3">

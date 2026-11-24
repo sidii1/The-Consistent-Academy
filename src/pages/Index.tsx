@@ -1,6 +1,6 @@
-import { useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { IS_SMALL_SCREEN, LITE_MOTION, reveal } from "@/lib/device";
+import { IS_SMALL_SCREEN, LITE_MOTION, PREFERS_REDUCED_MOTION, reveal } from "@/lib/device";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 
 import FlowingMenu from "@/components/ui/flowing-menu";
-import CircularGallery from "@/components/ui/circular-gallery";
 import { NeumorphicButton } from "@/components/ui/neumorphic-button";
 import { SectionWrapper } from "@/components/ui/section-wrapper";
 import { AnimatedHeading, AnimatedText } from "@/components/ui/animated-text";
@@ -26,11 +25,12 @@ import EnrollNowButton from "@/components/ui/EnrollNowButton";
 import CCButton from "@/components/ui/CCButton";
 
 import Founder from "../components/Founder";
-import Testimonials from "../components/Testimonials";
 import { Developers } from "../components/Developers";
 import { HomeSectionNav } from "@/components/HomeSectionNav";
 import { PageLoader } from "@/components/PageLoader";
 import { SEO } from "@/components/SEO";
+import { routeSeo } from "@/seo/routes";
+import { ORGANIZATION } from "@/seo/org";
 
 /* ─────────────────────────────────────────────────────────────
    DATA
@@ -43,29 +43,29 @@ const socialLinks = [
 ];
 
 const images = [
-  "/gallery/v8.jpeg", "/gallery/v6.png",  "/gallery/v1.png",  "/gallery/v7.jpeg",
-  "/gallery/v2.png",  "/gallery/v3.png",  "/gallery/v4.png",  "/gallery/v5.png",
-  "/gallery/v9.jpeg", "/gallery/v13.jpeg","/gallery/v10.jpeg","/gallery/v11.jpeg",
-  "/gallery/v12.jpeg","/gallery/v13.jpeg","/gallery/v14.jpeg","/gallery/v15.jpeg",
-  "/gallery/v16.jpeg","/gallery/v17.jpeg","/gallery/v18.jpeg","/gallery/v19.jpeg",
-  "/gallery/v20.jpeg","/gallery/v21.jpeg","/gallery/v22.jpeg",
+  "/gallery/v8.webp", "/gallery/v6.webp",  "/gallery/v1.webp",  "/gallery/v7.webp",
+  "/gallery/v2.webp",  "/gallery/v3.webp",  "/gallery/v4.webp",  "/gallery/v5.webp",
+  "/gallery/v9.webp", "/gallery/v10.webp","/gallery/v11.webp",
+  "/gallery/v12.webp","/gallery/v13.webp","/gallery/v14.webp","/gallery/v15.webp",
+  "/gallery/v16.webp","/gallery/v17.webp","/gallery/v18.webp","/gallery/v19.webp",
+  "/gallery/v20.webp","/gallery/v21.webp","/gallery/v22.webp",
 ];
 
 const courseImages = [
-  "/courses/img1.png","/courses/img2.png","/courses/img3.png","/courses/img4.png",
-  "/courses/img5.png","/courses/img6.png","/courses/img7.png",
+  "/courses/img1.webp","/courses/img2.webp","/courses/img3.webp","/courses/img4.webp",
+  "/courses/img5.webp","/courses/img6.webp","/courses/img7.webp",
 ];
 
 const courses = [
-  { title: "IELTS | TOEFL | PTE | CELPIP" },
-  { title: "Corporate Communication" },
-  { title: "Crack Your Interview" },
-  { title: "Communication Skill Training" },
-  { title: "Courses for Kids" },
+  { title: "IELTS | TOEFL | PTE | CELPIP", link: "/courses/ielts-toefl-pte-celpip-preparation" },
+  { title: "Corporate Survival & Success Programme", link: "/courses/corporate-survival-success-programme" },
+  { title: "Interview Preparation Course", link: "/courses/interview-preparation-course" },
+  { title: "Communication Skill Training", link: "/courses/communication-skill-training" },
+  { title: "Courses for Kids", link: "/courses" },
 ];
 
 const courseMenuItems = courses.map((c, i) => ({
-  link: "/courses",
+  link: c.link,
   text: c.title,
   image: courseImages[i % courseImages.length],
 }));
@@ -231,46 +231,71 @@ const HeroSection = ({ startAnim }: { startAnim: boolean }) => {
    PAGE
 ───────────────────────────────────────────────────────────── */
 
+/** Show the intro animation only once per browser session, never for reduced-motion
+ *  users, and never for automated renderers (prerender / crawlers). */
+const INTRO_SEEN_KEY = "tca-intro-seen";
+const shouldShowLoader = (): boolean => {
+  if (typeof window === "undefined" || PREFERS_REDUCED_MOTION) return false;
+  if (typeof navigator !== "undefined" && navigator.webdriver) return false;
+  try {
+    if (sessionStorage.getItem(INTRO_SEEN_KEY)) return false;
+  } catch {
+    /* storage blocked: still show it, once per page load */
+  }
+  return true;
+};
+
+// Heavy, below-the-fold pieces: WebGL gallery (ogl) and testimonials load on demand.
+const CircularGallery = lazy(() => import("@/components/ui/circular-gallery"));
+const Testimonials = lazy(() => import("../components/Testimonials"));
+
+/** Mounts the WebGL gallery (and downloads its 22 textures) only once it nears the viewport. */
+const LazyGallery = (props: React.ComponentProps<typeof CircularGallery>) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const near = useInView(ref, { once: true, margin: "400px" });
+  return (
+    <div ref={ref} className="w-full h-full">
+      {near && (
+        <Suspense fallback={null}>
+          <CircularGallery {...props} />
+        </Suspense>
+      )}
+    </div>
+  );
+};
+
 const Index = () => {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(shouldShowLoader);
 
-  const handleLoaderComplete = () => {
+  const handleLoaderComplete = useCallback(() => {
+    try {
+      sessionStorage.setItem(INTRO_SEEN_KEY, "1");
+    } catch {
+      /* ignore */
+    }
     setLoading(false);
-  };
+  }, []);
 
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
-    "name": "The Consistent Academy",
-    "url": "https://www.theconsistentacademy.in/",
-    "logo": "https://www.theconsistentacademy.in/logo2.png",
-    "description": "Master English with The Consistent Academy. Expert IELTS preparation, spoken English, and writing skills courses.",
-    "sameAs": [
-      "https://www.instagram.com/the_consistent_academy/",
-      "https://www.linkedin.com/company/the-consistent-academy/"
-    ]
-  };
+  const schema = ORGANIZATION;
 
   return (
     <div className="min-h-screen bg-neo-base overflow-x-hidden">
       <SEO 
-        title="The Consistent Academy | IELTS & English Learning"
-        description="Master English with The Consistent Academy. Expert IELTS preparation, spoken English, and writing skills courses with proven methodology."
-        canonical="/"
+        {...routeSeo("/")}
         schema={schema}
       />
       
-      {/* 1. If loading is true, render ONLY the PageLoader */}
+      {/* The intro is a fixed overlay; the page itself renders immediately underneath
+          so content (and crawlers/LCP) never wait on the animation. */}
       {loading && <PageLoader onComplete={handleLoaderComplete} />}
 
-      {/* 2. Once loading completes, render the entire page */}
-      {!loading && (
+      {(
         <>
           <Navbar />
           <Developers />
           <HomeSectionNav />
           <main>
-            <HeroSection startAnim={true} />
+            <HeroSection startAnim={!loading} />
 
           {/* COURSES */}
           <SectionWrapper id="courses">
@@ -339,7 +364,7 @@ const Index = () => {
             </div>
 
             <div className="relative h-[620px] max-sm:h-[440px] w-full overflow-hidden rounded-neo-card">
-              <CircularGallery
+              <LazyGallery
                 items={galleryItems}
                 bend={IS_SMALL_SCREEN ? 1.5 : 3}
                 textColor="#ffffff"
@@ -352,7 +377,9 @@ const Index = () => {
 
           {/* id="testimonials" enables Navbar scroll-spy to detect this section */}
           <div id="testimonials">
-            <Testimonials />
+            <Suspense fallback={<div className="min-h-[400px]" />}>
+              <Testimonials />
+            </Suspense>
           </div>
           </main>
           <Footer />
